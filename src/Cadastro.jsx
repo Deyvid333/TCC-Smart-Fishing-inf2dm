@@ -12,7 +12,7 @@ function Cadastro() {
 
   return (
     <div className='container'>
-      <form>
+      <form >
         <h1>Seja Bem Vindo à Smart Fishing</h1>
         <input name='email' type='email' placeholder='E-mail' />
         <input name='senha' type='password' placeholder='Senha' />
