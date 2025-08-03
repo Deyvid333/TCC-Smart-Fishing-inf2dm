@@ -11,18 +11,18 @@ function Pesqueiro2() {
       <Navbar />
 
     <div className="container mt-4">
-      {/* Imagem principal */}
+     
       <div className="card w-100 mb-4">
         <img src={pesqueiroImg} alt="Imagem do pesqueiro" />
       </div>
 
-      {/* Título centralizado */}
+     
       <h2 className="text-center mb-4">Catálogo de Peixes</h2>
 
-      {/* Cards */}
+     
       <div className="row justify-content-center align-items-stretch g-4">
 
-        {/* Card 1 - Pacu */}
+        
         <div className="col-md-4 d-flex">
           <div className="card w-100">
           <img src={pacuImg} alt="Pacu" width={355} height={230}/>
@@ -36,7 +36,7 @@ function Pesqueiro2() {
           </div>
         </div>
 
-        {/* Card 2 - Pintado */}
+      
         <div className="col-md-4 d-flex">
           <div className="card w-100">
             <img src={pintadoImg} alt="Pintado"  width={355} height={230} />
@@ -50,7 +50,7 @@ function Pesqueiro2() {
           </div>
         </div>
 
-        {/* Card 3 - Traíra */}
+      
         <div className="col-md-4 d-flex">
           <div className="card w-100">
            <img src={trairaImg} alt="Traíra"  width={355} height={230} />
@@ -65,7 +65,6 @@ function Pesqueiro2() {
         </div>
       </div>
 
-      {/* Descrição final */}
       <div className="mt-5">
         <h2>Informações e descrição sobre o pesqueiro</h2>
         <h3>🎣 Pesqueiro Lago do Pescador</h3>

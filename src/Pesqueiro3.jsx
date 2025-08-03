@@ -20,7 +20,7 @@ function Pesqueiro3() {
       <div className="container pb-5">
         <div className="row justify-content-center align-items-stretch g-4">
 
-          {/* Card 1 */}
+        
           <div className="col-md-4 d-flex">
             <div className="card w-100">
               <img src={bagre} className="card-img-top" alt="Bagre" height="190px" width="100%" />
@@ -35,7 +35,7 @@ function Pesqueiro3() {
             </div>
           </div>
 
-          {/* Card 2 */}
+         
           <div className="col-md-4 d-flex">
             <div className="card w-100">
               <img src={tambaqui} className="card-img-top" alt="Tambaqui" height="190px" width="100%" />
@@ -50,7 +50,7 @@ function Pesqueiro3() {
             </div>
           </div>
 
-          {/* Card 3 */}
+          
           <div className="col-md-4 d-flex">
             <div className="card w-100">
               <img src={carpa} className="card-img-top" alt="Carpa Cabeçuda" height="190px" width="100%" />

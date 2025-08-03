@@ -18,7 +18,7 @@ function Home() {
       <div className="container pb-5">
         <div className="row justify-content-center align-items-stretch g-4">
 
-          {/* Pesqueiro 1 */}
+          
           <div className="col-md-4 d-flex">
             <div className="card w-100">
               <img src={pesqueiro} className="card-img-top" alt="Imagem do pesqueiro 1" />
@@ -32,7 +32,7 @@ function Home() {
             </div>
           </div>
 
-          {/* Pesqueiro 2 */}
+       
           <div className="col-md-4 d-flex">
             <div className="card w-100">
               <img src={pesqueiro2} className="card-img-top" alt="Imagem do pesqueiro 2" />
@@ -46,7 +46,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Pesqueiro 3 */}
           <div className="col-md-4 d-flex">
             <div className="card w-100">
               <img src={pesqueiro3} className="card-img-top" alt="Imagem do pesqueiro 3" />

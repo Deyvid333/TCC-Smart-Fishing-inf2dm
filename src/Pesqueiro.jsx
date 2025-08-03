@@ -25,7 +25,7 @@ function Pesqueiro() {
      
       <div className="row justify-content-center align-items-stretch g-4">
 
-        {/* Card Tilápia */}
+     
         <div className="col-md-4 d-flex">
           <div className="card w-100">
             <img src={tilapiaImg} className="card-img-top" alt="Tilápia" height="190px" />
