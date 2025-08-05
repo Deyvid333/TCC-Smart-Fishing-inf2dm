@@ -3,64 +3,86 @@ import Navbar from './Componentes/Navbar/Navbar';
 import pesqueiro from './assets/pesqueiro1home.jpg';
 import pesqueiro2 from './assets/pesqueiro2home.jpg';
 import pesqueiro3 from './assets/pesqueiro3home.jpg';
+
 import { Link } from 'react-router-dom';
+import './App.css';
 
 function Home() {
+
   return (
     <>
       <Navbar />
 
-      <div className="container text-center my-5">
-        <h1>Smart Fishing</h1>
-        <h2 className="mt-3">Pesqueiros perto de você</h2>
-      </div>
-
-      <div className="container pb-5">
-        <div className="row justify-content-center align-items-stretch g-4">
-
-          
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src={pesqueiro} className="card-img-top" alt="Imagem do pesqueiro 1"  width="190px" height="100%" />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Pesqueiro dos Vara Grande</h4>
-                <p className="card-text">Horário: 8h às 22h30</p>
-                <p className="card-text">R$18 dias úteis | R$25 finais de semana</p>
-                <p className="card-text">Restaurante, quiosque (R$5/h), estacionamento gratuito</p>
-                <Link to="/Pesqueiro" className="btn btn-primary mt-auto">Ver mais</Link>
-              </div>
-            </div>
-          </div>
-
-       
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src={pesqueiro2} className="card-img-top" alt="Imagem do pesqueiro 2" width="190px" height="100%"  />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Pesqueiro Lago do Pescador</h4>
-                <p className="card-text">Horário: 8h às 19h</p>
-                <p className="card-text">R$20 por dia</p>
-                <p className="card-text">Restaurante com peixes frescos, estacionamento gratuito</p>
-                <Link to="/Pesqueiro2" className="btn btn-primary mt-auto">Ver mais</Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src={pesqueiro3} className="card-img-top" alt="Imagem do pesqueiro 3" width="190px" height="100%"  />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Pesqueiro lago da rocha do norte</h4>
-                <p className="card-text">Aberto 24h</p>
-                <p className="card-text">R$15 por dia</p>
-                <p className="card-text">Quiosque mais estacionamento gratuito</p>
-                <Link to="/Pesqueiro3" className="btn btn-primary mt-auto">Ver mais</Link>
-              </div>
-            </div>
-          </div>
-
+      <div className="pesqueiros-hero">
+        <div className="container text-center">
+          <h1 className="hero-title">🎣 Explore os Pesqueiros</h1>
+          <p className="hero-subtitle">Descubra os melhores locais para sua pescaria</p>
         </div>
       </div>
+
+      {/* Mapa dos Pesqueiros */}
+      <div className="pesqueiros-map-section">
+        <div className="container">
+          <h2 className="section-title text-center mb-5">📍 Pesqueiros Disponíveis</h2>
+          <div className="row justify-content-center align-items-stretch g-4">
+            <div className="col-lg-4 col-md-6 d-flex">
+              <div className="pesqueiro-card">
+                <div className="pesqueiro-image">
+                  <img src={pesqueiro} className="card-img-top" alt="Pesqueiro Vara Grande" />
+                  <div className="pesqueiro-badge">⭐ 4.8</div>
+                </div>
+                <div className="card-body">
+                  <h4 className="pesqueiro-title">Pesqueiro dos Vara Grande</h4>
+                  <div className="pesqueiro-info">
+                    <p><i className="icon">🕐</i> 8h às 22h30</p>
+                    <p><i className="icon">💰</i> R$18 (úteis) | R$25 (fins de semana)</p>
+                    <p><i className="icon">🍽️</i> Restaurante, quiosque, estacionamento</p>
+                  </div>
+                  <Link to="/Pesqueiro" className="btn-pesqueiro">Explorar Pesqueiro</Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-lg-4 col-md-6 d-flex">
+              <div className="pesqueiro-card">
+                <div className="pesqueiro-image">
+                  <img src={pesqueiro2} className="card-img-top" alt="Lago do Pescador" />
+                  <div className="pesqueiro-badge">⭐ 4.6</div>
+                </div>
+                <div className="card-body">
+                  <h4 className="pesqueiro-title">Pesqueiro Lago do Pescador</h4>
+                  <div className="pesqueiro-info">
+                    <p><i className="icon">🕐</i> 8h às 19h</p>
+                    <p><i className="icon">💰</i> R$20 por dia</p>
+                    <p><i className="icon">🍽️</i> Restaurante, peixes frescos</p>
+                  </div>
+                  <Link to="/Pesqueiro2" className="btn-pesqueiro">Explorar Pesqueiro</Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-lg-4 col-md-6 d-flex">
+              <div className="pesqueiro-card">
+                <div className="pesqueiro-image">
+                  <img src={pesqueiro3} className="card-img-top" alt="Lago da Rocha" />
+                  <div className="pesqueiro-badge">⭐ 4.5</div>
+                </div>
+                <div className="card-body">
+                  <h4 className="pesqueiro-title">Lago da Rocha do Norte</h4>
+                  <div className="pesqueiro-info">
+                    <p><i className="icon">🕐</i> Aberto 24h</p>
+                    <p><i className="icon">💰</i> R$15 por dia</p>
+                    <p><i className="icon">🍽️</i> Quiosque, estacionamento</p>
+                  </div>
+                  <Link to="/Pesqueiro3" className="btn-pesqueiro">Explorar Pesqueiro</Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </>
   );
 }

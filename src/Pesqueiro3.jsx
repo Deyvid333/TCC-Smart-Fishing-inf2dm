@@ -69,6 +69,48 @@ function Pesqueiro3() {
             </div>
           </div>
 
+          <div className="col-md-4 d-flex">
+            <div className="card w-100">
+              <img src="https://via.placeholder.com/300x190/8e44ad/ffffff?text=Piaucu" className="card-img-top" alt="Piaucu" height="190px" />
+              <div className="card-body d-flex flex-column">
+                <h4 className="card-title">Piaucu</h4>
+                <p className="card-text">Horário ideal: Madrugada e início da manhã (4h às 8h)</p>
+                <p className="card-text">Tamanho médio: 35 a 55 cm</p>
+                <p className="card-text">Espinhas: Poucas, carne firme e saborosa</p>
+                <p className="card-text">Riscos à saúde: Nenhum — muito apreciado na culinária</p>
+                <p className="card-text">Equipamento: Vara média, iscas: frutas, sementes, massa</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-4 d-flex">
+            <div className="card w-100">
+              <img src="https://via.placeholder.com/300x190/16a085/ffffff?text=Jatuarana" className="card-img-top" alt="Jatuarana" height="190px" />
+              <div className="card-body d-flex flex-column">
+                <h4 className="card-title">Jatuarana</h4>
+                <p className="card-text">Horário ideal: Tarde e início da noite (14h às 20h)</p>
+                <p className="card-text">Tamanho médio: 25 a 40 cm</p>
+                <p className="card-text">Espinhas: Médias, carne de sabor marcante</p>
+                <p className="card-text">Riscos à saúde: Nenhum — peixe nativo muito valorizado</p>
+                <p className="card-text">Equipamento: Vara leve, iscas artificiais ou naturais</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-4 d-flex">
+            <div className="card w-100">
+              <img src="https://via.placeholder.com/300x190/d35400/ffffff?text=Cascudo" className="card-img-top" alt="Cascudo" height="190px" />
+              <div className="card-body d-flex flex-column">
+                <h4 className="card-title">Cascudo</h4>
+                <p className="card-text">Horário ideal: Noite (19h às 23h)</p>
+                <p className="card-text">Tamanho médio: 20 a 35 cm</p>
+                <p className="card-text">Espinhas: Poucas, mas tem couro resistente</p>
+                <p className="card-text">Riscos à saúde: Nenhum — carne branca e macia</p>
+                <p className="card-text">Equipamento: Vara simples, iscas de fundo como minhoca</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -80,13 +122,13 @@ function Pesqueiro3() {
         </div>
         <div className="carousel-inner">
           <div className="carousel-item active">
-            <img src={pesqueiroImg10} className="d-block w-100" alt="Pesqueiro 1" />
+            <img src={pesqueiroImg10} className="d-block w-100" alt="Pesqueiro 1" style={{height: '400px', objectFit: 'cover'}} />
           </div>
           <div className="carousel-item">
-            <img src={pesqueiroImg11} className="d-block w-100" alt="Pesqueiro 2" />
+            <img src={pesqueiroImg11} className="d-block w-100" alt="Pesqueiro 2" style={{height: '400px', objectFit: 'cover'}} />
           </div>
           <div className="carousel-item">
-            <img src={pesqueiroImg12} className="d-block w-100" alt="Pesqueiro 3" />
+            <img src={pesqueiroImg12} className="d-block w-100" alt="Pesqueiro 3" style={{height: '400px', objectFit: 'cover'}} />
           </div>
         </div>
         <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">

@@ -67,6 +67,45 @@ function Pesqueiro2() {
             </div>
           </div>
         </div>
+
+        <div className="col-md-4 d-flex">
+          <div className="card w-100">
+            <img src="https://via.placeholder.com/300x190/9b59b6/ffffff?text=Tambaqui" className="card-img-top" alt="Tambaqui" height="190px" />
+            <div className="card-body d-flex flex-column">
+              <h4 className="card-title">Tambaqui</h4>
+              <p className="card-text">Horário ideal: Manhã e tarde (7h às 17h)</p>
+              <p className="card-text">Tamanho médio: 40 a 70 cm</p>
+              <p className="card-text">Espinhas: Poucas, carne saborosa. Riscos à saúde: Nenhum</p>
+              <p className="card-text">Equipamento: Vara resistente, iscas: frutas, milho, ração</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-4 d-flex">
+          <div className="card w-100">
+            <img src="https://via.placeholder.com/300x190/f39c12/ffffff?text=Surubim" className="card-img-top" alt="Surubim" height="190px" />
+            <div className="card-body d-flex flex-column">
+              <h4 className="card-title">Surubim</h4>
+              <p className="card-text">Horário ideal: Noite e madrugada (20h às 5h)</p>
+              <p className="card-text">Tamanho médio: 60 a 100 cm</p>
+              <p className="card-text">Espinhas: Poucas, carne nobre. Riscos à saúde: Nenhum</p>
+              <p className="card-text">Equipamento: Vara pesada, linha forte, isca viva</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-4 d-flex">
+          <div className="card w-100">
+            <img src="https://via.placeholder.com/300x190/27ae60/ffffff?text=Curimba" className="card-img-top" alt="Curimbá" height="190px" />
+            <div className="card-body d-flex flex-column">
+              <h4 className="card-title">Curimbá</h4>
+              <p className="card-text">Horário ideal: Manhã cedo e final da tarde (6h às 9h, 16h às 18h)</p>
+              <p className="card-text">Tamanho médio: 25 a 40 cm</p>
+              <p className="card-text">Espinhas: Médias, carne saborosa. Riscos à saúde: Nenhum</p>
+              <p className="card-text">Equipamento: Vara leve, iscas: minhoca, massa, milho</p>
+            </div>
+          </div>
+        </div>
       </div>
 
 
@@ -78,13 +117,13 @@ function Pesqueiro2() {
         </div>
         <div className="carousel-inner">
           <div className="carousel-item active">
-            <img src={pesqueiroImg7} className="d-block w-100" alt="Pesqueiro 1" width="300px" height="500px" />
+            <img src={pesqueiroImg7} className="d-block w-100" alt="Pesqueiro 1" style={{height: '400px', objectFit: 'cover'}} />
           </div>
           <div className="carousel-item">
-            <img src={pesqueiroImg8} className="d-block w-100" alt="Pesqueiro 2" width="300px" height="500px" />
+            <img src={pesqueiroImg8} className="d-block w-100" alt="Pesqueiro 2" style={{height: '400px', objectFit: 'cover'}} />
           </div>
           <div className="carousel-item">
-            <img src={pesqueiroImg9} className="d-block w-100" alt="Pesqueiro 3" width="300px" height="500px" />
+            <img src={pesqueiroImg9} className="d-block w-100" alt="Pesqueiro 3" style={{height: '400px', objectFit: 'cover'}} />
           </div>
         </div>
         <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">

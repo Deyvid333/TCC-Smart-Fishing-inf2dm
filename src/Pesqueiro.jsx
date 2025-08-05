@@ -71,6 +71,45 @@ function Pesqueiro() {
           </div>
         </div>
 
+        <div className="col-md-4 d-flex">
+          <div className="card w-100">
+            <img src="https://via.placeholder.com/300x190/4a90e2/ffffff?text=Carpa" className="card-img-top" alt="Carpa" height="190px" />
+            <div className="card-body d-flex flex-column">
+              <h4 className="card-title">Carpa</h4>
+              <p className="card-text">Aparece com frequência entre 6:00 e 22:00.</p>
+              <p className="card-text">Tamanho médio: 40cm a 60cm.</p>
+              <p className="card-text">Própria para consumo, carne saborosa e nutritiva.</p>
+              <p className="card-text">Requer vara resistente. Iscas: milho, boilie, massa doce.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-4 d-flex">
+          <div className="card w-100">
+            <img src="https://via.placeholder.com/300x190/2ecc71/ffffff?text=Pintado" className="card-img-top" alt="Pintado" height="190px" />
+            <div className="card-body d-flex flex-column">
+              <h4 className="card-title">Pintado</h4>
+              <p className="card-text">Aparece com frequência entre 18:00 e 6:00.</p>
+              <p className="card-text">Tamanho médio: 50cm a 80cm.</p>
+              <p className="card-text">Excelente para consumo, peixe nobre de água doce.</p>
+              <p className="card-text">Vara pesada obrigatória. Iscas: peixe vivo, lambari, camarão.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-md-4 d-flex">
+          <div className="card w-100">
+            <img src="https://via.placeholder.com/300x190/e74c3c/ffffff?text=Pacu" className="card-img-top" alt="Pacu" height="190px" />
+            <div className="card-body d-flex flex-column">
+              <h4 className="card-title">Pacu</h4>
+              <p className="card-text">Aparece com frequência entre 8:00 e 18:00.</p>
+              <p className="card-text">Tamanho médio: 30cm a 45cm.</p>
+              <p className="card-text">Próprio para consumo, sabor suave e delicado.</p>
+              <p className="card-text">Vara média. Iscas: frutas, milho, ração, massas.</p>
+            </div>
+          </div>
+        </div>
+
 
 <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
   <div className="carousel-indicators">
@@ -80,13 +119,13 @@ function Pesqueiro() {
   </div>
   <div className="carousel-inner">
     <div className="carousel-item active">
-      <img src={pesqueiroImg4} className="d-block w-100" alt="Pesqueiro 1" />
+      <img src={pesqueiroImg4} className="d-block w-100" alt="Pesqueiro 1" style={{height: '400px', objectFit: 'cover'}} />
     </div>
     <div className="carousel-item">
-      <img src={pesqueiroImg5} className="d-block w-100" alt="Pesqueiro 2" />
+      <img src={pesqueiroImg5} className="d-block w-100" alt="Pesqueiro 2" style={{height: '400px', objectFit: 'cover'}} />
     </div>
     <div className="carousel-item">
-      <img src={pesqueiroImg6} className="d-block w-100" alt="Pesqueiro 3" />
+      <img src={pesqueiroImg6} className="d-block w-100" alt="Pesqueiro 3" style={{height: '400px', objectFit: 'cover'}} />
     </div>
   </div>
   <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">

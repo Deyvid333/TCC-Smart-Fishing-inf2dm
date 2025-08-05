@@ -5,7 +5,7 @@ function Cadastro() {
   const navigate = useNavigate();
 
   const handleCadastro = () => {
-    navigate('/home');
+    navigate('/pesqueiros');
   };
 
   return (
@@ -17,7 +17,7 @@ function Cadastro() {
         <button type="button" onClick={handleCadastro}>Cadastrar-se</button>
         <h3 className="h2index">Já tem uma conta?</h3>
         <div className="register-link">
-          <Link to="/">Login</Link>
+          <Link to="/login">Login</Link>
         </div>
       </form>
     </div>

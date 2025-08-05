@@ -1,3 +1,10 @@
+/* Gradiente de fundo global */
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .container {
   display: flex;
   align-items: center;
@@ -8,49 +15,75 @@
 h1 {
   color: #fff;
   font-size: 32px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
+h2 {
+  color: #2c3e50;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Formulários melhorados */
 .custom-form {
   display: flex;
   flex-direction: column;
   gap: 30px;
-  padding: 30px;
-  border-radius: 18px;
-  background-color: dodgerblue;
+  padding: 40px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #3498db, #2980b9);
   max-width: 50%;
   width: 400px;
   margin-bottom: 20px;
-  border: 2px solid white;
-  box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+  border: none;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.custom-form:hover {
+  transform: translateY(-5px);
 }
 
 .custom-form button {
   border-radius: 30px;
-  background-color: #fff;
-  height: 40px;
-  border: 1px solid black;
+  background: linear-gradient(45deg, #fff, #f8f9fa);
+  height: 45px;
+  border: none;
   font-weight: bold;
-  font-size: 14px;
-  color: cadetblue;
+  font-size: 16px;
+  color: #2980b9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .custom-form button:hover {
-  opacity: 0.8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  background: linear-gradient(45deg, #f8f9fa, #e9ecef);
 }
 
 .custom-form input {
-  border: 1px solid;
+  border: none;
   border-radius: 30px;
-  height: 40px;
-  background-color: #fff;
-  color: rgb(122, 118, 118);
-  font-size: 13px;
-  padding-left: 10px;
+  height: 45px;
+  background-color: rgba(255,255,255,0.95);
+  color: #2c3e50;
+  font-size: 14px;
+  padding-left: 20px;
   outline: none;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.custom-form input:focus {
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.3), inset 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .h2index {
   color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .register-link a {
@@ -58,20 +91,557 @@ h1 {
   font-size: 14px;
   text-decoration: none;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
 
 .register-link a:hover {
   text-decoration: underline;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Cards melhorados */
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.card-img-top {
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05);
 }
 
 .formspesqueiro {
-  background-color: #fff;
-  border-radius: 12px;
+  background: linear-gradient(145deg, #fff, #f8f9fa);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  margin-top: 30px;
 }
 
-.custom-carousel .carousel-item img {
-  max-height: 100px; 
+/* Carrossel melhorado */
+.carousel {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  margin: 30px 0;
+}
+
+.carousel-item img {
   height: 400px;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.carousel-item:hover img {
+  transform: scale(1.02);
+}
+
+/* Botões do Bootstrap melhorados */
+.btn-primary {
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  border: none;
+  border-radius: 25px;
+  padding: 12px 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #2980b9, #1f5f8b);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+/* Formulários do Bootstrap melhorados */
+.form-control {
   border-radius: 10px;
+  border: 2px solid #e9ecef;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* Animações suaves */
+* {
+  transition: all 0.3s ease;
+}
+
+/* Efeito de hover nos textos */
+.card-title {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.text-danger {
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Estilos da página de perfil */
+.profile-avatar img {
+  border: 4px solid #3498db;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+
+.profile-avatar img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+}
+
+.achievement-badge {
+  font-size: 2rem;
+  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.achievement-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Estilos da página inicial */
+.hero-section {
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx=".5" cy=".5" r=".5"><stop offset="0%" stop-color="%23ffffff" stop-opacity=".1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(%23a)"/></svg>');
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 800px;
+  padding: 0 20px;
+  animation: fadeInUp 1s ease-out;
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-hero-primary {
+  background: linear-gradient(45deg, #fff, #f8f9fa);
+  color: #2980b9;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.btn-hero-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+  color: #1f5f8b;
+}
+
+.btn-hero-secondary {
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+  padding: 15px 40px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-hero-secondary:hover {
+  background: #fff;
+  color: #2980b9;
+  transform: translateY(-3px);
+}
+
+/* Seção de features */
+.features-section {
+  padding: 100px 0;
+  background: linear-gradient(145deg, #f8f9fa, #fff);
+}
+
+.feature-card {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  background: linear-gradient(145deg, #3498db, #2980b9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feature-card h4 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.feature-card p {
+  color: #7f8c8d;
+  line-height: 1.6;
+}
+
+/* Seção CTA */
+.cta-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #2980b9, #3498db);
+  color: #fff;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.cta-section p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.btn-cta {
+  background: #fff;
+  color: #2980b9;
+  border: none;
+  padding: 15px 50px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.btn-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+  color: #1f5f8b;
+}
+
+/* Animação */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-hero-primary,
+  .btn-hero-secondary {
+    width: 250px;
+  }
+}
+
+/* Estilos da página dos pesqueiros */
+.pesqueiros-hero {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9));
+  padding: 120px 0 80px;
+  text-align: center;
+}
+
+.pesqueiros-map-section {
+  padding: 80px 0;
+  background: linear-gradient(145deg, #f8f9fa, #fff);
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 3rem;
+}
+
+.pesqueiro-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.pesqueiro-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.pesqueiro-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.pesqueiro-image img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pesqueiro-card:hover .pesqueiro-image img {
+  transform: scale(1.1);
+}
+
+.pesqueiro-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255,255,255,0.95);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2c3e50;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.pesqueiro-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.pesqueiro-info {
+  margin-bottom: 25px;
+}
+
+.pesqueiro-info p {
+  margin-bottom: 10px;
+  color: #7f8c8d;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pesqueiro-info .icon {
+  font-size: 1.1rem;
+}
+
+.btn-pesqueiro {
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.btn-pesqueiro:hover {
+  background: linear-gradient(45deg, #2980b9, #1f5f8b);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+  color: #fff;
+}
+
+/* Catálogo de peixes */
+.fish-catalog-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.fish-catalog-section .section-title {
+  color: #fff;
+}
+
+.fish-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.fish-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+.fish-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.fish-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.fish-card:hover .fish-image img {
+  transform: scale(1.1);
+}
+
+.fish-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.fish-status.safe {
+  background: rgba(46, 204, 113, 0.9);
+}
+
+.fish-status.dangerous {
+  background: rgba(231, 76, 60, 0.9);
+}
+
+.fish-info {
+  padding: 25px;
+}
+
+.fish-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.fish-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #34495e;
+  font-size: 0.9rem;
+}
+
+.detail-value {
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.difficulty.fácil {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.difficulty.médio {
+  color: #f39c12;
+  font-weight: 600;
+}
+
+.difficulty.difícil {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.consumo.safe {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.consumo.dangerous {
+  color: #e74c3c;
+  font-weight: 600;
 }
