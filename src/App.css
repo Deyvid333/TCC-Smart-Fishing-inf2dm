@@ -63,3 +63,13 @@ h1 {
 .register-link a:hover {
   text-decoration: underline;
 }
+
+.formspesqueiro {
+  background-color: #fff;
+  border-radius: 12px;
+}
+
+.custom-carousel .carousel-item img {
+  max-height: 100px; 
+  object-fit: cover;
+}

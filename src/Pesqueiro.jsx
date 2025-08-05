@@ -5,6 +5,11 @@ import pesqueiroImg from './assets/pesqueiro.png';
 import tilapiaImg from './assets/Tilapia.jpeg';
 import douradoImg from './assets/PeixeDourado.jpeg';
 import baiacuImg from './assets/Baiacu.jpeg';
+import pesqueiroImg4 from './assets/pesqueiro4.jpeg';
+import pesqueiroImg5 from './assets/pesqueiro5.jpg';
+import pesqueiroImg6 from './assets/pesqueiro6.jpg';
+
+
 
 function Pesqueiro() {
   return (
@@ -66,10 +71,42 @@ function Pesqueiro() {
           </div>
         </div>
 
-      </div>
 
-     
+<div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
+  <div className="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div className="carousel-inner">
+    <div className="carousel-item active">
+      <img src={pesqueiroImg4} className="d-block w-100" alt="Pesqueiro 1" />
+    </div>
+    <div className="carousel-item">
+      <img src={pesqueiroImg5} className="d-block w-100" alt="Pesqueiro 2" />
+    </div>
+    <div className="carousel-item">
+      <img src={pesqueiroImg6} className="d-block w-100" alt="Pesqueiro 3" />
+    </div>
+  </div>
+  <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span className="visually-hidden">Previous</span>
+  </button>
+  <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span className="carousel-control-next-icon" aria-hidden="true"></span>
+    <span className="visually-hidden">Next</span>
+  </button>
+</div>
+
+
+
+
+
+
+      </div>
       <div className="mt-5">
+        <form className='formspesqueiro'>
         <h2>Informações e Descrição sobre o Pesqueiro</h2>
         <h3>🎣 Pesqueiro dos Vara Grande</h3>
         <p>
@@ -77,6 +114,7 @@ function Pesqueiro() {
           Com funcionamento estendido até às 22h30, o local conta com um belo lago, restaurante à beira d’água, quiosque para descanso e estacionamento gratuito. 
           Durante a semana, o custo é acessível e nos fins de semana continua em conta, ideal para toda a família. Um verdadeiro refúgio para pescadores apaixonados!
         </p>
+        </form>
       </div>
     </div>
  

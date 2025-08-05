@@ -43,3 +43,16 @@
     width: 100%;
 
 }
+
+.inputnav {
+     border: 1px solid;
+  border-radius: 30px;
+  height: 40px;
+  background-color: #fff;
+  color: rgb(122, 118, 118);
+  font-size: 13px;
+  padding-left: 10px;
+  outline: none;
+  margin-left: 40px;
+  width: 320px;
+}

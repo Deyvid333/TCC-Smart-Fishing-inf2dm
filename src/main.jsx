@@ -4,6 +4,8 @@ import './index.css'
 import App from './App.jsx'
 import Appcadastro from './Cadastro.jsx' 
 import './App.css'; 
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 
 

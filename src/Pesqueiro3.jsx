@@ -3,7 +3,8 @@ import Navbar from './Componentes/Navbar/Navbar';
 import pesqueiro3 from './assets/pesqueiro3.png';
 import bagre from './assets/bagre-africano.webp';
 import tambaqui from './assets/Tambaqui.jpg';
-import carpa from './assets/Carpa.jpg'
+import carpa from './assets/Carpa.jpg';
+import './App.css'
 
 function Pesqueiro3() {
   return (
@@ -68,16 +69,29 @@ function Pesqueiro3() {
         </div>
       </div>
 
+      <div>
+        <form>
+          
+        </form>
+      </div>
+
+
+
+
+
+
       <div className="container mb-5">
+        <form className='formspesqueiro'> 
         <h2>Informações e descrição sobre o pesqueiro</h2>
-        <h3>🎣 Pesqueiro do Seu Zé</h3>
+        <h3>🎣 Pesqueiro lago da rocha do norte</h3>
         <p>
-          O mais tradicional da região, o Pesqueiro do Seu Zé nunca dorme! Aberto 24 horas por dia,
+          O mais tradicional da região, o Pesqueiro lago da rocha do norte nunca dorme! Aberto 24 horas por dia,
           é o destino ideal para pescadores noturnos ou para quem gosta de curtir a natureza a qualquer hora.
           Simples, mas muito funcional, o espaço conta com quiosques e estacionamento gratuito.
           Tudo isso por um valor simbólico de 15 reais por dia.
           Um lugar acolhedor que carrega histórias e memórias de gerações.
         </p>
+        </form>
       </div>
     </div>
      
