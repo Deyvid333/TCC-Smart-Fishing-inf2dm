@@ -4,7 +4,10 @@ import pesqueiro3 from './assets/pesqueiro3.png';
 import bagre from './assets/bagre-africano.webp';
 import tambaqui from './assets/Tambaqui.jpg';
 import carpa from './assets/Carpa.jpg';
-import './App.css'
+import './App.css';
+import pesqueiroImg10 from './assets/pesqueiro10.jpg';
+import pesqueiroImg11 from './assets/pesqueiro11.jpg';
+import pesqueiroImg12 from './assets/pesqueiro12.jpg';
 
 function Pesqueiro3() {
   return (
@@ -13,7 +16,7 @@ function Pesqueiro3() {
 
     <div>
       <div className="card w-100">
-        <img src={pesqueiro3} className="card-img-top" alt="Imagem do pesqueiro 3" />
+        <img src={pesqueiro3}  alt="Imagem do pesqueiro 3" />
       </div>
 
       <h2 className="text-center mt-4">Catálogo de Peixes</h2>
@@ -69,10 +72,31 @@ function Pesqueiro3() {
         </div>
       </div>
 
-      <div>
-        <form>
-          
-        </form>
+      <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
+        <div className="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div className="carousel-inner">
+          <div className="carousel-item active">
+            <img src={pesqueiroImg10} className="d-block w-100" alt="Pesqueiro 1" />
+          </div>
+          <div className="carousel-item">
+            <img src={pesqueiroImg11} className="d-block w-100" alt="Pesqueiro 2" />
+          </div>
+          <div className="carousel-item">
+            <img src={pesqueiroImg12} className="d-block w-100" alt="Pesqueiro 3" />
+          </div>
+        </div>
+        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span className="visually-hidden">Previous</span>
+        </button>
+        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+          <span className="carousel-control-next-icon" aria-hidden="true"></span>
+          <span className="visually-hidden">Next</span>
+        </button>
       </div>
 
 

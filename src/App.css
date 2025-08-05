@@ -71,5 +71,7 @@ h1 {
 
 .custom-carousel .carousel-item img {
   max-height: 100px; 
+  height: 400px;
   object-fit: cover;
+  border-radius: 10px;
 }
