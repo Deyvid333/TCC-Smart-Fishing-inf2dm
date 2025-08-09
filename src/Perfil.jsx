@@ -1,8 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
 import './App.css';
 
 function Perfil() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData] = useState({
+    nome: 'João Silva',
+    email: 'joao@email.com',
+    telefone: '(11) 99999-9999',
+    cidade: 'São Paulo, SP',
+    apelido: 'João Pescador',
+    anoInicio: '2015'
+  });
+
+  const [fishingStats, setFishingStats] = useState({
+    pesqueirosVisitados: '12',
+    peixesCapturados: '87',
+    maiorPeixe: 'Tilápia 2.5kg',
+    peixeFavorito: 'Dourado'
+  });
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    alert('Estatísticas atualizadas com sucesso!');
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const handleStatsChange = (e) => {
+    setFishingStats({
+      ...fishingStats,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handlePasswordChange = () => {
+    alert('Redirecionando para alteração de senha...');
+  };
+
   return (
     <>
       <Navbar />
@@ -10,31 +51,79 @@ function Perfil() {
         <h2 className="text-center mb-5">Meu Perfil</h2>
         
         <div className="row justify-content-center">
-          <div className="col-md-8">
+          <div className="col-md-10 col-lg-11">
             <div className="card">
               <div className="card-body">
                 <div className="text-center mb-4">
-                  <div className="profile-avatar mb-3">
-                    <img src="https://via.placeholder.com/120" alt="Avatar" className="rounded-circle" width="120" height="120" />
-                  </div>
-                  <h4>João Pescador</h4>
-                  <p className="text-muted">Pescador desde 2015</p>
+                  <h4>{profileData.apelido}</h4>
+                  <p className="text-muted">Pescador desde {profileData.anoInicio}</p>
                 </div>
 
                 <div className="row mb-4">
                   <div className="col-md-6">
                     <h5>📋 Informações Pessoais</h5>
-                    <p><strong>Nome:</strong> João Silva</p>
-                    <p><strong>Email:</strong> joao@email.com</p>
-                    <p><strong>Telefone:</strong> (11) 99999-9999</p>
-                    <p><strong>Cidade:</strong> São Paulo, SP</p>
+                    <div>
+                      <p><strong>Nome:</strong> {profileData.nome}</p>
+                      <p><strong>Email:</strong> {profileData.email}</p>
+                      <p><strong>Telefone:</strong> {profileData.telefone}</p>
+                      <p><strong>Cidade:</strong> {profileData.cidade}</p>
+                    </div>
                   </div>
                   <div className="col-md-6">
                     <h5>🎣 Estatísticas de Pesca</h5>
-                    <p><strong>Pesqueiros visitados:</strong> 12</p>
-                    <p><strong>Peixes capturados:</strong> 87</p>
-                    <p><strong>Maior peixe:</strong> Tilápia 2.5kg</p>
-                    <p><strong>Peixe favorito:</strong> Dourado</p>
+                    {isEditing ? (
+                      <div>
+                        <div className="mb-3">
+                          <label className="form-label"><strong>Pesqueiros visitados:</strong></label>
+                          <input 
+                            type="number" 
+                            className="form-control" 
+                            name="pesqueirosVisitados"
+                            value={fishingStats.pesqueirosVisitados}
+                            onChange={handleStatsChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label"><strong>Peixes capturados:</strong></label>
+                          <input 
+                            type="number" 
+                            className="form-control" 
+                            name="peixesCapturados"
+                            value={fishingStats.peixesCapturados}
+                            onChange={handleStatsChange}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label"><strong>Maior peixe:</strong></label>
+                          <input 
+                            type="text" 
+                            className="form-control" 
+                            name="maiorPeixe"
+                            value={fishingStats.maiorPeixe}
+                            onChange={handleStatsChange}
+                            placeholder="Ex: Tilápia 2.5kg"
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label"><strong>Peixe favorito:</strong></label>
+                          <input 
+                            type="text" 
+                            className="form-control" 
+                            name="peixeFavorito"
+                            value={fishingStats.peixeFavorito}
+                            onChange={handleStatsChange}
+                            placeholder="Ex: Dourado"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <p><strong>Pesqueiros visitados:</strong> {fishingStats.pesqueirosVisitados}</p>
+                        <p><strong>Peixes capturados:</strong> {fishingStats.peixesCapturados}</p>
+                        <p><strong>Maior peixe:</strong> {fishingStats.maiorPeixe}</p>
+                        <p><strong>Peixe favorito:</strong> {fishingStats.peixeFavorito}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -42,30 +131,28 @@ function Perfil() {
 
                 <h5 className="mb-3">⚙️ Configurações da Conta</h5>
                 <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <button className="btn btn-primary w-100">Editar Perfil</button>
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <button className="btn btn-outline-primary w-100">Alterar Senha</button>
-                  </div>
-                </div>
-
-                <hr />
-
-                <h5 className="mb-3">🏆 Conquistas Recentes</h5>
-                <div className="row">
-                  <div className="col-md-4 text-center mb-3">
-                    <div className="achievement-badge">🥇</div>
-                    <small>Primeiro Peixe</small>
-                  </div>
-                  <div className="col-md-4 text-center mb-3">
-                    <div className="achievement-badge">🎣</div>
-                    <small>10 Pescarias</small>
-                  </div>
-                  <div className="col-md-4 text-center mb-3">
-                    <div className="achievement-badge">⭐</div>
-                    <small>Pescador Experiente</small>
-                  </div>
+                  {isEditing ? (
+                    <>
+                      <div className="col-md-4 mb-3">
+                        <button className="btn btn-success w-100" onClick={handleSave}>Salvar Estatísticas</button>
+                      </div>
+                      <div className="col-md-4 mb-3">
+                        <button className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
+                      </div>
+                      <div className="col-md-4 mb-3">
+                        <button className="btn btn-outline-primary w-100" onClick={handlePasswordChange}>Alterar Senha</button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="col-md-6 mb-3">
+                        <button className="btn btn-primary w-100" onClick={handleEdit}>Editar Estatísticas</button>
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <button className="btn btn-outline-primary w-100" onClick={handlePasswordChange}>Alterar Senha</button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

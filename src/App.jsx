@@ -9,6 +9,7 @@ import Perfil from './Perfil';
 import Pesqueiro from './Pesqueiro';
 import Pesqueiro2 from './Pesqueiro2';
 import Pesqueiro3 from './Pesqueiro3';
+import AdminDashboard from './AdminDashboard';
 import './App.css';
 
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/Pesqueiro3" element={<Pesqueiro3 />} />
         <Route path="/Pesqueiro2" element={<Pesqueiro2 />} />
         <Route path="/Pesqueiro" element={<Pesqueiro />} />
+        <Route path="/admin" element={<AdminDashboard />} />
      
       </Routes>
     </Router>

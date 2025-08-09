@@ -29,7 +29,7 @@ function Home() {
               <div className="pesqueiro-card">
                 <div className="pesqueiro-image">
                   <img src={pesqueiro} className="card-img-top" alt="Pesqueiro Vara Grande" />
-                  <div className="pesqueiro-badge">⭐ 4.8</div>
+                  <div className="pesqueiro-badge">⭐ 4.7</div>
                 </div>
                 <div className="card-body">
                   <h4 className="pesqueiro-title">Pesqueiro dos Vara Grande</h4>
@@ -47,7 +47,7 @@ function Home() {
               <div className="pesqueiro-card">
                 <div className="pesqueiro-image">
                   <img src={pesqueiro2} className="card-img-top" alt="Lago do Pescador" />
-                  <div className="pesqueiro-badge">⭐ 4.6</div>
+                  <div className="pesqueiro-badge">⭐ 4.3</div>
                 </div>
                 <div className="card-body">
                   <h4 className="pesqueiro-title">Pesqueiro Lago do Pescador</h4>
@@ -65,7 +65,7 @@ function Home() {
               <div className="pesqueiro-card">
                 <div className="pesqueiro-image">
                   <img src={pesqueiro3} className="card-img-top" alt="Lago da Rocha" />
-                  <div className="pesqueiro-badge">⭐ 4.5</div>
+                  <div className="pesqueiro-badge">⭐ 4.7</div>
                 </div>
                 <div className="card-body">
                   <h4 className="pesqueiro-title">Lago da Rocha do Norte</h4>

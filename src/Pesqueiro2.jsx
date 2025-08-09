@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
 import pacuImg from './assets/Pacu.jpeg';
 import pintadoImg from './assets/pintado.jpg';
@@ -10,23 +10,96 @@ import pesqueiroImg9 from './assets/pesqueiro9.jpg';
 import './App.css'
 
 function Pesqueiro2() {
+  const [comments, setComments] = useState([
+    {
+      id: 1,
+      nome: 'Ana Costa',
+      rating: 4,
+      texto: 'Pesqueiro muito bom! Peguei vários pacus e o restaurante tem comida deliciosa. Recomendo!',
+      data: 'há 3 dias'
+    },
+    {
+      id: 2,
+      nome: 'Roberto Lima',
+      rating: 5,
+      texto: 'Lugar incrível! Consegui pescar um pintado de 4kg. A estrutura é excelente e o pessoal muito atencioso.',
+      data: 'há 1 semana'
+    },
+    {
+      id: 3,
+      nome: 'Fernanda Oliveira',
+      rating: 4,
+      texto: 'Ambiente familiar e tranquilo. Perfeito para levar as crianças. Os peixes são abundantes!',
+      data: 'há 2 semanas'
+    }
+  ]);
+
+  const [newComment, setNewComment] = useState({
+    nome: '',
+    rating: 5,
+    texto: ''
+  });
+
+  const handleInputChange = (e) => {
+    setNewComment({
+      ...newComment,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleRatingClick = (rating) => {
+    setNewComment({
+      ...newComment,
+      rating: rating
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newComment.nome.trim() && newComment.texto.trim()) {
+      const comment = {
+        id: comments.length + 1,
+        nome: newComment.nome,
+        rating: newComment.rating,
+        texto: newComment.texto,
+        data: 'agora'
+      };
+      setComments([comment, ...comments]);
+      setNewComment({ nome: '', rating: 5, texto: '' });
+      alert('Comentário enviado com sucesso!');
+    } else {
+      alert('Por favor, preencha todos os campos!');
+    }
+  };
+
+  const renderStars = (rating, interactive = false) => {
+    return Array.from({ length: 5 }, (_, index) => (
+      <span 
+        key={index}
+        className={`star ${interactive ? 'interactive' : ''} ${index < rating ? 'filled' : ''}`}
+        onClick={interactive ? () => handleRatingClick(index + 1) : undefined}
+      >
+        ⭐
+      </span>
+    ));
+  };
+
+  const calculateAverageRating = () => {
+    if (comments.length === 0) return 0;
+    const sum = comments.reduce((acc, comment) => acc + comment.rating, 0);
+    return (sum / comments.length).toFixed(1);
+  };
+
   return (
     <>
       <Navbar />
 
     <div className="container mt-4">
-     
-      <div className="card w-100 mb-4">
-        <img src={pesqueiroImg} alt="Imagem do pesqueiro" />
-      </div>
+      <h1 className="text-center mb-4 text-white">🎣 Pesqueiro Lago do Pescador</h1>
+      
+      <h2 className="text-center mb-5">Catálogo de Peixes</h2>
 
-     
-      <h2 className="text-center mb-4">Catálogo de Peixes</h2>
-
-     
       <div className="row justify-content-center align-items-stretch g-4">
-
-        
         <div className="col-md-4 d-flex">
           <div className="card w-100">
           <img src={pacuImg}  className="card-img-top" alt="Pacu"  width="190px" height="100%" />
@@ -40,7 +113,6 @@ function Pesqueiro2() {
           </div>
         </div>
 
-      
         <div className="col-md-4 d-flex">
           <div className="card w-100">
             <img src={pintadoImg}  className="card-img-top" alt="Pintado" width="190px" height="100%" />
@@ -54,7 +126,6 @@ function Pesqueiro2() {
           </div>
         </div>
 
-      
         <div className="col-md-4 d-flex">
           <div className="card w-100">
            <img src={trairaImg}  className="card-img-top" alt="Traíra"   width="190px" height="100%" />
@@ -108,46 +179,162 @@ function Pesqueiro2() {
         </div>
       </div>
 
-
-      <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
-        <div className="carousel-indicators">
-          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
-          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+      {/* Seção de Informações Melhorada */}
+      <div className="info-section mt-5">
+        <div className="card info-card">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-8">
+                <h2 className="info-title">🎣 Pesqueiro Lago do Pescador</h2>
+                <p className="info-description">
+                  Localizado em uma área de natureza preservada, o Pesqueiro Lago do Pescador é conhecido por seu ambiente calmo e familiar.
+                  Aberto até as 19h, oferece um restaurante com peixes frescos direto do lago e infraestrutura pensada para o conforto dos visitantes.
+                </p>
+                <p className="info-highlight">
+                  A escolha perfeita para quem quer pescar e saborear boas refeições com vista para a água!
+                </p>
+              </div>
+              <div className="col-md-4">
+                <div className="info-details">
+                  <h5 className="mb-3">📊 Informações Rápidas</h5>
+                  <div className="detail-row">
+                    <span className="detail-icon">🕐</span>
+                    <span><strong>Horário:</strong> 8h às 19h</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">💰</span>
+                    <span><strong>Preço:</strong> R$20 por dia</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">📏</span>
+                    <span><strong>Área:</strong> 12.500 m²</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">🌊</span>
+                    <span><strong>Profundidade:</strong> 3,2m (média)</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">🏠</span>
+                    <span><strong>Quiosques:</strong> 6 unidades</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">🍽️</span>
+                    <span><strong>Serviços:</strong> Restaurante com peixes frescos</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">🏎️</span>
+                    <span><strong>Estacionamento:</strong> Gratuito (35 vagas)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Seção de Regras */}
+          <div className="row mt-4">
+            <div className="col-12">
+              <div className="rules-section">
+                <h4 className="rules-title">📜 Regras do Pesqueiro</h4>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="rules-allowed">
+                      <h6>✅ Permitido:</h6>
+                      <ul>
+                        <li>Entrada de crianças acompanhadas</li>
+                        <li>Pets de pequeno porte (coleira)</li>
+                        <li>Coolers e lanches próprios</li>
+                        <li>Equipamentos de pesca</li>
+                        <li>Churrasco em áreas designadas</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="rules-forbidden">
+                      <h6>❌ Proibido:</h6>
+                      <ul>
+                        <li>Pescar sem camisa</li>
+                        <li>Bebidas alcoólicas em excesso</li>
+                        <li>Pesca noturna após 19h</li>
+                        <li>Fogueiras e acampamento</li>
+                        <li>Pesca com explosivos</li>
+                        <li>Perturbação da fauna local</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="carousel-inner">
-          <div className="carousel-item active">
-            <img src={pesqueiroImg7} className="d-block w-100" alt="Pesqueiro 1" style={{height: '400px', objectFit: 'cover'}} />
-          </div>
-          <div className="carousel-item">
-            <img src={pesqueiroImg8} className="d-block w-100" alt="Pesqueiro 2" style={{height: '400px', objectFit: 'cover'}} />
-          </div>
-          <div className="carousel-item">
-            <img src={pesqueiroImg9} className="d-block w-100" alt="Pesqueiro 3" style={{height: '400px', objectFit: 'cover'}} />
-          </div>
-        </div>
-        <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Previous</span>
-        </button>
-        <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-          <span className="carousel-control-next-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Next</span>
-        </button>
       </div>
-
-
-
-      <div className="mt-5">
-        <form className='formspesqueiro'>
-        <h2>Informações e descrição sobre o pesqueiro</h2>
-        <h3>🎣 Pesqueiro Lago do Pescador</h3>
-        <p>
-          Localizado em uma área de natureza preservada, o Pesqueiro Lago do Pescador é conhecido por seu ambiente calmo e familiar.
-          Aberto até as 19h, oferece um restaurante com peixes frescos direto do lago e infraestrutura pensada para o conforto dos visitantes.
-          Com entrada a apenas 20 reais por dia, é a escolha perfeita para quem quer pescar e saborear boas refeições com vista para a água.
-        </p>
-        </form>
+      
+      {/* Seção de Comentários no Final */}
+      <div className="comments-section mt-5">
+        <div className="card">
+          <div className="card-body">
+            <h3 className="mb-4">💬 Comentários e Experiências</h3>
+            
+            {/* Formulário para novo comentário */}
+            <div className="comment-form mb-4">
+              <h5>Compartilhe sua experiência:</h5>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <input 
+                    type="text" 
+                    className="form-control" 
+                    placeholder="Seu nome" 
+                    name="nome"
+                    value={newComment.nome}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <div className="rating-stars mb-2">
+                    <span>Avaliação: </span>
+                    {renderStars(newComment.rating, true)}
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <textarea 
+                    className="form-control" 
+                    rows="3" 
+                    placeholder="Conte como foi sua experiência no pesqueiro..."
+                    name="texto"
+                    value={newComment.texto}
+                    onChange={handleInputChange}
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" className="btn btn-primary">Enviar Comentário</button>
+              </form>
+            </div>
+            
+            <hr />
+            
+            {/* Comentários existentes */}
+            <div className="existing-comments">
+              <h5 className="mb-3">Experiências de outros pescadores ({comments.length}):</h5>
+              
+              {comments.map((comment) => (
+                <div key={comment.id} className="comment-item mb-3">
+                  <div className="comment-header">
+                    <strong>{comment.nome}</strong>
+                    <span className="comment-rating">
+                      {renderStars(comment.rating)}
+                    </span>
+                    <small className="text-muted">{comment.data}</small>
+                  </div>
+                  <p className="comment-text">{comment.texto}</p>
+                </div>
+              ))}
+              
+              {comments.length === 0 && (
+                <p className="text-muted text-center">Nenhum comentário ainda. Seja o primeiro a compartilhar sua experiência!</p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
      

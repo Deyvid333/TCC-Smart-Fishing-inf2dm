@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
 import './App.css'; 
 import pesqueiroImg from './assets/pesqueiro.png';
@@ -12,152 +12,339 @@ import pesqueiroImg6 from './assets/pesqueiro6.jpg';
 
 
 function Pesqueiro() {
+  const [comments, setComments] = useState([
+    {
+      id: 1,
+      nome: 'Carlos Silva',
+      rating: 5,
+      texto: 'Excelente pesqueiro! Peguei várias tilápias e um pintado de 3kg. Estrutura muito boa e atendimento nota 10!',
+      data: 'há 2 dias'
+    },
+    {
+      id: 2,
+      nome: 'Maria Santos',
+      rating: 4,
+      texto: 'Lugar muito tranquilo para pescar em família. As crianças adoraram! Só achei o preço um pouco salgado no fim de semana.',
+      data: 'há 1 semana'
+    },
+    {
+      id: 3,
+      nome: 'João Pescador',
+      rating: 5,
+      texto: 'Melhor pesqueiro da região! Sempre volto aqui. Os peixes são abundantes e o restaurante serve uma tilápia frita deliciosa.',
+      data: 'há 2 semanas'
+    }
+  ]);
+
+  const [newComment, setNewComment] = useState({
+    nome: '',
+    rating: 5,
+    texto: ''
+  });
+
+  const handleInputChange = (e) => {
+    setNewComment({
+      ...newComment,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleRatingClick = (rating) => {
+    setNewComment({
+      ...newComment,
+      rating: rating
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newComment.nome.trim() && newComment.texto.trim()) {
+      const comment = {
+        id: comments.length + 1,
+        nome: newComment.nome,
+        rating: newComment.rating,
+        texto: newComment.texto,
+        data: 'agora'
+      };
+      setComments([comment, ...comments]);
+      setNewComment({ nome: '', rating: 5, texto: '' });
+      alert('Comentário enviado com sucesso!');
+    } else {
+      alert('Por favor, preencha todos os campos!');
+    }
+  };
+
+  const renderStars = (rating, interactive = false) => {
+    return Array.from({ length: 5 }, (_, index) => (
+      <span 
+        key={index}
+        className={`star ${interactive ? 'interactive' : ''} ${index < rating ? 'filled' : ''}`}
+        onClick={interactive ? () => handleRatingClick(index + 1) : undefined}
+      >
+        ⭐
+      </span>
+    ));
+  };
+
+  const calculateAverageRating = () => {
+    if (comments.length === 0) return 0;
+    const sum = comments.reduce((acc, comment) => acc + comment.rating, 0);
+    return (sum / comments.length).toFixed(1);
+  };
+
   return (
     <>
       <Navbar />
 
-
-
     <div className="container mt-4">
-     
-      <div className="card w-100 mb-4">
-        <img src={pesqueiroImg} className="card-img-top" alt="Imagem do pesqueiro" />
-      </div>
-
-   
+      <h1 className="text-center mb-4 text-white">🎣 Pesqueiro dos Vara Grande</h1>
+      
       <h2 className="text-center mb-5">Catálogo de Peixes</h2>
 
-     
-      <div className="row justify-content-center align-items-stretch g-4">
-
-     
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src={tilapiaImg} className="card-img-top" alt="Tilápia" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Tilápia</h4>
-              <p className="card-text">Aparece com frequência entre 8:00 e 20:00.</p>
-              <p className="card-text">Tamanho médio: 28cm a 35cm.</p>
-              <p className="card-text">Própria para consumo, sem espinhas ou riscos à saúde.</p>
-              <p className="card-text">Recomendada vara resistente. Iscas comuns como minhocas funcionam bem.</p>
+      <div className="fish-catalog-modern">
+        <div className="fish-item">
+          <div className="fish-emoji">🐟</div>
+          <div className="fish-content">
+            <h4 className="fish-title">Tilápia</h4>
+            <div className="fish-details-grid">
+              <div className="detail-badge time">🕐 8:00-20:00</div>
+              <div className="detail-badge size">📏 28-35cm</div>
+              <div className="detail-badge safe">✅ Seguro</div>
+              <div className="detail-badge easy">🎯 Fácil</div>
             </div>
+            <p className="fish-description">Peixe ideal para iniciantes. Iscas: minhoca, milho, massa.</p>
           </div>
         </div>
 
-       
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src={douradoImg} className="card-img-top" alt="Peixe Dourado" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Peixe Dourado</h4>
-              <p className="card-text">Aparece com frequência entre 12:00 e 18:00.</p>
-              <p className="card-text">Tamanho médio: 15cm a 18cm.</p>
-              <p className="card-text">Próprio para consumo, sem espinhas ou riscos à saúde.</p>
-              <p className="card-text">Pode ser pescado com equipamento simples e iscas como minhocas.</p>
+        <div className="fish-item">
+          <div className="fish-emoji">🐠</div>
+          <div className="fish-content">
+            <h4 className="fish-title">Peixe Dourado</h4>
+            <div className="fish-details-grid">
+              <div className="detail-badge time">🕐 12:00-18:00</div>
+              <div className="detail-badge size">📏 15-18cm</div>
+              <div className="detail-badge safe">✅ Seguro</div>
+              <div className="detail-badge easy">🎯 Fácil</div>
             </div>
+            <p className="fish-description">Pequeno e colorido. Iscas: minhoca, massa, pão.</p>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src={baiacuImg} className="card-img-top" alt="Baiacu" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Baiacu</h4>
-              <p className="card-text">Aparece com frequência entre 15:00 e 19:00.</p>
-              <p className="card-text">Tamanho médio: 12cm a 15cm.</p>
-              <p className="card-text text-danger">**Venenoso!** Não é seguro para consumo.</p>
-              <p className="card-text">Pode ser pescado com equipamento simples e iscas normais como minhocas.</p>
+        <div className="fish-item">
+          <div className="fish-emoji">🐡</div>
+          <div className="fish-content">
+            <h4 className="fish-title">Baiacu</h4>
+            <div className="fish-details-grid">
+              <div className="detail-badge time">🕐 15:00-19:00</div>
+              <div className="detail-badge size">📏 12-15cm</div>
+              <div className="detail-badge danger">⚠️ Venenoso</div>
+              <div className="detail-badge medium">🎯 Médio</div>
             </div>
+            <p className="fish-description">ATENÇÃO: Não consumir! Apenas pesca esportiva.</p>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src="https://via.placeholder.com/300x190/4a90e2/ffffff?text=Carpa" className="card-img-top" alt="Carpa" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Carpa</h4>
-              <p className="card-text">Aparece com frequência entre 6:00 e 22:00.</p>
-              <p className="card-text">Tamanho médio: 40cm a 60cm.</p>
-              <p className="card-text">Própria para consumo, carne saborosa e nutritiva.</p>
-              <p className="card-text">Requer vara resistente. Iscas: milho, boilie, massa doce.</p>
+        <div className="fish-item">
+          <div className="fish-emoji">🐟</div>
+          <div className="fish-content">
+            <h4 className="fish-title">Carpa</h4>
+            <div className="fish-details-grid">
+              <div className="detail-badge time">🕐 6:00-22:00</div>
+              <div className="detail-badge size">📏 40-60cm</div>
+              <div className="detail-badge safe">✅ Seguro</div>
+              <div className="detail-badge hard">🎯 Difícil</div>
             </div>
+            <p className="fish-description">Peixe grande e forte. Iscas: milho, boilie, massa doce.</p>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src="https://via.placeholder.com/300x190/2ecc71/ffffff?text=Pintado" className="card-img-top" alt="Pintado" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Pintado</h4>
-              <p className="card-text">Aparece com frequência entre 18:00 e 6:00.</p>
-              <p className="card-text">Tamanho médio: 50cm a 80cm.</p>
-              <p className="card-text">Excelente para consumo, peixe nobre de água doce.</p>
-              <p className="card-text">Vara pesada obrigatória. Iscas: peixe vivo, lambari, camarão.</p>
+        <div className="fish-item">
+          <div className="fish-emoji">🐟</div>
+          <div className="fish-content">
+            <h4 className="fish-title">Pintado</h4>
+            <div className="fish-details-grid">
+              <div className="detail-badge time">🕐 18:00-6:00</div>
+              <div className="detail-badge size">📏 50-80cm</div>
+              <div className="detail-badge safe">✅ Seguro</div>
+              <div className="detail-badge hard">🎯 Difícil</div>
             </div>
+            <p className="fish-description">Peixe nobre noturno. Iscas: peixe vivo, lambari, camarão.</p>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src="https://via.placeholder.com/300x190/e74c3c/ffffff?text=Pacu" className="card-img-top" alt="Pacu" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Pacu</h4>
-              <p className="card-text">Aparece com frequência entre 8:00 e 18:00.</p>
-              <p className="card-text">Tamanho médio: 30cm a 45cm.</p>
-              <p className="card-text">Próprio para consumo, sabor suave e delicado.</p>
-              <p className="card-text">Vara média. Iscas: frutas, milho, ração, massas.</p>
+        <div className="fish-item">
+          <div className="fish-emoji">🐟</div>
+          <div className="fish-content">
+            <h4 className="fish-title">Pacu</h4>
+            <div className="fish-details-grid">
+              <div className="detail-badge time">🕐 8:00-18:00</div>
+              <div className="detail-badge size">📏 30-45cm</div>
+              <div className="detail-badge safe">✅ Seguro</div>
+              <div className="detail-badge medium">🎯 Médio</div>
             </div>
+            <p className="fish-description">Gosta de frutas. Iscas: banana, milho, ração, massas.</p>
           </div>
         </div>
-
-
-<div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
-  <div className="carousel-indicators">
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-  </div>
-  <div className="carousel-inner">
-    <div className="carousel-item active">
-      <img src={pesqueiroImg4} className="d-block w-100" alt="Pesqueiro 1" style={{height: '400px', objectFit: 'cover'}} />
-    </div>
-    <div className="carousel-item">
-      <img src={pesqueiroImg5} className="d-block w-100" alt="Pesqueiro 2" style={{height: '400px', objectFit: 'cover'}} />
-    </div>
-    <div className="carousel-item">
-      <img src={pesqueiroImg6} className="d-block w-100" alt="Pesqueiro 3" style={{height: '400px', objectFit: 'cover'}} />
-    </div>
-  </div>
-  <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span className="visually-hidden">Previous</span>
-  </button>
-  <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-    <span className="carousel-control-next-icon" aria-hidden="true"></span>
-    <span className="visually-hidden">Next</span>
-  </button>
-</div>
-
-
-
-
-
-
       </div>
-      <div className="mt-5">
-        <form className='formspesqueiro'>
-        <h2>Informações e Descrição sobre o Pesqueiro</h2>
-        <h3>🎣 Pesqueiro dos Vara Grande</h3>
-        <p>
-          Um dos favoritos da região, o Pesqueiro dos Vara Grande oferece uma experiência completa para quem ama relaxar e pescar com tranquilidade. 
-          Com funcionamento estendido até às 22h30, o local conta com um belo lago, restaurante à beira d’água, quiosque para descanso e estacionamento gratuito. 
-          Durante a semana, o custo é acessível e nos fins de semana continua em conta, ideal para toda a família. Um verdadeiro refúgio para pescadores apaixonados!
-        </p>
-        </form>
+      
+      {/* Seção de Informações Melhorada */}
+      <div className="info-section mt-5">
+        <div className="card info-card">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-8">
+                <h2 className="info-title">🎣 Pesqueiro dos Vara Grande</h2>
+                <p className="info-description">
+                  Um dos favoritos da região, o Pesqueiro dos Vara Grande oferece uma experiência completa para quem ama relaxar e pescar com tranquilidade. 
+                  Com funcionamento estendido até às 22h30, o local conta com um belo lago, restaurante à beira d'água, quiosque para descanso e estacionamento gratuito.
+                </p>
+                <p className="info-highlight">
+                  Um verdadeiro refúgio para pescadores apaixonados de todos os níveis!
+                </p>
+              </div>
+              <div className="col-md-4">
+                <div className="info-details">
+                  <h5 className="mb-3">📊 Informações Rápidas</h5>
+                  <div className="detail-row">
+                    <span className="detail-icon">🕐</span>
+                    <span><strong>Horário:</strong> 8h às 22h30</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">💰</span>
+                    <span><strong>Preço:</strong> R$18 (úteis) | R$25 (fins de semana)</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">📏</span>
+                    <span><strong>Área:</strong> 15.000 m²</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">🌊</span>
+                    <span><strong>Profundidade:</strong> 2,5m (média)</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">🏠</span>
+                    <span><strong>Quiosques:</strong> 8 unidades</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">🍽️</span>
+                    <span><strong>Serviços:</strong> Restaurante, quiosque</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-icon">🏎️</span>
+                    <span><strong>Estacionamento:</strong> Gratuito (50 vagas)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Seção de Regras */}
+          <div className="row mt-4">
+            <div className="col-12">
+              <div className="rules-section">
+                <h4 className="rules-title">📜 Regras do Pesqueiro</h4>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="rules-allowed">
+                      <h6>✅ Permitido:</h6>
+                      <ul>
+                        <li>Entrada de crianças acompanhadas</li>
+                        <li>Coolers e bebidas não alcoólicas</li>
+                        <li>Equipamentos próprios de pesca</li>
+                        <li>Fotografias e vídeos</li>
+                        <li>Consumo no restaurante</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="rules-forbidden">
+                      <h6>❌ Proibido:</h6>
+                      <ul>
+                        <li>Pescar sem camisa</li>
+                        <li>Entrada de pets/animais</li>
+                        <li>Bebidas alcoólicas externas</li>
+                        <li>Som alto e perturbação</li>
+                        <li>Pesca com redes ou tarrafas</li>
+                        <li>Acampamento no local</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Seção de Comentários no Final */}
+      <div className="comments-section mt-5">
+        <div className="card">
+          <div className="card-body">
+            <h3 className="mb-4">💬 Comentários e Experiências</h3>
+            
+            {/* Formulário para novo comentário */}
+            <div className="comment-form mb-4">
+              <h5>Compartilhe sua experiência:</h5>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <input 
+                    type="text" 
+                    className="form-control" 
+                    placeholder="Seu nome" 
+                    name="nome"
+                    value={newComment.nome}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <div className="rating-stars mb-2">
+                    <span>Avaliação: </span>
+                    {renderStars(newComment.rating, true)}
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <textarea 
+                    className="form-control" 
+                    rows="3" 
+                    placeholder="Conte como foi sua experiência no pesqueiro..."
+                    name="texto"
+                    value={newComment.texto}
+                    onChange={handleInputChange}
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" className="btn btn-primary">Enviar Comentário</button>
+              </form>
+            </div>
+            
+            <hr />
+            
+            {/* Comentários existentes */}
+            <div className="existing-comments">
+              <h5 className="mb-3">Experiências de outros pescadores ({comments.length}):</h5>
+              
+              {comments.map((comment) => (
+                <div key={comment.id} className="comment-item mb-3">
+                  <div className="comment-header">
+                    <strong>{comment.nome}</strong>
+                    <span className="comment-rating">
+                      {renderStars(comment.rating)}
+                    </span>
+                    <small className="text-muted">{comment.data}</small>
+                  </div>
+                  <p className="comment-text">{comment.texto}</p>
+                </div>
+              ))}
+              
+              {comments.length === 0 && (
+                <p className="text-muted text-center">Nenhum comentário ainda. Seja o primeiro a compartilhar sua experiência!</p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
- 
-     
     </>
   );
 }
