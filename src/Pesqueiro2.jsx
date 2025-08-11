@@ -97,83 +97,113 @@ function Pesqueiro2() {
     <div className="container mt-4">
       <h1 className="text-center mb-4 text-white">🎣 Pesqueiro Lago do Pescador</h1>
       
-      <h2 className="text-center mb-5">Catálogo de Peixes</h2>
+      <h2 className="text-center mb-5">🐟 Catálogo de Peixes Disponíveis</h2>
 
-      <div className="row justify-content-center align-items-stretch g-4">
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-          <img src={pacuImg}  className="card-img-top" alt="Pacu"  width="190px" height="100%" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Pacu</h4>
-              <p className="card-text">Horário ideal: Durante o dia, especialmente à tarde (12h às 16h)</p>
-              <p className="card-text">Tamanho médio: 30 a 60 cm</p>
-              <p className="card-text">Espinhas: Tem espinhas, mas é fácil de limpar. Riscos à saúde: Nenhum</p>
-              <p className="card-text">Equipamento: Vara reforçada, linha média e iscas como frutas ou massas doces</p>
+      <div className="row g-4 mb-5">
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-secondary text-white">
+              <h4 className="mb-0">🐟 Pacu</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 12:00 - 16:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 30-60cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-warning">Médio</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Frutas, massas doces</p>
+              <p className="card-text text-muted">Gosta de frutas, fácil de limpar</p>
             </div>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src={pintadoImg}  className="card-img-top" alt="Pintado" width="190px" height="100%" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Pintado</h4>
-              <p className="card-text">Horário ideal: Noite e madrugadas (21h às 4h)</p>
-              <p className="card-text">Tamanho médio: 60 cm até mais de 1 metro</p>
-              <p className="card-text">Espinhas: Poucas, carne firme. Riscos à saúde: Nenhum</p>
-              <p className="card-text">Equipamento: Vara pesada, linha forte e isca viva ou peixe pequeno</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-dark text-white">
+              <h4 className="mb-0">🐟 Pintado</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 21:00 - 4:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 60-100cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-danger">Difícil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Isca viva, peixe pequeno</p>
+              <p className="card-text text-muted">Peixe nobre noturno, carne firme</p>
             </div>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-           <img src={trairaImg}  className="card-img-top" alt="Traíra"   width="190px" height="100%" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Traíra</h4>
-              <p className="card-text">Horário ideal: Início da manhã e fim de tarde</p>
-              <p className="card-text">Tamanho médio: 20 a 50 cm</p>
-              <p className="card-text">Espinhas: Muitas e finas. Riscos à saúde: Deve ser bem limpa</p>
-              <p className="card-text">Equipamento: Vara comum ou molinete, iscas artificiais funcionam bem</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-warning text-dark">
+              <h4 className="mb-0">🐟 Traíra</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 6:00 - 9:00, 16:00 - 18:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 20-50cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-warning">Médio</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-warning">Cuidado</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Iscas artificiais, minhoca</p>
+              <p className="card-text text-muted">Muitas espinhas, deve ser bem limpa</p>
             </div>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src="https://via.placeholder.com/300x190/9b59b6/ffffff?text=Tambaqui" className="card-img-top" alt="Tambaqui" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Tambaqui</h4>
-              <p className="card-text">Horário ideal: Manhã e tarde (7h às 17h)</p>
-              <p className="card-text">Tamanho médio: 40 a 70 cm</p>
-              <p className="card-text">Espinhas: Poucas, carne saborosa. Riscos à saúde: Nenhum</p>
-              <p className="card-text">Equipamento: Vara resistente, iscas: frutas, milho, ração</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-info text-white">
+              <h4 className="mb-0">🐟 Tambaqui</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 7:00 - 17:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 40-70cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-warning">Médio</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Frutas, milho, ração</p>
+              <p className="card-text text-muted">Carne saborosa, poucas espinhas</p>
             </div>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src="https://via.placeholder.com/300x190/f39c12/ffffff?text=Surubim" className="card-img-top" alt="Surubim" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Surubim</h4>
-              <p className="card-text">Horário ideal: Noite e madrugada (20h às 5h)</p>
-              <p className="card-text">Tamanho médio: 60 a 100 cm</p>
-              <p className="card-text">Espinhas: Poucas, carne nobre. Riscos à saúde: Nenhum</p>
-              <p className="card-text">Equipamento: Vara pesada, linha forte, isca viva</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-primary text-white">
+              <h4 className="mb-0">🐟 Surubim</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 20:00 - 5:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 60-100cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-danger">Difícil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Isca viva</p>
+              <p className="card-text text-muted">Carne nobre, poucas espinhas</p>
             </div>
           </div>
         </div>
 
-        <div className="col-md-4 d-flex">
-          <div className="card w-100">
-            <img src="https://via.placeholder.com/300x190/27ae60/ffffff?text=Curimba" className="card-img-top" alt="Curimbá" height="190px" />
-            <div className="card-body d-flex flex-column">
-              <h4 className="card-title">Curimbá</h4>
-              <p className="card-text">Horário ideal: Manhã cedo e final da tarde (6h às 9h, 16h às 18h)</p>
-              <p className="card-text">Tamanho médio: 25 a 40 cm</p>
-              <p className="card-text">Espinhas: Médias, carne saborosa. Riscos à saúde: Nenhum</p>
-              <p className="card-text">Equipamento: Vara leve, iscas: minhoca, massa, milho</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-success text-white">
+              <h4 className="mb-0">🐟 Curimbá</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 6:00 - 9:00, 16:00 - 18:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 25-40cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-success">Fácil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Minhoca, massa, milho</p>
+              <p className="card-text text-muted">Carne saborosa, espinhas médias</p>
             </div>
           </div>
         </div>

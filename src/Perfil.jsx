@@ -40,9 +40,7 @@ function Perfil() {
     });
   };
 
-  const handlePasswordChange = () => {
-    alert('Redirecionando para alteração de senha...');
-  };
+
 
   return (
     <>
@@ -133,25 +131,17 @@ function Perfil() {
                 <div className="row">
                   {isEditing ? (
                     <>
-                      <div className="col-md-4 mb-3">
+                      <div className="col-md-6 mb-3">
                         <button className="btn btn-success w-100" onClick={handleSave}>Salvar Estatísticas</button>
                       </div>
-                      <div className="col-md-4 mb-3">
+                      <div className="col-md-6 mb-3">
                         <button className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
-                      </div>
-                      <div className="col-md-4 mb-3">
-                        <button className="btn btn-outline-primary w-100" onClick={handlePasswordChange}>Alterar Senha</button>
                       </div>
                     </>
                   ) : (
-                    <>
-                      <div className="col-md-6 mb-3">
-                        <button className="btn btn-primary w-100" onClick={handleEdit}>Editar Estatísticas</button>
-                      </div>
-                      <div className="col-md-6 mb-3">
-                        <button className="btn btn-outline-primary w-100" onClick={handlePasswordChange}>Alterar Senha</button>
-                      </div>
-                    </>
+                    <div className="col-md-12 mb-3">
+                      <button className="btn btn-primary w-100" onClick={handleEdit}>Editar Estatísticas</button>
+                    </div>
                   )}
                 </div>
               </div>

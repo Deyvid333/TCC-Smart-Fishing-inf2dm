@@ -97,91 +97,113 @@ function Pesqueiro3() {
     <div className="container mt-4">
       <h1 className="text-center mb-4 text-white">🎣 Lago da Rocha do Norte</h1>
       
-      <h2 className="text-center mb-5">Catálogo de Peixes</h2>
+      <h2 className="text-center mb-5">🐟 Catálogo de Peixes Disponíveis</h2>
 
-      <div className="container pb-5">
-        <div className="row justify-content-center align-items-stretch g-4">
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src={bagre} className="card-img-top" alt="Bagre" height="190px" width="100%" />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Bagre</h4>
-                <p className="card-text">Horário ideal: Noite (18h às 2h)</p>
-                <p className="card-text">Tamanho médio: 30 a 70 cm</p>
-                <p className="card-text">Espinhas: Poucas, mas atenção: tem ferrões venenosos nas nadadeiras</p>
-                <p className="card-text">Riscos à saúde: O ferrão pode causar dor e inchaço; deve ser manuseado com cuidado</p>
-                <p className="card-text">Equipamento: Vara simples com linha média, isca de fundo (como pedaços de peixe ou carne)</p>
+      <div className="row g-4 mb-5">
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-warning text-dark">
+              <h4 className="mb-0">🐟 Bagre</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 18:00 - 2:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 30-70cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-success">Fácil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-warning">⚠️ Cuidado</span></p>
               </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Pedaços de peixe, carne</p>
+              <p className="card-text text-warning"><strong>ATENÇÃO:</strong> Ferrões venenosos nas nadadeiras</p>
             </div>
           </div>
+        </div>
 
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src={tambaqui} className="card-img-top" alt="Tambaqui" height="190px" width="100%" />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Tambaqui</h4>
-                <p className="card-text">Horário ideal: Meio da manhã e fim da tarde (10h às 12h e 16h às 18h)</p>
-                <p className="card-text">Tamanho médio: 40 a 90 cm</p>
-                <p className="card-text">Espinhas: Poucas e grandes, fáceis de remover</p>
-                <p className="card-text">Riscos à saúde: Nenhum — é muito valorizado na culinária</p>
-                <p className="card-text">Equipamento: Vara resistente, linha média ou grossa, e iscas como massas doces, frutas ou ração</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-info text-white">
+              <h4 className="mb-0">🐟 Tambaqui</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 10:00 - 12:00, 16:00 - 18:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 40-90cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-warning">Médio</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
               </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Massas doces, frutas, ração</p>
+              <p className="card-text text-muted">Poucas espinhas, muito valorizado</p>
             </div>
           </div>
+        </div>
 
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src={carpa} className="card-img-top" alt="Carpa Cabeçuda" height="190px" width="100%" />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Carpa Cabeçuda</h4>
-                <p className="card-text">Horário ideal: Início da manhã e fim da tarde (6h às 9h e 16h às 18h)</p>
-                <p className="card-text">Tamanho médio: 60 a 90 cm</p>
-                <p className="card-text">Espinhas: Bastantes espinhas pequenas — exige atenção no preparo</p>
-                <p className="card-text">Riscos à saúde: Nenhum risco conhecido — carne branca e sabor suave</p>
-                <p className="card-text">Equipamento: Vara forte, linha grossa, molinete resistente e iscas fermentadas ou milho</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-primary text-white">
+              <h4 className="mb-0">🐟 Carpa Cabeçuda</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 6:00 - 9:00, 16:00 - 18:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 60-90cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-danger">Difícil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-warning">Cuidado</span></p>
               </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Iscas fermentadas, milho</p>
+              <p className="card-text text-muted">Muitas espinhas pequenas, carne suave</p>
             </div>
           </div>
+        </div>
 
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src="https://via.placeholder.com/300x190/8e44ad/ffffff?text=Piaucu" className="card-img-top" alt="Piaucu" height="190px" />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Piaucu</h4>
-                <p className="card-text">Horário ideal: Madrugada e início da manhã (4h às 8h)</p>
-                <p className="card-text">Tamanho médio: 35 a 55 cm</p>
-                <p className="card-text">Espinhas: Poucas, carne firme e saborosa</p>
-                <p className="card-text">Riscos à saúde: Nenhum — muito apreciado na culinária</p>
-                <p className="card-text">Equipamento: Vara média, iscas: frutas, sementes, massa</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-secondary text-white">
+              <h4 className="mb-0">🐟 Piaucu</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 4:00 - 8:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 35-55cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-warning">Médio</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
               </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Frutas, sementes, massa</p>
+              <p className="card-text text-muted">Carne firme e saborosa, poucas espinhas</p>
             </div>
           </div>
+        </div>
 
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src="https://via.placeholder.com/300x190/16a085/ffffff?text=Jatuarana" className="card-img-top" alt="Jatuarana" height="190px" />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Jatuarana</h4>
-                <p className="card-text">Horário ideal: Tarde e início da noite (14h às 20h)</p>
-                <p className="card-text">Tamanho médio: 25 a 40 cm</p>
-                <p className="card-text">Espinhas: Médias, carne de sabor marcante</p>
-                <p className="card-text">Riscos à saúde: Nenhum — peixe nativo muito valorizado</p>
-                <p className="card-text">Equipamento: Vara leve, iscas artificiais ou naturais</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-success text-white">
+              <h4 className="mb-0">🐟 Jatuarana</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 14:00 - 20:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 25-40cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-warning">Médio</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
               </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Iscas artificiais, naturais</p>
+              <p className="card-text text-muted">Peixe nativo, sabor marcante</p>
             </div>
           </div>
+        </div>
 
-          <div className="col-md-4 d-flex">
-            <div className="card w-100">
-              <img src="https://via.placeholder.com/300x190/d35400/ffffff?text=Cascudo" className="card-img-top" alt="Cascudo" height="190px" />
-              <div className="card-body d-flex flex-column">
-                <h4 className="card-title">Cascudo</h4>
-                <p className="card-text">Horário ideal: Noite (19h às 23h)</p>
-                <p className="card-text">Tamanho médio: 20 a 35 cm</p>
-                <p className="card-text">Espinhas: Poucas, mas tem couro resistente</p>
-                <p className="card-text">Riscos à saúde: Nenhum — carne branca e macia</p>
-                <p className="card-text">Equipamento: Vara simples, iscas de fundo como minhoca</p>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-dark text-white">
+              <h4 className="mb-0">🐟 Cascudo</h4>
+            </div>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 19:00 - 23:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 20-35cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-success">Fácil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
               </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Minhoca, iscas de fundo</p>
+              <p className="card-text text-muted">Carne branca e macia, couro resistente</p>
             </div>
           </div>
         </div>

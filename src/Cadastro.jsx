@@ -33,7 +33,12 @@ function Cadastro() {
 
   const handleSocialLogin = (provider) => {
     console.log(`Login com ${provider}`);
-    navigate('/inicial');
+    // Redireciona baseado no tipo de usuário selecionado
+    if (formData.tipoUsuario === 'dono') {
+      navigate('/admin');
+    } else {
+      navigate('/inicial');
+    }
   };
 
   const handleInputChange = (e) => {
@@ -140,7 +145,7 @@ function Cadastro() {
             className="social-btn facebook-btn"
             onClick={() => handleSocialLogin('Facebook')}
           >
-            <span className="social-icon">f</span>
+            <span className="social-icon">📘</span>
             Entrar com Facebook
           </button>
           
@@ -149,7 +154,7 @@ function Cadastro() {
             className="social-btn apple-btn"
             onClick={() => handleSocialLogin('Apple')}
           >
-            <span className="social-icon"></span>
+            <span className="social-icon">🍎</span>
             Entrar com Apple
           </button>
         </div>

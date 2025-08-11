@@ -56,7 +56,7 @@ function Login() {
             className="social-btn facebook-btn"
             onClick={() => handleSocialLogin('Facebook')}
           >
-            <span className="social-icon">f</span>
+            <span className="social-icon">📘</span>
             Entrar com Facebook
           </button>
           
@@ -65,7 +65,7 @@ function Login() {
             className="social-btn apple-btn"
             onClick={() => handleSocialLogin('Apple')}
           >
-            <span className="social-icon"></span>
+            <span className="social-icon">🍎</span>
             Entrar com Apple
           </button>
         </div>

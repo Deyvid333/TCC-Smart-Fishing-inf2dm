@@ -75,15 +75,19 @@ function Pesqueiro() {
   };
 
   const renderStars = (rating, interactive = false) => {
-    return Array.from({ length: 5 }, (_, index) => (
-      <span 
-        key={index}
-        className={`star ${interactive ? 'interactive' : ''} ${index < rating ? 'filled' : ''}`}
-        onClick={interactive ? () => handleRatingClick(index + 1) : undefined}
-      >
-        ⭐
-      </span>
-    ));
+    return Array.from({ length: 5 }, (_, index) => {
+      const isFilled = index < rating;
+      return (
+        <span 
+          key={index}
+          className={`star ${interactive ? 'interactive' : ''} ${isFilled ? 'filled' : ''}`}
+          onClick={interactive ? () => handleRatingClick(index + 1) : undefined}
+          style={{ opacity: isFilled ? 1 : 0.3 }}
+        >
+          ⭐
+        </span>
+      );
+    });
   };
 
   const calculateAverageRating = () => {
@@ -97,92 +101,116 @@ function Pesqueiro() {
       <Navbar />
 
     <div className="container mt-4">
-      <h1 className="text-center mb-4 text-white">🎣 Pesqueiro dos Vara Grande</h1>
+      <h1 className="text-center mb-4 text-white">🎣 Pesqueiro Águas Claras</h1>
       
-      <h2 className="text-center mb-5">Catálogo de Peixes</h2>
+      <h2 className="text-center mb-5">🐟 Catálogo de Peixes Disponíveis</h2>
 
-      <div className="fish-catalog-modern">
-        <div className="fish-item">
-          <div className="fish-emoji">🐟</div>
-          <div className="fish-content">
-            <h4 className="fish-title">Tilápia</h4>
-            <div className="fish-details-grid">
-              <div className="detail-badge time">🕐 8:00-20:00</div>
-              <div className="detail-badge size">📏 28-35cm</div>
-              <div className="detail-badge safe">✅ Seguro</div>
-              <div className="detail-badge easy">🎯 Fácil</div>
+      <div className="row g-4 mb-5">
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-primary text-white">
+              <h4 className="mb-0">🐟 Tilápia</h4>
             </div>
-            <p className="fish-description">Peixe ideal para iniciantes. Iscas: minhoca, milho, massa.</p>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 8:00 - 20:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 28-35cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-success">Fácil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Minhoca, milho, massa</p>
+              <p className="card-text text-muted">Peixe ideal para iniciantes e famílias</p>
+            </div>
           </div>
         </div>
 
-        <div className="fish-item">
-          <div className="fish-emoji">🐠</div>
-          <div className="fish-content">
-            <h4 className="fish-title">Peixe Dourado</h4>
-            <div className="fish-details-grid">
-              <div className="detail-badge time">🕐 12:00-18:00</div>
-              <div className="detail-badge size">📏 15-18cm</div>
-              <div className="detail-badge safe">✅ Seguro</div>
-              <div className="detail-badge easy">🎯 Fácil</div>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-warning text-dark">
+              <h4 className="mb-0">🐠 Peixe Dourado</h4>
             </div>
-            <p className="fish-description">Pequeno e colorido. Iscas: minhoca, massa, pão.</p>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 12:00 - 18:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 15-18cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-success">Fácil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Minhoca, massa, pão</p>
+              <p className="card-text text-muted">Pequeno, colorido e divertido de pescar</p>
+            </div>
           </div>
         </div>
 
-        <div className="fish-item">
-          <div className="fish-emoji">🐡</div>
-          <div className="fish-content">
-            <h4 className="fish-title">Baiacu</h4>
-            <div className="fish-details-grid">
-              <div className="detail-badge time">🕐 15:00-19:00</div>
-              <div className="detail-badge size">📏 12-15cm</div>
-              <div className="detail-badge danger">⚠️ Venenoso</div>
-              <div className="detail-badge medium">🎯 Médio</div>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-danger text-white">
+              <h4 className="mb-0">🐡 Baiacu</h4>
             </div>
-            <p className="fish-description">ATENÇÃO: Não consumir! Apenas pesca esportiva.</p>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 15:00 - 19:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 12-15cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-warning">Médio</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-danger">⚠️ Venenoso</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Camarão, minhoca</p>
+              <p className="card-text text-danger"><strong>ATENÇÃO:</strong> Não consumir! Apenas pesca esportiva</p>
+            </div>
           </div>
         </div>
 
-        <div className="fish-item">
-          <div className="fish-emoji">🐟</div>
-          <div className="fish-content">
-            <h4 className="fish-title">Carpa</h4>
-            <div className="fish-details-grid">
-              <div className="detail-badge time">🕐 6:00-22:00</div>
-              <div className="detail-badge size">📏 40-60cm</div>
-              <div className="detail-badge safe">✅ Seguro</div>
-              <div className="detail-badge hard">🎯 Difícil</div>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-info text-white">
+              <h4 className="mb-0">🐟 Carpa</h4>
             </div>
-            <p className="fish-description">Peixe grande e forte. Iscas: milho, boilie, massa doce.</p>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 6:00 - 22:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 40-60cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-danger">Difícil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Milho, boilie, massa doce</p>
+              <p className="card-text text-muted">Peixe grande e forte, desafio para pescadores experientes</p>
+            </div>
           </div>
         </div>
 
-        <div className="fish-item">
-          <div className="fish-emoji">🐟</div>
-          <div className="fish-content">
-            <h4 className="fish-title">Pintado</h4>
-            <div className="fish-details-grid">
-              <div className="detail-badge time">🕐 18:00-6:00</div>
-              <div className="detail-badge size">📏 50-80cm</div>
-              <div className="detail-badge safe">✅ Seguro</div>
-              <div className="detail-badge hard">🎯 Difícil</div>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-dark text-white">
+              <h4 className="mb-0">🐟 Pintado</h4>
             </div>
-            <p className="fish-description">Peixe nobre noturno. Iscas: peixe vivo, lambari, camarão.</p>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 18:00 - 6:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 50-80cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-danger">Difícil</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Peixe vivo, lambari, camarão</p>
+              <p className="card-text text-muted">Peixe nobre noturno, troféu dos pescadores</p>
+            </div>
           </div>
         </div>
 
-        <div className="fish-item">
-          <div className="fish-emoji">🐟</div>
-          <div className="fish-content">
-            <h4 className="fish-title">Pacu</h4>
-            <div className="fish-details-grid">
-              <div className="detail-badge time">🕐 8:00-18:00</div>
-              <div className="detail-badge size">📏 30-45cm</div>
-              <div className="detail-badge safe">✅ Seguro</div>
-              <div className="detail-badge medium">🎯 Médio</div>
+        <div className="col-lg-4 col-md-6">
+          <div className="card fish-card h-100">
+            <div className="card-header text-center bg-secondary text-white">
+              <h4 className="mb-0">🐟 Pacu</h4>
             </div>
-            <p className="fish-description">Gosta de frutas. Iscas: banana, milho, ração, massas.</p>
+            <div className="card-body">
+              <div className="fish-info mb-3">
+                <p><strong>🕐 Melhor horário:</strong> 8:00 - 18:00</p>
+                <p><strong>📏 Tamanho médio:</strong> 30-45cm</p>
+                <p><strong>🎯 Dificuldade:</strong> <span className="badge bg-warning">Médio</span></p>
+                <p><strong>🍽️ Consumo:</strong> <span className="badge bg-success">Seguro</span></p>
+              </div>
+              <p className="card-text"><strong>🎣 Iscas recomendadas:</strong> Banana, milho, ração, massas</p>
+              <p className="card-text text-muted">Gosta de frutas, peixe interessante e saboroso</p>
+            </div>
           </div>
         </div>
       </div>
@@ -193,9 +221,9 @@ function Pesqueiro() {
           <div className="card-body">
             <div className="row">
               <div className="col-md-8">
-                <h2 className="info-title">🎣 Pesqueiro dos Vara Grande</h2>
+                <h2 className="info-title">🎣 Pesqueiro Águas Claras</h2>
                 <p className="info-description">
-                  Um dos favoritos da região, o Pesqueiro dos Vara Grande oferece uma experiência completa para quem ama relaxar e pescar com tranquilidade. 
+                  Um dos favoritos da região, o Pesqueiro Águas Claras oferece uma experiência completa para quem ama relaxar e pescar com tranquilidade. 
                   Com funcionamento estendido até às 22h30, o local conta com um belo lago, restaurante à beira d'água, quiosque para descanso e estacionamento gratuito.
                 </p>
                 <p className="info-highlight">

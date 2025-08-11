@@ -31,14 +31,14 @@ function Home() {
                   <img src={pesqueiro} className="card-img-top" alt="Pesqueiro Vara Grande" />
                   <div className="pesqueiro-badge">⭐ 4.7</div>
                 </div>
-                <div className="card-body">
-                  <h4 className="pesqueiro-title">Pesqueiro dos Vara Grande</h4>
-                  <div className="pesqueiro-info">
+                <div className="card-body d-flex flex-column">
+                  <h4 className="pesqueiro-title">Pesqueiro Águas Claras</h4>
+                  <div className="pesqueiro-info flex-grow-1">
                     <p><i className="icon">🕐</i> 8h às 22h30</p>
                     <p><i className="icon">💰</i> R$18 (úteis) | R$25 (fins de semana)</p>
                     <p><i className="icon">🍽️</i> Restaurante, quiosque, estacionamento</p>
                   </div>
-                  <Link to="/Pesqueiro" className="btn-pesqueiro">Explorar Pesqueiro</Link>
+                  <Link to="/Pesqueiro" className="btn-pesqueiro mt-auto">Explorar Pesqueiro</Link>
                 </div>
               </div>
             </div>
@@ -49,14 +49,14 @@ function Home() {
                   <img src={pesqueiro2} className="card-img-top" alt="Lago do Pescador" />
                   <div className="pesqueiro-badge">⭐ 4.3</div>
                 </div>
-                <div className="card-body">
+                <div className="card-body d-flex flex-column">
                   <h4 className="pesqueiro-title">Pesqueiro Lago do Pescador</h4>
-                  <div className="pesqueiro-info">
+                  <div className="pesqueiro-info flex-grow-1">
                     <p><i className="icon">🕐</i> 8h às 19h</p>
                     <p><i className="icon">💰</i> R$20 por dia</p>
                     <p><i className="icon">🍽️</i> Restaurante, peixes frescos</p>
                   </div>
-                  <Link to="/Pesqueiro2" className="btn-pesqueiro">Explorar Pesqueiro</Link>
+                  <Link to="/Pesqueiro2" className="btn-pesqueiro mt-auto">Explorar Pesqueiro</Link>
                 </div>
               </div>
             </div>
@@ -67,14 +67,14 @@ function Home() {
                   <img src={pesqueiro3} className="card-img-top" alt="Lago da Rocha" />
                   <div className="pesqueiro-badge">⭐ 4.7</div>
                 </div>
-                <div className="card-body">
+                <div className="card-body d-flex flex-column">
                   <h4 className="pesqueiro-title">Lago da Rocha do Norte</h4>
-                  <div className="pesqueiro-info">
+                  <div className="pesqueiro-info flex-grow-1">
                     <p><i className="icon">🕐</i> Aberto 24h</p>
                     <p><i className="icon">💰</i> R$15 por dia</p>
                     <p><i className="icon">🍽️</i> Quiosque, estacionamento</p>
                   </div>
-                  <Link to="/Pesqueiro3" className="btn-pesqueiro">Explorar Pesqueiro</Link>
+                  <Link to="/Pesqueiro3" className="btn-pesqueiro mt-auto">Explorar Pesqueiro</Link>
                 </div>
               </div>
             </div>
