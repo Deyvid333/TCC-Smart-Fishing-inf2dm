@@ -72,7 +72,7 @@ function AdminDashboard() {
 
   const handleLogout = () => {
     if (confirm('Tem certeza que deseja sair do painel administrativo?')) {
-      window.location.href = '/inicial';
+      window.location.href = '/login';
     }
   };
 

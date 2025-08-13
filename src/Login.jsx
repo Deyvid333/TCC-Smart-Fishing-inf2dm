@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import './App.css';
 
 function Login() {
   const navigate = useNavigate();
+  const [tipoUsuario, setTipoUsuario] = useState('usuario');
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -14,12 +16,22 @@ function Login() {
       return;
     }
     
-    navigate('/inicial');
+    // Redireciona baseado no tipo de usuário
+    if (tipoUsuario === 'dono') {
+      navigate('/admin');
+    } else {
+      navigate('/inicial');
+    }
   };
 
   const handleSocialLogin = (provider) => {
     console.log(`Login com ${provider}`);
-    navigate('/inicial');
+    // Redireciona baseado no tipo de usuário selecionado
+    if (tipoUsuario === 'dono') {
+      navigate('/admin');
+    } else {
+      navigate('/inicial');
+    }
   };
 
   const handleForgotPassword = () => {
@@ -30,6 +42,42 @@ function Login() {
     <div className="container">
       <form className="custom-form">
         <h1>Seja Bem Vindo de Volta</h1>
+        
+        <div className="user-type-selection">
+          <label className="user-type-label">Entrar como:</label>
+          <div className="user-type-options">
+            <label className="user-type-option">
+              <input 
+                type="radio" 
+                name="tipoUsuario" 
+                value="usuario" 
+                checked={tipoUsuario === 'usuario'}
+                onChange={(e) => setTipoUsuario(e.target.value)}
+              />
+              <span className="user-type-text">
+                <span className="user-type-icon">🎣</span>
+                <span className="user-type-title">Usuário</span>
+                <span className="user-type-desc">Pescador</span>
+              </span>
+            </label>
+            
+            <label className="user-type-option">
+              <input 
+                type="radio" 
+                name="tipoUsuario" 
+                value="dono" 
+                checked={tipoUsuario === 'dono'}
+                onChange={(e) => setTipoUsuario(e.target.value)}
+              />
+              <span className="user-type-text">
+                <span className="user-type-icon">🏢</span>
+                <span className="user-type-title">Dono de Pesqueiro</span>
+                <span className="user-type-desc">Proprietário</span>
+              </span>
+            </label>
+          </div>
+        </div>
+        
         <input name="email" type="email" placeholder="E-mail" required />
         <input name="senha" type="password" placeholder="Senha" required />
         
