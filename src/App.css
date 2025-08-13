@@ -10,6 +10,8 @@ body {
   align-items: center;
   flex-direction: column;
   padding-top: 80px;
+  position: relative;
+  z-index: 10;
 }
 
 h1 {
@@ -106,6 +108,8 @@ h2 {
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
   overflow: hidden;
+  position: relative;
+  z-index: 10;
 }
 
 .card:hover {
@@ -1501,4 +1505,101 @@ h1.text-white {
     flex: 1;
     min-width: 120px;
   }
+}
+
+/* Animação de peixes no fundo */
+.fish-animation-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.swimming-fish {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.4;
+  animation: swimAcross 15s linear infinite;
+}
+
+.swimming-fish:nth-child(1) {
+  top: 20%;
+  animation-delay: 0s;
+  font-size: 1.8rem;
+}
+
+.swimming-fish:nth-child(2) {
+  top: 40%;
+  animation-delay: -3s;
+  font-size: 2.2rem;
+}
+
+.swimming-fish:nth-child(3) {
+  top: 60%;
+  animation-delay: -6s;
+  font-size: 1.5rem;
+}
+
+.swimming-fish:nth-child(4) {
+  top: 80%;
+  animation-delay: -9s;
+  font-size: 2rem;
+}
+
+.swimming-fish:nth-child(5) {
+  top: 30%;
+  animation-delay: -12s;
+  font-size: 1.7rem;
+}
+
+.swimming-fish:nth-child(6) {
+  top: 70%;
+  animation-delay: -2s;
+  font-size: 1.9rem;
+}
+
+@keyframes swimAcross {
+  0% {
+    left: -100px;
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(1);
+  }
+  100% {
+    left: 100vw;
+    transform: scaleX(1);
+  }
+}
+
+/* Variação para peixes nadando na direção oposta */
+.swimming-fish.reverse {
+  animation: swimReverse 18s linear infinite;
+}
+
+@keyframes swimReverse {
+  0% {
+    right: -100px;
+    transform: scaleX(-1);
+  }
+  100% {
+    right: 100vw;
+    transform: scaleX(-1);
+  }
+}
+
+.swimming-fish.reverse:nth-child(2) {
+  animation-delay: -4s;
+}
+
+.swimming-fish.reverse:nth-child(4) {
+  animation-delay: -8s;
+}
+
+.swimming-fish.reverse:nth-child(6) {
+  animation-delay: -1s;
 }

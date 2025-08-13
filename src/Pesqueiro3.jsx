@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
+import FishAnimation from './Componentes/FishAnimation/FishAnimation';
 import pesqueiro3 from './assets/pesqueiro3.png';
 import bagre from './assets/bagre-africano.webp';
 import tambaqui from './assets/Tambaqui.jpg';
@@ -93,6 +94,7 @@ function Pesqueiro3() {
   return (
     <>
       <Navbar />
+      <FishAnimation />
 
     <div className="container mt-4">
       <h1 className="text-center mb-4 text-white">🎣 Lago da Rocha do Norte</h1>

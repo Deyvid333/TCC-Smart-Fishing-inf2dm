@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
+import FishAnimation from './Componentes/FishAnimation/FishAnimation';
 import pacuImg from './assets/Pacu.jpeg';
 import pintadoImg from './assets/pintado.jpg';
 import trairaImg from './assets/Peixe-Traira.webp';
@@ -93,6 +94,7 @@ function Pesqueiro2() {
   return (
     <>
       <Navbar />
+      <FishAnimation />
 
     <div className="container mt-4">
       <h1 className="text-center mb-4 text-white">🎣 Pesqueiro Lago do Pescador</h1>
