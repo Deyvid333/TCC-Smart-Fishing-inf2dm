@@ -40,14 +40,20 @@ function AdminDashboard() {
     { id: 3, nome: 'Pintado', quantidade: 25, tamanhoMedio: '65cm', status: 'Baixo' }
   ]);
   const [editingFish, setEditingFish] = useState(null);
-  const [newFish, setNewFish] = useState({ nome: '', quantidade: '', tamanhoMedio: '', status: 'Abundante' });
+  const [newFish, setNewFish] = useState({ nome: '', quantidade: '', tamanhoMedio: '0.0', status: 'Abundante' });
   const [showAddForm, setShowAddForm] = useState(false);
-  const [reservas] = useState([
-    { id: 1, nome: 'Carlos Silva', data: '2025-06-15', horario: '08:00', pessoas: 2, telefone: '(11) 99999-1111', status: 'Confirmada' },
-    { id: 2, nome: 'Maria Santos', data: '2025-06-15', horario: '14:00', pessoas: 4, telefone: '(11) 99999-2222', status: 'Pendente' },
-    { id: 3, nome: 'João Pescador', data: '2025-06-16', horario: '06:00', pessoas: 1, telefone: '(11) 99999-3333', status: 'Confirmada' },
-    { id: 4, nome: 'Ana Costa', data: '2025-06-16', horario: '10:00', pessoas: 3, telefone: '(11) 99999-4444', status: 'Cancelada' },
-    { id: 5, nome: 'Roberto Lima', data: '2025-06-17', horario: '07:00', pessoas: 2, telefone: '(11) 99999-5555', status: 'Pendente' }
+  const [reservas, setReservas] = useState([
+    { id: 1, nome: 'Carlos Silva', data: '2025-06-15', horario: '08:00', pessoas: 2, telefone: '(11) 99999-1111', status: 'Confirmada', tipo: 'pesca' },
+    { id: 2, nome: 'Maria Santos', data: '2025-06-15', horario: '14:00', pessoas: 4, telefone: '(11) 99999-2222', status: 'Pendente', tipo: 'pesca' },
+    { id: 3, nome: 'João Pescador', data: '2025-06-16', horario: '06:00', pessoas: 1, telefone: '(11) 99999-3333', status: 'Confirmada', tipo: 'pesca' },
+    { id: 4, nome: 'Ana Costa', data: '2025-06-16', horario: '10:00', pessoas: 3, telefone: '(11) 99999-4444', status: 'Cancelada', tipo: 'pesca' },
+    { id: 5, nome: 'Roberto Lima', data: '2025-06-17', horario: '07:00', pessoas: 2, telefone: '(11) 99999-5555', status: 'Pendente', tipo: 'pesca' }
+  ]);
+
+  const [reservasRestaurante, setReservasRestaurante] = useState([
+    { id: 1, nome: 'Patricia Oliveira', data: '2025-06-15', horario: '12:30', pessoas: 4, telefone: '(11) 88888-1111', status: 'Confirmada', ocasiao: 'aniversario', observacoes: 'Mesa com vista para o lago' },
+    { id: 2, nome: 'Fernando Costa', data: '2025-06-15', horario: '19:00', pessoas: 2, telefone: '(11) 88888-2222', status: 'Pendente', ocasiao: 'encontro', observacoes: '' },
+    { id: 3, nome: 'Família Silva', data: '2025-06-16', horario: '13:00', pessoas: 6, telefone: '(11) 88888-3333', status: 'Confirmada', ocasiao: 'familia', observacoes: 'Criança com alergia a frutos do mar' }
   ]);
 
   const handleEdit = () => {
@@ -80,20 +86,74 @@ function AdminDashboard() {
     setShowHelp(!showHelp);
   };
 
-  const handleAddFish = () => {
-    if (newFish.nome && newFish.quantidade && newFish.tamanhoMedio) {
-      const fish = {
-        id: Math.max(...fishData.map(f => f.id)) + 1,
-        ...newFish,
-        quantidade: parseInt(newFish.quantidade)
-      };
-      setFishData([...fishData, fish]);
-      setNewFish({ nome: '', quantidade: '', tamanhoMedio: '', status: 'Abundante' });
-      setShowAddForm(false);
-      alert('Peixe adicionado com sucesso!');
+  const handleConfirmarReserva = (id, tipo) => {
+    if (tipo === 'restaurante') {
+      setReservasRestaurante(reservasRestaurante.map(r => 
+        r.id === id ? { ...r, status: 'Confirmada' } : r
+      ));
     } else {
-      alert('Preencha todos os campos!');
+      setReservas(reservas.map(r => 
+        r.id === id ? { ...r, status: 'Confirmada' } : r
+      ));
     }
+    alert('Reserva confirmada com sucesso!');
+  };
+
+  const handleCancelarReserva = (id, tipo) => {
+    if (confirm('Tem certeza que deseja cancelar esta reserva?')) {
+      if (tipo === 'restaurante') {
+        setReservasRestaurante(reservasRestaurante.map(r => 
+          r.id === id ? { ...r, status: 'Cancelada' } : r
+        ));
+      } else {
+        setReservas(reservas.map(r => 
+          r.id === id ? { ...r, status: 'Cancelada' } : r
+        ));
+      }
+      alert('Reserva cancelada!');
+    }
+  };
+
+  const handleContatarCliente = (telefone) => {
+    window.open(`tel:${telefone}`);
+  };
+
+  const getStatusFromQuantity = (quantidade) => {
+    const qty = parseInt(quantidade);
+    if (qty < 100) return 'Baixo';
+    if (qty <= 300) return 'Moderado';
+    return 'Abundante';
+  };
+
+  const handleAddFish = () => {
+    if (!newFish.nome || !newFish.quantidade || !newFish.tamanhoMedio) {
+      alert('Todos os campos são obrigatórios!');
+      return;
+    }
+    
+    const quantidade = parseInt(newFish.quantidade);
+    if (isNaN(quantidade) || quantidade <= 0) {
+      alert('Quantidade deve ser um número maior que zero!');
+      return;
+    }
+    
+    const tamanho = parseFloat(newFish.tamanhoMedio);
+    if (isNaN(tamanho) || tamanho <= 0) {
+      alert('O tamanho médio dos peixes deve ser maior que 0.0 cm!');
+      return;
+    }
+    
+    const fish = {
+      id: Math.max(...fishData.map(f => f.id)) + 1,
+      nome: newFish.nome.trim(),
+      quantidade: quantidade,
+      tamanhoMedio: tamanho + 'cm',
+      status: getStatusFromQuantity(quantidade)
+    };
+    setFishData([...fishData, fish]);
+    setNewFish({ nome: '', quantidade: '', tamanhoMedio: '0.0', status: 'Abundante' });
+    setShowAddForm(false);
+    alert('Peixe adicionado com sucesso!');
   };
 
   const handleEditFish = (fish) => {
@@ -101,7 +161,32 @@ function AdminDashboard() {
   };
 
   const handleSaveFish = () => {
-    setFishData(fishData.map(f => f.id === editingFish.id ? editingFish : f));
+    if (!editingFish.nome || !editingFish.quantidade || !editingFish.tamanhoMedio) {
+      alert('Todos os campos são obrigatórios!');
+      return;
+    }
+    
+    const quantidade = parseInt(editingFish.quantidade);
+    if (isNaN(quantidade) || quantidade <= 0) {
+      alert('Quantidade deve ser um número maior que zero!');
+      return;
+    }
+    
+    const tamanhoStr = editingFish.tamanhoMedio.replace('cm', '');
+    const tamanho = parseFloat(tamanhoStr);
+    if (isNaN(tamanho) || tamanho <= 0) {
+      alert('O tamanho médio dos peixes deve ser maior que 0.0 cm!');
+      return;
+    }
+    
+    const updatedFish = {
+      ...editingFish,
+      nome: editingFish.nome.trim(),
+      quantidade: quantidade,
+      tamanhoMedio: tamanho + 'cm',
+      status: getStatusFromQuantity(quantidade)
+    };
+    setFishData(fishData.map(f => f.id === editingFish.id ? updatedFish : f));
     setEditingFish(null);
     alert('Peixe atualizado com sucesso!');
   };
@@ -210,28 +295,41 @@ function AdminDashboard() {
                         className="form-control form-control-sm" 
                         placeholder="Quantidade" 
                         value={newFish.quantidade}
-                        onChange={(e) => setNewFish({...newFish, quantidade: e.target.value})}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === '' || (!isNaN(value) && parseInt(value) >= 0)) {
+                            setNewFish({...newFish, quantidade: value});
+                          }
+                        }}
+                        min="0"
+                      />
+                    </div>
+                    <div className="col-6">
+                      <input 
+                        type="number" 
+                        className="form-control form-control-sm" 
+                        placeholder="Tamanho médio (cm)" 
+                        value={newFish.tamanhoMedio}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === '' || (!isNaN(value) && parseFloat(value) >= 0)) {
+                            setNewFish({...newFish, tamanhoMedio: value});
+                          }
+                        }}
+                        min="0.1"
+                        step="0.1"
+                        title="Tamanho médio dos peixes em centímetros"
                       />
                     </div>
                     <div className="col-6">
                       <input 
                         type="text" 
                         className="form-control form-control-sm" 
-                        placeholder="Tamanho" 
-                        value={newFish.tamanhoMedio}
-                        onChange={(e) => setNewFish({...newFish, tamanhoMedio: e.target.value})}
+                        placeholder="Status (automático)" 
+                        value={newFish.quantidade ? getStatusFromQuantity(newFish.quantidade) : ''}
+                        readOnly
+                        style={{backgroundColor: '#f8f9fa', color: '#6c757d'}}
                       />
-                    </div>
-                    <div className="col-6">
-                      <select 
-                        className="form-select form-select-sm" 
-                        value={newFish.status}
-                        onChange={(e) => setNewFish({...newFish, status: e.target.value})}
-                      >
-                        <option value="Abundante">Abundante</option>
-                        <option value="Moderado">Moderado</option>
-                        <option value="Baixo">Baixo</option>
-                      </select>
                     </div>
                     <div className="col-12">
                       <button className="btn btn-success btn-sm me-2" onClick={handleAddFish}>
@@ -263,27 +361,41 @@ function AdminDashboard() {
                             type="number" 
                             className="form-control form-control-sm" 
                             value={editingFish.quantidade}
-                            onChange={(e) => setEditingFish({...editingFish, quantidade: parseInt(e.target.value)})}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || (!isNaN(value) && parseInt(value) >= 0)) {
+                                setEditingFish({...editingFish, quantidade: value});
+                              }
+                            }}
+                            min="0"
+                          />
+                        </div>
+                        <div className="col-6">
+                          <input 
+                            type="number" 
+                            className="form-control form-control-sm" 
+                            value={editingFish.tamanhoMedio.replace('cm', '')}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '' || (!isNaN(value) && parseFloat(value) >= 0)) {
+                                setEditingFish({...editingFish, tamanhoMedio: value});
+                              }
+                            }}
+                            min="0.1"
+                            step="0.1"
+                            placeholder="Tamanho médio (cm)"
+                            title="Tamanho médio dos peixes em centímetros"
                           />
                         </div>
                         <div className="col-6">
                           <input 
                             type="text" 
                             className="form-control form-control-sm" 
-                            value={editingFish.tamanhoMedio}
-                            onChange={(e) => setEditingFish({...editingFish, tamanhoMedio: e.target.value})}
+                            placeholder="Status (automático)" 
+                            value={editingFish.quantidade ? getStatusFromQuantity(editingFish.quantidade) : ''}
+                            readOnly
+                            style={{backgroundColor: '#f8f9fa', color: '#6c757d'}}
                           />
-                        </div>
-                        <div className="col-6">
-                          <select 
-                            className="form-select form-select-sm" 
-                            value={editingFish.status}
-                            onChange={(e) => setEditingFish({...editingFish, status: e.target.value})}
-                          >
-                            <option value="Abundante">Abundante</option>
-                            <option value="Moderado">Moderado</option>
-                            <option value="Baixo">Baixo</option>
-                          </select>
                         </div>
                       </div>
                       <button className="btn btn-success btn-sm me-2" onClick={handleSaveFish}>
@@ -298,7 +410,7 @@ function AdminDashboard() {
                       <div>
                         <strong>{fish.nome}</strong>
                         <div className="small text-muted">
-                          Quantidade: {fish.quantidade} | Tamanho: {fish.tamanhoMedio}
+                          Quantidade: {fish.quantidade} | Tamanho médio: {fish.tamanhoMedio}
                         </div>
                       </div>
                       <div className="d-flex align-items-center gap-2">
@@ -483,7 +595,7 @@ function AdminDashboard() {
           <div className="card-body">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <div>
-                <h3>📅 Gerenciar Reservas</h3>
+                <h3>🎣 Reservas de Pesca</h3>
                 <p className="text-muted mb-0">Acompanhe e gerencie as reservas dos pescadores</p>
               </div>
               <div className="d-flex gap-2">
@@ -526,15 +638,27 @@ function AdminDashboard() {
                         <div className="btn-group btn-group-sm">
                           {reserva.status === 'Pendente' && (
                             <>
-                              <button className="btn btn-success" title="Confirmar">
+                              <button 
+                                className="btn btn-success" 
+                                title="Confirmar"
+                                onClick={() => handleConfirmarReserva(reserva.id, 'pesca')}
+                              >
                                 ✅
                               </button>
-                              <button className="btn btn-danger" title="Cancelar">
+                              <button 
+                                className="btn btn-danger" 
+                                title="Cancelar"
+                                onClick={() => handleCancelarReserva(reserva.id, 'pesca')}
+                              >
                                 ❌
                               </button>
                             </>
                           )}
-                          <button className="btn btn-outline-primary" title="Contatar">
+                          <button 
+                            className="btn btn-outline-primary" 
+                            title="Contatar"
+                            onClick={() => handleContatarCliente(reserva.telefone)}
+                          >
                             📞
                           </button>
                         </div>
@@ -548,6 +672,117 @@ function AdminDashboard() {
             {reservas.length === 0 && (
               <div className="text-center py-4">
                 <p className="text-muted">Nenhuma reserva encontrada.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderReservasRestaurante = () => (
+    <div className="row">
+      <div className="col-12">
+        <div className="card admin-main-card">
+          <div className="card-body">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <h3>🍽️ Reservas do Restaurante</h3>
+                <p className="text-muted mb-0">Gerencie as reservas de mesa do restaurante</p>
+              </div>
+              <div className="d-flex gap-2">
+                <span className="badge bg-success">Confirmadas: {reservasRestaurante.filter(r => r.status === 'Confirmada').length}</span>
+                <span className="badge bg-warning">Pendentes: {reservasRestaurante.filter(r => r.status === 'Pendente').length}</span>
+                <span className="badge bg-danger">Canceladas: {reservasRestaurante.filter(r => r.status === 'Cancelada').length}</span>
+              </div>
+            </div>
+            
+            <div className="table-responsive">
+              <table className="table table-hover">
+                <thead className="table-light">
+                  <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Horário</th>
+                    <th>Pessoas</th>
+                    <th>Telefone</th>
+                    <th>Ocasião</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reservasRestaurante.map(reserva => (
+                    <tr key={reserva.id}>
+                      <td>
+                        <strong>{reserva.nome}</strong>
+                        {reserva.observacoes && (
+                          <div className="small text-muted">
+                            📝 {reserva.observacoes}
+                          </div>
+                        )}
+                      </td>
+                      <td>{new Date(reserva.data).toLocaleDateString('pt-BR')}</td>
+                      <td>{reserva.horario}</td>
+                      <td>{reserva.pessoas} pessoa{reserva.pessoas > 1 ? 's' : ''}</td>
+                      <td>{reserva.telefone}</td>
+                      <td>
+                        {reserva.ocasiao && (
+                          <span className="badge bg-info">
+                            {reserva.ocasiao === 'aniversario' ? '🎂 Aniversário' :
+                             reserva.ocasiao === 'encontro' ? '💕 Encontro' :
+                             reserva.ocasiao === 'familia' ? '👨‍👩‍👧‍👦 Família' :
+                             reserva.ocasiao === 'negocios' ? '💼 Negócios' :
+                             reserva.ocasiao === 'comemoracao' ? '🎉 Comemoração' : reserva.ocasiao}
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        <span className={`badge ${
+                          reserva.status === 'Confirmada' ? 'bg-success' :
+                          reserva.status === 'Pendente' ? 'bg-warning' : 'bg-danger'
+                        }`}>
+                          {reserva.status}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="btn-group btn-group-sm">
+                          {reserva.status === 'Pendente' && (
+                            <>
+                              <button 
+                                className="btn btn-success" 
+                                title="Confirmar"
+                                onClick={() => handleConfirmarReserva(reserva.id, 'restaurante')}
+                              >
+                                ✅
+                              </button>
+                              <button 
+                                className="btn btn-danger" 
+                                title="Cancelar"
+                                onClick={() => handleCancelarReserva(reserva.id, 'restaurante')}
+                              >
+                                ❌
+                              </button>
+                            </>
+                          )}
+                          <button 
+                            className="btn btn-outline-primary" 
+                            title="Contatar"
+                            onClick={() => handleContatarCliente(reserva.telefone)}
+                          >
+                            📞
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            {reservasRestaurante.length === 0 && (
+              <div className="text-center py-4">
+                <p className="text-muted">Nenhuma reserva de restaurante encontrada.</p>
               </div>
             )}
           </div>
@@ -584,7 +819,14 @@ function AdminDashboard() {
                   onClick={() => setActiveTab('reservas')}
                   title="Gerenciar reservas dos pescadores"
                 >
-                  📅 Reservas
+                  🎣 Reservas Pesca
+                </button>
+                <button 
+                  className={`btn ${activeTab === 'restaurante' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
+                  onClick={() => setActiveTab('restaurante')}
+                  title="Gerenciar reservas do restaurante"
+                >
+                  🍽️ Reservas Restaurante
                 </button>
                 <button 
                   className={`btn ${activeTab === 'settings' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
@@ -616,8 +858,9 @@ function AdminDashboard() {
               </div>
               <div className="col-md-6">
                 <ul className="mb-0">
+                  <li><strong>Reservas Pesca:</strong> Confirme ou cancele reservas de pescadores</li>
+                  <li><strong>Reservas Restaurante:</strong> Gerencie mesas e ocasiões especiais</li>
                   <li><strong>Gerenciar Dados:</strong> Atualize preços, horários e informações</li>
-                  <li><strong>Status dos Peixes:</strong> Monitore o estoque disponível</li>
                 </ul>
               </div>
             </div>
@@ -629,6 +872,7 @@ function AdminDashboard() {
       <div className="container-fluid mt-4">
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'reservas' && renderReservas()}
+        {activeTab === 'restaurante' && renderReservasRestaurante()}
         {activeTab === 'settings' && renderSettings()}
       </div>
     </div>

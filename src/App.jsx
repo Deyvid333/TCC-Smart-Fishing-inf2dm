@@ -10,6 +10,7 @@ import Pesqueiro from './Pesqueiro';
 import Pesqueiro2 from './Pesqueiro2';
 import Pesqueiro3 from './Pesqueiro3';
 import AdminDashboard from './AdminDashboard';
+import Conscientizacao from './Conscientizacao';
 import './App.css';
 
 
@@ -31,6 +32,7 @@ function App() {
         <Route path="/Pesqueiro2" element={<Pesqueiro2 />} />
         <Route path="/Pesqueiro" element={<Pesqueiro />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/conscientizacao" element={<Conscientizacao />} />
      
       </Routes>
     </Router>
