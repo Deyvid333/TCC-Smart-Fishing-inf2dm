@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import FishAnimation from './Componentes/FishAnimation/FishAnimation';
 import './App.css';
 
 function AdminDashboard() {
@@ -793,6 +794,7 @@ function AdminDashboard() {
 
   return (
     <div className="admin-layout">
+      <FishAnimation />
       {/* Header melhorado */}
       <div className="admin-header">
         <div className="container-fluid">
