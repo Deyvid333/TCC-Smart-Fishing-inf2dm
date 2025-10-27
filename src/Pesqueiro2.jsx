@@ -1,6 +1,9 @@
+// ========== IMPORTAÇÕES ==========
+// Importa React e o hook useState para gerenciar estados do componente
 import React, { useState } from 'react';
+// Importa componentes personalizados
 import Navbar from './Componentes/Navbar/Navbar';
-import FishAnimation from './Componentes/FishAnimation/FishAnimation';
+// Importa imagens específicas do Pesqueiro 2
 import pacuImg from './assets/Pacu.jpeg';
 import pintadoImg from './assets/pintado.jpg';
 import trairaImg from './assets/Peixe-Traira.webp';
@@ -8,9 +11,14 @@ import pesqueiroImg from './assets/pesqueiro2.png';
 import pesqueiroImg7 from './assets/pesqueiro7.jpg';
 import pesqueiroImg8 from './assets/pesqueiro8.jpg';
 import pesqueiroImg9 from './assets/pesqueiro9.jpg';
+// Importa estilos CSS
 import './App.css'
 
+// ========== COMPONENTE PESQUEIRO 2 ==========
 function Pesqueiro2() {
+  // ========== ESTADOS (VARIÁVEIS QUE PODEM MUDAR) ==========
+  
+  // Estado para armazenar lista de comentários específicos do Pesqueiro 2
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -35,10 +43,13 @@ function Pesqueiro2() {
     }
   ]);
 
-  const [selectedFish, setSelectedFish] = useState(null);
-  const [showFishInfo, setShowFishInfo] = useState(false);
-  const [currentFishIndex, setCurrentFishIndex] = useState(0);
+  // Estados para controlar o popup de informações dos peixes
+  const [selectedFish, setSelectedFish] = useState(null); // Peixe selecionado
+  const [showFishInfo, setShowFishInfo] = useState(false); // Se deve mostrar o popup
+  const [currentFishIndex, setCurrentFishIndex] = useState(0); // Índice atual do carrossel
 
+  // ========== DADOS DOS PEIXES DO PANTANAL/NOBRES ==========
+  // Array com informações de peixes especiais do Pesqueiro 2 (espécies do Pantanal e nobres)
   const peixes = [
     { nome: 'Pacu-Caranha', horario: '10:00 - 14:00', tamanho: '35-65cm', dificuldade: 'Médio', consumo: 'Seguro', iscas: 'Frutas maduras, caju, manga', obs: 'Especialista em frutas, carne doce', extincao: false },
     { nome: 'Pintado-Real', horario: '20:00 - 3:00', tamanho: '70-120cm', dificuldade: 'Muito Difícil', consumo: 'Seguro', iscas: 'Tuvira, lambari vivo', obs: 'Rei dos peixes nobres, troféu máximo', extincao: true },
@@ -54,21 +65,27 @@ function Pesqueiro2() {
     { nome: 'Piau-Três-Pintas', horario: '6:00 - 16:00', tamanho: '12-25cm', dificuldade: 'Fácil', consumo: 'Seguro', iscas: 'Minhoca, milho, massa', obs: 'Três manchas características', extincao: false }
   ];
 
+  // ========== FUNÇÃO PARA ABRIR POPUP DO PEIXE ==========
   const handleFishClick = (peixe) => {
-    setSelectedFish(peixe);
-    setShowFishInfo(true);
+    setSelectedFish(peixe); // Define qual peixe foi clicado
+    setShowFishInfo(true);  // Mostra o popup
   };
 
+  // Estado para novo comentário (estrutura de objeto)
   const [newComment, setNewComment] = useState({
     nome: '',
     rating: 5,
     texto: ''
   });
 
-  const [selectedDate, setSelectedDate] = useState('');
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  // ========== ESTADOS PARA O CALENDÁRIO DE RESERVAS ==========
+  const [selectedDate, setSelectedDate] = useState(''); // Data selecionada
+  const [showCalendar, setShowCalendar] = useState(false); // Se deve mostrar o calendário
+  const [currentMonth, setCurrentMonth] = useState(new Date()); // Mês atual do calendário
 
+  // ========== FUNÇÕES DO CALENDÁRIO ==========
+  
+  // Função para definir limites de datas (mínima e máxima)
   const getDateLimits = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -93,6 +110,7 @@ function Pesqueiro2() {
     }
   };
 
+  // ========== FUNÇÃO PARA RENDERIZAR O CALENDÁRIO ==========
   const renderCalendar = () => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
@@ -151,66 +169,86 @@ function Pesqueiro2() {
     }
   };
 
+  // ========== FUNÇÕES PARA COMENTÁRIOS ==========
+  
+  // Função para atualizar campos do formulário de comentário
   const handleInputChange = (e) => {
     setNewComment({
-      ...newComment,
-      [e.target.name]: e.target.value
+      ...newComment, // Mantém os valores existentes
+      [e.target.name]: e.target.value // Atualiza apenas o campo alterado
     });
   };
 
+  // Função para definir avaliação ao clicar nas estrelas
   const handleRatingClick = (rating) => {
     setNewComment({
       ...newComment,
-      rating: rating
+      rating: rating // Atualiza apenas a avaliação
     });
   };
 
+  // Função para enviar novo comentário
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Impede o envio padrão do formulário
+    
+    // Verifica se os campos obrigatórios estão preenchidos
     if (newComment.nome.trim() && newComment.texto.trim()) {
+      // Cria novo comentário
       const comment = {
-        id: comments.length + 1,
+        id: comments.length + 1, // ID sequencial
         nome: newComment.nome,
         rating: newComment.rating,
         texto: newComment.texto,
         data: 'agora'
       };
+      
+      // Adiciona novo comentário no início da lista
       setComments([comment, ...comments]);
+      
+      // Limpa o formulário
       setNewComment({ nome: '', rating: 5, texto: '' });
+      
       alert('Comentário enviado com sucesso!');
     } else {
       alert('Por favor, preencha todos os campos!');
     }
   };
 
+  // ========== FUNÇÕES UTILITÁRIAS ==========
+  
+  // Função para renderizar estrelas (interativas ou apenas visuais)
   const renderStars = (rating, interactive = false) => {
     return Array.from({ length: 5 }, (_, index) => (
       <span 
         key={index}
         className={`star ${interactive ? 'interactive' : ''} ${index < rating ? 'filled' : ''}`}
-        onClick={interactive ? () => handleRatingClick(index + 1) : undefined}
+        onClick={interactive ? () => handleRatingClick(index + 1) : undefined} // Só clica se for interativo
       >
         ⭐
       </span>
     ));
   };
 
+  // Função para calcular média das avaliações
   const calculateAverageRating = () => {
-    if (comments.length === 0) return 0;
-    const sum = comments.reduce((acc, comment) => acc + comment.rating, 0);
-    return (sum / comments.length).toFixed(1);
+    if (comments.length === 0) return 0; // Evita divisão por zero
+    const sum = comments.reduce((acc, comment) => acc + comment.rating, 0); // Soma todas as avaliações
+    return (sum / comments.length).toFixed(1); // Retorna média com 1 casa decimal
   };
 
+  // ========== RENDERIZAÇÃO DO COMPONENTE ==========
   return (
     <>
+      {/* Componente de navegação fixo */}
       <Navbar />
-      <FishAnimation />
 
-    <div className="container mt-4">
-      <h1 className="text-center mb-4 text-white">🎣 Pesqueiro Lago do Pescador</h1>
-      
-      {/* Seção de Informações do Pesqueiro */}
-      <div className="info-section mb-5">
+      {/* Container principal */}
+      <div className="container mt-4">
+        {/* Título da página */}
+        <h1 className="text-center mb-4 text-white">🎣 Pesqueiro Lago do Pescador</h1>
+        
+        {/* ========== SEÇÃO DE INFORMAÇÕES DO PESQUEIRO 2 ========== */}
+        <div className="info-section mb-5">
         <div className="card info-card">
           <div className="card-body">
             <div className="row">

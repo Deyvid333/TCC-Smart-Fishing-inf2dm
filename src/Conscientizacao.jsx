@@ -1,8 +1,15 @@
+// ========== IMPORTAÇÕES ==========
+// Importa React (sem hooks pois é um componente estático)
 import React from 'react';
+// Importa componente de navegação
 import Navbar from './Componentes/Navbar/Navbar';
+// Importa estilos CSS
 import './App.css';
 
+// ========== COMPONENTE DE CONSCIENTIZAÇÃO AMBIENTAL ==========
 function Conscientizacao() {
+  // ========== DADOS DOS PEIXES AMEAÇADOS ==========
+  // Array com informações de espécies em risco de extinção (dados fictícios para demonstração)
   const peixesExtincao = [
     { nome: 'Surubim do São Francisco', status: 'Criticamente Ameaçado', causa: 'Poluição e barragens no Rio São Francisco', icon: '🐟' },
     { nome: 'Dourado', status: 'Vulnerável', causa: 'Sobrepesca e degradação do habitat', icon: '🐠' },
@@ -36,6 +43,8 @@ function Conscientizacao() {
     { nome: 'Cichla', status: 'Criticamente Ameaçado', causa: 'Aquecimento global das águas', icon: '🐡' }
   ];
 
+  // ========== DADOS DE AÇÕES SUSTENTÁVEIS ==========
+  // Array com sugestões de práticas responsáveis para pescadores
   const acoesSustentaveis = [
     {
       titulo: 'Pesque com Responsabilidade',
@@ -63,11 +72,17 @@ function Conscientizacao() {
     }
   ];
 
+  // ========== RENDERIZAÇÃO DO COMPONENTE ==========
   return (
     <>
+      {/* Componente de navegação fixo */}
       <Navbar />
+      
+      {/* Container principal com margem para navbar */}
       <div className="user-page-content">
         <div className="container mt-4">
+          
+          {/* ========== CABEÇALHO DA PÁGINA ========== */}
           <div className="text-center mb-5">
             <h1 className="hero-title" style={{color: '#112D4E', fontSize: '3rem'}}>
               🌊 Conscientização Ambiental
@@ -75,6 +90,8 @@ function Conscientizacao() {
             <p className="hero-subtitle" style={{color: '#3F72AF', fontSize: '1.3rem'}}>
               Protegendo nossos rios e peixes para as futuras gerações
             </p>
+            
+            {/* Aviso sobre dados fictícios */}
             <div className="alert alert-info mt-4">
               <small>
                 <strong>📝 Aviso:</strong> Os dados apresentados nesta página são fictícios e foram criados 
@@ -84,8 +101,10 @@ function Conscientizacao() {
             </div>
           </div>
 
+          {/* ========== SEÇÃO PRINCIPAL: PEIXES AMEAÇADOS E PROBLEMAS ========== */}
           <div className="row mb-5">
-            {/* Seção de Peixes em Extinção */}
+            
+            {/* ========== COLUNA: PEIXES EM EXTINÇÃO ========== */}
             <div className="col-md-6">
               <div className="card admin-main-card">
                 <div className="card-body">
@@ -94,7 +113,9 @@ function Conscientizacao() {
                     Conheça algumas espécies brasileiras que correm risco de desaparecer:
                   </p>
                   
+                  {/* Lista scrollável de peixes ameaçados */}
                   <div style={{maxHeight: '400px', overflowY: 'auto'}}>
+                    {/* Mapeia cada peixe para criar um item da lista */}
                     {peixesExtincao.map((peixe, index) => (
                       <div key={index} className="mb-2 p-2 border rounded" style={{borderLeft: '3px solid #e74c3c'}}>
                         <div className="d-flex align-items-center mb-1">
@@ -125,7 +146,7 @@ function Conscientizacao() {
               </div>
             </div>
 
-            {/* Seção de Problemas e Soluções */}
+            {/* ========== COLUNA: PRINCIPAIS PROBLEMAS ========== */}
             <div className="col-md-6">
               <div className="card admin-main-card">
                 <div className="card-body">
@@ -189,7 +210,7 @@ function Conscientizacao() {
             </div>
           </div>
 
-          {/* Seção Detalhada sobre Sobrepesca */}
+          {/* ========== SEÇÃO DETALHADA: SOBREPESCA ========== */}
           <div className="row mb-5">
             <div className="col-12">
               <div className="card admin-main-card">
@@ -263,7 +284,7 @@ function Conscientizacao() {
             </div>
           </div>
 
-          {/* Seção de Ações Sustentáveis */}
+          {/* ========== SEÇÃO: AÇÕES SUSTENTÁVEIS ========== */}
           <div className="row mb-5">
             <div className="col-12">
               <div className="card admin-main-card">
@@ -274,6 +295,7 @@ function Conscientizacao() {
                   </p>
                   
                   <div className="row">
+                    {/* Mapeia cada ação sustentável para criar um card */}
                     {acoesSustentaveis.map((acao, index) => (
                       <div key={index} className="col-md-6 mb-4">
                         <div className="h-100 p-4 border rounded" style={{background: 'linear-gradient(145deg, #F9F7F7, #DBE2EF)'}}>
@@ -299,15 +321,18 @@ function Conscientizacao() {
             </div>
           </div>
 
-          {/* Call to Action */}
+          {/* ========== SEÇÃO: CALL TO ACTION (CHAMADA PARA AÇÃO) ========== */}
           <div className="row mb-5">
             <div className="col-12">
+              {/* Card com gradiente e botões de ação */}
               <div className="text-center p-5" style={{background: 'linear-gradient(135deg, #3F72AF, #112D4E)', borderRadius: '20px', color: '#F9F7F7'}}>
                 <h3 className="mb-3">🤝 Junte-se ao Movimento</h3>
                 <p className="mb-4">
                   Seja um pescador consciente e ajude a preservar a biodiversidade aquática brasileira. 
                   Cada ação conta para garantir que as próximas gerações também possam desfrutar da pesca.
                 </p>
+                
+                {/* Botões de ação (apenas visuais - não funcionais) */}
                 <div className="d-flex justify-content-center gap-3 flex-wrap">
                   <button className="btn btn-light btn-lg">
                     📱 Denunciar Poluição
@@ -328,4 +353,5 @@ function Conscientizacao() {
   );
 }
 
+// ========== EXPORTAÇÃO DO COMPONENTE ==========
 export default Conscientizacao;

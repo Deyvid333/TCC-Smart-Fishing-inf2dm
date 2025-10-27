@@ -1,7 +1,11 @@
+// ========== IMPORTAÇÕES ==========
+// Importa React e o hook useState para gerenciar estados do componente
 import React, { useState } from 'react';
+// Importa componentes personalizados
 import Navbar from './Componentes/Navbar/Navbar';
-import FishAnimation from './Componentes/FishAnimation/FishAnimation';
+// Importa estilos CSS
 import './App.css'; 
+// Importa imagens (disponíveis para uso futuro)
 import pesqueiroImg from './assets/pesqueiro.png';
 import tilapiaImg from './assets/Tilapia.jpeg';
 import douradoImg from './assets/PeixeDourado.jpeg';
@@ -10,9 +14,11 @@ import pesqueiroImg4 from './assets/pesqueiro4.jpeg';
 import pesqueiroImg5 from './assets/pesqueiro5.jpg';
 import pesqueiroImg6 from './assets/pesqueiro6.jpg';
 
-
-
+// ========== COMPONENTE PRINCIPAL ==========
 function Pesqueiro() {
+  // ========== ESTADOS (VARIÁVEIS QUE PODEM MUDAR) ==========
+  
+  // Estado para armazenar lista de comentários
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -37,10 +43,13 @@ function Pesqueiro() {
     }
   ]);
 
-  const [selectedFish, setSelectedFish] = useState(null);
-  const [showFishInfo, setShowFishInfo] = useState(false);
-  const [currentFishIndex, setCurrentFishIndex] = useState(0);
+  // Estados para controlar o popup de informações dos peixes
+  const [selectedFish, setSelectedFish] = useState(null); // Peixe selecionado
+  const [showFishInfo, setShowFishInfo] = useState(false); // Se deve mostrar o popup
+  const [currentFishIndex, setCurrentFishIndex] = useState(0); // Índice atual do carrossel
 
+  // ========== DADOS DOS PEIXES ==========
+  // Array com informações de todos os peixes disponíveis
   const peixes = [
     { nome: 'Tilápia', horario: '8:00 - 20:00', tamanho: '28-35cm', dificuldade: 'Fácil', consumo: 'Seguro', iscas: 'Minhoca, milho, massa', obs: 'Peixe ideal para iniciantes e famílias', extincao: false },
     { nome: 'Dourado', horario: '12:00 - 18:00', tamanho: '15-18cm', dificuldade: 'Fácil', consumo: 'Seguro', iscas: 'Minhoca, massa, pão', obs: 'Pequeno, colorido e divertido de pescar', extincao: true },
@@ -59,18 +68,22 @@ function Pesqueiro() {
     { nome: 'Piau', horario: '7:00 - 16:00', tamanho: '15-25cm', dificuldade: 'Fácil', consumo: 'Seguro', iscas: 'Minhoca, milho', obs: 'Abundante, fácil de pescar', extincao: false }
   ];
 
+  // ========== FUNÇÃO PARA ABRIR POPUP DO PEIXE ==========
   const handleFishClick = (peixe) => {
-    setSelectedFish(peixe);
-    setShowFishInfo(true);
+    setSelectedFish(peixe); // Define qual peixe foi clicado
+    setShowFishInfo(true);  // Mostra o popup
   };
 
 
 
-  const [selectedDate, setSelectedDate] = useState('');
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  // ========== ESTADOS PARA O CALENDÁRIO DE RESERVAS ==========
+  const [selectedDate, setSelectedDate] = useState(''); // Data selecionada
+  const [showCalendar, setShowCalendar] = useState(false); // Se deve mostrar o calendário
+  const [currentMonth, setCurrentMonth] = useState(new Date()); // Mês atual do calendário
 
-  // Função para obter data mínima (amanhã) e máxima (2 meses)
+  // ========== FUNÇÕES DO CALENDÁRIO ==========
+  
+  // Função para definir limites de datas (mínima e máxima)
   const getDateLimits = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -98,7 +111,7 @@ function Pesqueiro() {
     }
   };
 
-  // Renderizar calendário
+  // ========== FUNÇÃO PARA RENDERIZAR O CALENDÁRIO ==========
   const renderCalendar = () => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
@@ -159,16 +172,19 @@ function Pesqueiro() {
 
 
 
+  // ========== RENDERIZAÇÃO DO COMPONENTE ==========
   return (
     <>
+      {/* Componente de navegação fixo */}
       <Navbar />
-      <FishAnimation />
 
-    <div className="container mt-4">
-      <h1 className="text-center mb-4 text-white">🎣 Pesqueiro Águas Claras</h1>
-      
-      {/* Seção de Informações do Pesqueiro */}
-      <div className="info-section mb-5">
+      {/* Container principal */}
+      <div className="container mt-4">
+        {/* Título da página */}
+        <h1 className="text-center mb-4 text-white">🎣 Pesqueiro Águas Claras</h1>
+        
+        {/* ========== SEÇÃO DE INFORMAÇÕES DO PESQUEIRO ========== */}
+        <div className="info-section mb-5">
         <div className="card info-card">
           <div className="card-body">
             <div className="row">
@@ -260,34 +276,41 @@ function Pesqueiro() {
         </div>
       </div>
 
-      <h2 className="text-center mb-5">🐟 Peixes Disponíveis</h2>
+        {/* ========== TÍTULO DA SEÇÃO DE PEIXES ========== */}
+        <h2 className="text-center mb-5">🐟 Peixes Disponíveis</h2>
 
-      {/* Carrossel de Peixes */}
-      <div className="fish-carousel mb-5">
-        <div className="text-center mb-3">
-          <button 
-            onClick={() => setCurrentFishIndex(Math.max(0, currentFishIndex - 5))}
-            disabled={currentFishIndex === 0}
-            className="btn btn-outline-primary me-2"
-          >
-            ← Anterior
-          </button>
-          <span className="mx-3 text-muted">Grupo {Math.floor(currentFishIndex / 5) + 1} de {Math.ceil(peixes.length / 5)}</span>
-          <button 
-            onClick={() => setCurrentFishIndex(Math.min(peixes.length - 5, currentFishIndex + 5))}
-            disabled={currentFishIndex >= peixes.length - 5}
-            className="btn btn-outline-primary ms-2"
-          >
-            Próximo →
-          </button>
-        </div>
-        
-        <div className="d-flex justify-content-center gap-3 flex-wrap">
-          {peixes.slice(currentFishIndex, currentFishIndex + 5).map((peixe, index) => (
-            <div 
-              key={currentFishIndex + index}
-              className="fish-card-small" 
-              onClick={() => handleFishClick(peixe)}
+        {/* ========== CARROSSEL DE PEIXES ========== */}
+        <div className="fish-carousel mb-5">
+          {/* Controles de navegação do carrossel */}
+          <div className="text-center mb-3">
+            {/* Botão anterior */}
+            <button 
+              onClick={() => setCurrentFishIndex(Math.max(0, currentFishIndex - 5))}
+              disabled={currentFishIndex === 0}
+              className="btn btn-outline-primary me-2"
+            >
+              ← Anterior
+            </button>
+            {/* Indicador de grupo atual */}
+            <span className="mx-3 text-muted">Grupo {Math.floor(currentFishIndex / 5) + 1} de {Math.ceil(peixes.length / 5)}</span>
+            {/* Botão próximo */}
+            <button 
+              onClick={() => setCurrentFishIndex(Math.min(peixes.length - 5, currentFishIndex + 5))}
+              disabled={currentFishIndex >= peixes.length - 5}
+              className="btn btn-outline-primary ms-2"
+            >
+              Próximo →
+            </button>
+          </div>
+          
+          {/* Container dos cards de peixes */}
+          <div className="d-flex justify-content-center gap-3 flex-wrap">
+            {/* Mapeia apenas 5 peixes por vez (slice) */}
+            {peixes.slice(currentFishIndex, currentFishIndex + 5).map((peixe, index) => (
+              <div 
+                key={currentFishIndex + index}
+                className="fish-card-small" 
+                onClick={() => handleFishClick(peixe)} // Abre popup ao clicar
               style={{
                 width: '180px',
                 height: '140px',
@@ -319,8 +342,8 @@ function Pesqueiro() {
         </div>
       </div>
 
-      {/* Popup de Informações do Peixe */}
-      {showFishInfo && selectedFish && (
+        {/* ========== POPUP DE INFORMAÇÕES DO PEIXE ========== */}
+        {showFishInfo && selectedFish && (
         <div 
           className="fish-info-popup" 
           style={{
@@ -391,8 +414,8 @@ function Pesqueiro() {
         ></div>
       )}
       
-      {/* Seção de Reserva do Restaurante */}
-      <div className="restaurant-reservation-section mb-5">
+        {/* ========== SEÇÃO DE RESERVA DO RESTAURANTE ========== */}
+        <div className="restaurant-reservation-section mb-5">
         <div className="card">
           <div className="card-body">
             <h3 className="mb-4 text-center">🍽️ Reserva do Restaurante</h3>
@@ -521,30 +544,40 @@ function Pesqueiro() {
       
 
       
-      {/* Seção de Comentários Simples */}
-      <div className="comments-section mb-5">
+        {/* ========== SEÇÃO DE COMENTÁRIOS ========== */}
+        <div className="comments-section mb-5">
         <div className="card">
           <div className="card-body">
             <h3 className="mb-4">💬 Comentários</h3>
             
-            {/* Formulário simples */}
+            {/* ========== FORMULÁRIO DE COMENTÁRIOS ========== */}
             <form onSubmit={(e) => {
-              e.preventDefault();
+              e.preventDefault(); // Impede o envio padrão do formulário
+              
+              // Coleta dados do formulário usando FormData
               const formData = new FormData(e.target);
               const nome = formData.get('nome');
               const rating = parseInt(formData.get('rating'));
               const texto = formData.get('texto');
               
+              // Verifica se todos os campos obrigatórios foram preenchidos
               if (nome && rating && texto) {
+                // Cria novo comentário
                 const novoComentario = {
-                  id: Date.now(),
+                  id: Date.now(), // ID único baseado no timestamp
                   nome: nome,
                   rating: rating,
                   texto: texto,
                   data: 'agora'
                 };
+                
+                // Adiciona novo comentário no início da lista
                 setComments([novoComentario, ...comments]);
+                
+                // Limpa o formulário
                 e.target.reset();
+                
+                // Mostra mensagem de sucesso
                 alert('Comentário enviado!');
               }
             }}>
@@ -611,4 +644,5 @@ function Pesqueiro() {
   );
 }
 
+// ========== EXPORTAÇÃO DO COMPONENTE ==========
 export default Pesqueiro;

@@ -85,20 +85,24 @@ function Login() {
         
         <button type="button" onClick={handleLogin}>Entrar</button>
         
+        {/* Divisor visual */}
         <div className="divider">
           <span>ou</span>
         </div>
         
+        {/* ========== BOTÕES DE LOGIN SOCIAL ========== */}
         <div className="social-buttons">
+          {/* Botão Google */}
           <button 
             type="button" 
             className="social-btn google-btn"
-            onClick={() => handleSocialLogin('Google')}
+            onClick={() => handleSocialLogin('Google')} // Chama função com parâmetro
           >
             <span className="social-icon">G</span>
             Entrar com Google
           </button>
           
+          {/* Botão Facebook */}
           <button 
             type="button" 
             className="social-btn facebook-btn"
@@ -108,6 +112,7 @@ function Login() {
             Entrar com Facebook
           </button>
           
+          {/* Botão Apple */}
           <button 
             type="button" 
             className="social-btn apple-btn"
@@ -118,8 +123,10 @@ function Login() {
           </button>
         </div>
         
+        {/* ========== LINK PARA CADASTRO ========== */}
         <h3 className="h2index">Não tem uma conta?</h3>
         <div className="register-link">
+          {/* Link para página de cadastro */}
           <Link to="/cadastro">Cadastre-se!</Link>
         </div>
       </form>
@@ -127,4 +134,5 @@ function Login() {
   );
 }
 
+// ========== EXPORTAÇÃO DO COMPONENTE ==========
 export default Login;

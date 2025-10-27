@@ -1,16 +1,24 @@
+// ========== IMPORTAÇÕES ==========
+// Importa React e o hook useState para gerenciar estados do componente
 import React, { useState } from 'react';
+// Importa componentes personalizados
 import Navbar from './Componentes/Navbar/Navbar';
-import FishAnimation from './Componentes/FishAnimation/FishAnimation';
+// Importa imagens específicas do Pesqueiro 3 (peixes exóticos/predadores)
 import pesqueiro3 from './assets/pesqueiro3.png';
 import bagre from './assets/bagre-africano.webp';
 import tambaqui from './assets/Tambaqui.jpg';
 import carpa from './assets/Carpa.jpg';
+// Importa estilos CSS
 import './App.css';
 import pesqueiroImg10 from './assets/pesqueiro10.jpg';
 import pesqueiroImg11 from './assets/pesqueiro11.jpg';
 import pesqueiroImg12 from './assets/pesqueiro12.jpg';
 
+// ========== COMPONENTE PESQUEIRO 3 (24H) ==========
 function Pesqueiro3() {
+  // ========== ESTADOS (VARIÁVEIS QUE PODEM MUDAR) ==========
+  
+  // Estado para armazenar lista de comentários específicos do Pesqueiro 3
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -35,10 +43,13 @@ function Pesqueiro3() {
     }
   ]);
 
-  const [selectedFish, setSelectedFish] = useState(null);
-  const [showFishInfo, setShowFishInfo] = useState(false);
-  const [currentFishIndex, setCurrentFishIndex] = useState(0);
+  // Estados para controlar o popup de informações dos peixes
+  const [selectedFish, setSelectedFish] = useState(null); // Peixe selecionado
+  const [showFishInfo, setShowFishInfo] = useState(false); // Se deve mostrar o popup
+  const [currentFishIndex, setCurrentFishIndex] = useState(0); // Índice atual do carrossel
 
+  // ========== DADOS DOS PEIXES EXÓTICOS/PREDADORES ==========
+  // Array com informações de peixes especiais do Pesqueiro 3 (espécies exóticas e predadoras)
   const peixes = [
     { nome: 'Bagre-Africano', horario: '20:00 - 4:00', tamanho: '40-80cm', dificuldade: 'Fácil', consumo: 'Seguro', iscas: 'Pedaços de frango, fígado', obs: 'Espécie exótica, muito resistente', extincao: false },
     { nome: 'Carpa-Capim', horario: '5:00 - 8:00, 17:00 - 20:00', tamanho: '50-100cm', dificuldade: 'Difícil', consumo: 'Seguro', iscas: 'Capim, algas, vegetação', obs: 'Vegetariana, muito grande', extincao: false },
@@ -54,21 +65,26 @@ function Pesqueiro3() {
     { nome: 'Peixe-Cachorro', horario: '11:00 - 16:00', tamanho: '40-80cm', dificuldade: 'Difícil', consumo: 'Seguro', iscas: 'Peixe vivo, iscas artificiais', obs: 'Predador feroz, dentes caninos', extincao: true }
   ];
 
+  // ========== FUNÇÃO PARA ABRIR POPUP DO PEIXE ==========
   const handleFishClick = (peixe) => {
-    setSelectedFish(peixe);
-    setShowFishInfo(true);
+    setSelectedFish(peixe); // Define qual peixe foi clicado
+    setShowFishInfo(true);  // Mostra o popup
   };
 
+  // Estado para novo comentário (estrutura de objeto)
   const [newComment, setNewComment] = useState({
     nome: '',
     rating: 5,
     texto: ''
   });
 
+  // ========== FUNÇÕES PARA COMENTÁRIOS ==========
+  
+  // Função para atualizar campos do formulário de comentário
   const handleInputChange = (e) => {
     setNewComment({
-      ...newComment,
-      [e.target.name]: e.target.value
+      ...newComment, // Mantém os valores existentes
+      [e.target.name]: e.target.value // Atualiza apenas o campo alterado
     });
   };
 
@@ -97,12 +113,15 @@ function Pesqueiro3() {
     }
   };
 
+  // ========== FUNÇÕES UTILITÁRIAS ==========
+  
+  // Função para renderizar estrelas (interativas ou apenas visuais)
   const renderStars = (rating, interactive = false) => {
     return Array.from({ length: 5 }, (_, index) => (
       <span 
         key={index}
         className={`star ${interactive ? 'interactive' : ''} ${index < rating ? 'filled' : ''}`}
-        onClick={interactive ? () => handleRatingClick(index + 1) : undefined}
+        onClick={interactive ? () => handleRatingClick(index + 1) : undefined} // Só clica se for interativo
       >
         ⭐
       </span>
@@ -115,16 +134,19 @@ function Pesqueiro3() {
     return (sum / comments.length).toFixed(1);
   };
 
+  // ========== RENDERIZAÇÃO DO COMPONENTE ==========
   return (
     <>
+      {/* Componente de navegação fixo */}
       <Navbar />
-      <FishAnimation />
 
-    <div className="container mt-4">
-      <h1 className="text-center mb-4 text-white">🎣 Lago da Rocha do Norte</h1>
-      
-      {/* Seção de Informações do Pesqueiro */}
-      <div className="info-section mb-5">
+      {/* Container principal */}
+      <div className="container mt-4">
+        {/* Título da página */}
+        <h1 className="text-center mb-4 text-white">🎣 Lago da Rocha do Norte</h1>
+        
+        {/* ========== SEÇÃO DE INFORMAÇÕES DO PESQUEIRO 3 (24H) ========== */}
+        <div className="info-section mb-5">
         <div className="card info-card">
           <div className="card-body">
             <div className="row">
@@ -214,10 +236,11 @@ function Pesqueiro3() {
         </div>
       </div>
 
-      <h2 className="text-center mb-5">🐟 Peixes Disponíveis</h2>
+        {/* ========== TÍTULO DA SEÇÃO DE PEIXES EXÓTICOS ========== */}
+        <h2 className="text-center mb-5">🐟 Peixes Disponíveis</h2>
 
-      {/* Carrossel de Peixes */}
-      <div className="fish-carousel mb-5">
+        {/* ========== CARROSSEL DE PEIXES EXÓTICOS/PREDADORES ========== */}
+        <div className="fish-carousel mb-5">
         <div className="text-center mb-3">
           <button 
             onClick={() => setCurrentFishIndex(Math.max(0, currentFishIndex - 5))}
@@ -637,4 +660,5 @@ function Pesqueiro3() {
   );
 }
 
+// ========== EXPORTAÇÃO DO COMPONENTE ==========
 export default Pesqueiro3;

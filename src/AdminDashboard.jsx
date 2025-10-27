@@ -1,11 +1,20 @@
+// ========== IMPORTAÇÕES ==========
+// Importa React e hook useState para gerenciar estados
 import React, { useState } from 'react';
-import FishAnimation from './Componentes/FishAnimation/FishAnimation';
+// Importa estilos CSS
 import './App.css';
 
+// ========== COMPONENTE DO PAINEL ADMINISTRATIVO ==========
 function AdminDashboard() {
+  // ========== ESTADOS PRINCIPAIS ==========
+  // Estado para controlar qual aba está ativa no painel
   const [activeTab, setActiveTab] = useState('dashboard');
+  // Estado para controlar se está editando informações do pesqueiro
   const [isEditing, setIsEditing] = useState(false);
+  // Estado para mostrar/ocultar ajuda
   const [showHelp, setShowHelp] = useState(false);
+  
+  // Estado com dados do pesqueiro (editáveis)
   const [pesqueiroData, setPesqueiroData] = useState({
     nome: 'Pesqueiro Águas Claras',
     endereco: 'Rua dos Pescadores, 123',
@@ -20,6 +29,8 @@ function AdminDashboard() {
     vagas: '50'
   });
 
+  // ========== DADOS ESTATÍSTICOS ==========
+  // Estatísticas do pesqueiro (dados simulados)
   const [stats] = useState({
     visitasHoje: 45,
     visitasMes: 1250,
@@ -29,20 +40,28 @@ function AdminDashboard() {
     pescadoresAtivos: 156
   });
 
+  // Comentários recentes (dados de exemplo)
   const [recentComments] = useState([
     { id: 1, nome: 'Carlos Silva', rating: 5, texto: 'Excelente pesqueiro!', data: 'há 2 horas' },
     { id: 2, nome: 'Maria Santos', rating: 4, texto: 'Muito bom para família.', data: 'há 5 horas' },
     { id: 3, nome: 'João Pescador', rating: 5, texto: 'Sempre volto aqui!', data: 'há 1 dia' }
   ]);
 
+  // ========== ESTADOS PARA GERENCIAMENTO DE PEIXES ==========
+  // Lista de peixes do pesqueiro
   const [fishData, setFishData] = useState([
     { id: 1, nome: 'Tilápia', quantidade: 150, tamanhoMedio: '30cm', status: 'Abundante' },
     { id: 2, nome: 'Carpa', quantidade: 80, tamanhoMedio: '45cm', status: 'Moderado' },
     { id: 3, nome: 'Pintado', quantidade: 25, tamanhoMedio: '65cm', status: 'Baixo' }
   ]);
+  // Estado para controlar qual peixe está sendo editado
   const [editingFish, setEditingFish] = useState(null);
+  // Estado para dados do novo peixe
   const [newFish, setNewFish] = useState({ nome: '', quantidade: '', tamanhoMedio: '0.0', status: 'Abundante' });
+  // Estado para mostrar/ocultar formulário de adição
   const [showAddForm, setShowAddForm] = useState(false);
+  // ========== ESTADOS PARA RESERVAS ==========
+  // Lista de reservas de pesca
   const [reservas, setReservas] = useState([
     { id: 1, nome: 'Carlos Silva', data: '2025-06-15', horario: '08:00', pessoas: 2, telefone: '(11) 99999-1111', status: 'Confirmada', tipo: 'pesca' },
     { id: 2, nome: 'Maria Santos', data: '2025-06-15', horario: '14:00', pessoas: 4, telefone: '(11) 99999-2222', status: 'Pendente', tipo: 'pesca' },
@@ -51,6 +70,7 @@ function AdminDashboard() {
     { id: 5, nome: 'Roberto Lima', data: '2025-06-17', horario: '07:00', pessoas: 2, telefone: '(11) 99999-5555', status: 'Pendente', tipo: 'pesca' }
   ]);
 
+  // Lista de reservas do restaurante
   const [reservasRestaurante, setReservasRestaurante] = useState([
     { id: 1, nome: 'Patricia Oliveira', data: '2025-06-15', horario: '12:30', pessoas: 4, telefone: '(11) 88888-1111', status: 'Confirmada', ocasiao: 'aniversario', observacoes: 'Mesa com vista para o lago' },
     { id: 2, nome: 'Fernando Costa', data: '2025-06-15', horario: '19:00', pessoas: 2, telefone: '(11) 88888-2222', status: 'Pendente', ocasiao: 'encontro', observacoes: '' },
@@ -794,7 +814,6 @@ function AdminDashboard() {
 
   return (
     <div className="admin-layout">
-      <FishAnimation />
       {/* Header melhorado */}
       <div className="admin-header">
         <div className="container-fluid">
