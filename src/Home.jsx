@@ -56,7 +56,7 @@ function Home() {
                   link: '/Pesqueiro3'
                 }
               ].map((pesqueiro, index) => ( // Mapeia cada pesqueiro para criar um card
-                {/* Card individual de cada pesqueiro */}
+                // Card individual de cada pesqueiro
                 <div key={index} className="col-lg-4 col-md-6">
                   <div className="card h-100"> {/* h-100 garante altura igual para todos os cards */}
                     {/* Container da imagem com badge de avaliação */}
