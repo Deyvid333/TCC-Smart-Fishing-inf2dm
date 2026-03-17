@@ -14,10 +14,10 @@ function Contato() {
           <div className="col-md-6">
             <div className="card contact-info-card">
               <div className="card-body">
-                <h4 className="card-title mb-4">📞 Informações de Contato</h4>
+                <h4 className="card-title mb-4">Informações de Contato</h4>
                 
                 <div className="contact-info-item">
-                  <div className="contact-icon">📍</div>
+                  <div className="contact-icon">Endereço</div>
                   <div className="contact-details">
                     <h5>Endereço</h5>
                     <p>Rua dos Pescadores, 123<br/>
@@ -27,7 +27,7 @@ function Contato() {
                 </div>
                 
                 <div className="contact-info-item">
-                  <div className="contact-icon">📱</div>
+                  <div className="contact-icon">Telefone</div>
                   <div className="contact-details">
                     <h5>Telefone</h5>
                     <p>(11) 99999-9999</p>
@@ -35,7 +35,7 @@ function Contato() {
                 </div>
                 
                 <div className="contact-info-item">
-                  <div className="contact-icon">✉️</div>
+                  <div className="contact-icon">Email</div>
                   <div className="contact-details">
                     <h5>Email</h5>
                     <p>contato@smartfishing.com</p>
@@ -43,7 +43,7 @@ function Contato() {
                 </div>
                 
                 <div className="contact-info-item">
-                  <div className="contact-icon">🕐</div>
+                  <div className="contact-icon">Horário</div>
                   <div className="contact-details">
                     <h5>Horário de Atendimento</h5>
                     <p>Segunda a Sexta: 8h às 18h<br/>
@@ -52,7 +52,7 @@ function Contato() {
                 </div>
                 
                 <div className="contact-info-item">
-                  <div className="contact-icon">🌍</div>
+                  <div className="contact-icon">Redes Sociais</div>
                   <div className="contact-details">
                     <h5>Redes Sociais</h5>
                     <p>@smartfishing<br/>
@@ -67,7 +67,7 @@ function Contato() {
           <div className="col-md-6">
             <div className="card contact-form-card">
               <div className="card-body">
-                <h4 className="card-title mb-4">💬 Envie sua Mensagem</h4>
+                <h4 className="card-title mb-4">Envie sua Mensagem</h4>
                 <form>
                   <div className="mb-3">
                     <label className="form-label">Nome Completo</label>

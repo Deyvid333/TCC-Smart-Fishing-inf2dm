@@ -1,8 +1,8 @@
 import React from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
-import pesqueiro from './assets/pesqueiro1home.jpg';
-import pesqueiro2 from './assets/pesqueiro2home.jpg';
-import pesqueiro3 from './assets/pesqueiro3home.jpg';
+import pesqueiro from './assets/imagensPeixes/pesqueiro1home.jpg';
+import pesqueiro2 from './assets/imagensPeixes/pesqueiro2home.jpg';
+import pesqueiro3 from './assets/imagensPeixes/pesqueiro3home.jpg';
 
 import { Link } from 'react-router-dom';
 import './App.css';
@@ -15,7 +15,7 @@ function Home() {
       <div className="user-page-content">
       <div className="pesqueiros-hero">
         <div className="container text-center">
-          <h1 className="hero-title">🎣 Explore os Pesqueiros</h1>
+          <h1 className="hero-title">Explore os Pesqueiros</h1>
           <p className="hero-subtitle">Descubra os melhores locais para sua pescaria</p>
         </div>
       </div>
@@ -23,7 +23,7 @@ function Home() {
         {/* ========== SEÇÃO DE PESQUEIROS DISPONÍVEIS ========== */}
         <div className="pesqueiros-map-section">
           <div className="container">
-            <h2 className="section-title text-center mb-5">📍 Pesqueiros Disponíveis</h2>
+            <h2 className="section-title text-center mb-5">Pesqueiros Disponíveis</h2>
             <div className="row g-4">
               {/* ========== ARRAY DE DADOS DOS PESQUEIROS ========== */}
               {/* Array com informações de cada pesqueiro */}
@@ -69,7 +69,7 @@ function Home() {
                       />
                       {/* Badge de avaliação posicionado no canto superior direito */}
                       <span className="position-absolute top-0 end-0 m-2 badge bg-primary">
-                        ⭐ {pesqueiro.avaliacao}
+                        {pesqueiro.avaliacao}
                       </span>
                     </div>
                     
@@ -79,9 +79,9 @@ function Home() {
                       
                       {/* Informações do pesqueiro com ícones */}
                       <div className="mb-3 flex-grow-1"> {/* flex-grow-1 expande para empurrar botão para baixo */}
-                        <p className="mb-2">🕐 {pesqueiro.horario}</p>
-                        <p className="mb-2">💰 {pesqueiro.preco}</p>
-                        <p className="mb-0">🍽️ {pesqueiro.servicos}</p>
+                        <p className="mb-2">{pesqueiro.horario}</p>
+                        <p className="mb-2">{pesqueiro.preco}</p>
+                        <p className="mb-0">{pesqueiro.servicos}</p>
                       </div>
                       
                       {/* Botão de navegação sempre no final do card */}

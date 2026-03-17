@@ -11,9 +11,6 @@ function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   // Estado para controlar se está editando informações do pesqueiro
   const [isEditing, setIsEditing] = useState(false);
-  // Estado para mostrar/ocultar ajuda
-  const [showHelp, setShowHelp] = useState(false);
-  
   // Estado com dados do pesqueiro (editáveis)
   const [pesqueiroData, setPesqueiroData] = useState({
     nome: 'Pesqueiro Águas Claras',
@@ -36,8 +33,7 @@ function AdminDashboard() {
     visitasMes: 1250,
     avaliacaoMedia: 4.7,
     totalComentarios: 23,
-    receitaMes: 22500,
-    pescadoresAtivos: 156
+    receitaMes: 22500
   });
 
   // Comentários recentes (dados de exemplo)
@@ -47,19 +43,8 @@ function AdminDashboard() {
     { id: 3, nome: 'João Pescador', rating: 5, texto: 'Sempre volto aqui!', data: 'há 1 dia' }
   ]);
 
-  // ========== ESTADOS PARA GERENCIAMENTO DE PEIXES ==========
-  // Lista de peixes do pesqueiro
-  const [fishData, setFishData] = useState([
-    { id: 1, nome: 'Tilápia', quantidade: 150, tamanhoMedio: '30cm', status: 'Abundante' },
-    { id: 2, nome: 'Carpa', quantidade: 80, tamanhoMedio: '45cm', status: 'Moderado' },
-    { id: 3, nome: 'Pintado', quantidade: 25, tamanhoMedio: '65cm', status: 'Baixo' }
-  ]);
-  // Estado para controlar qual peixe está sendo editado
-  const [editingFish, setEditingFish] = useState(null);
-  // Estado para dados do novo peixe
-  const [newFish, setNewFish] = useState({ nome: '', quantidade: '', tamanhoMedio: '0.0', status: 'Abundante' });
-  // Estado para mostrar/ocultar formulário de adição
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [fishData, setFishData] = useState(['Tilápia', 'Carpa', 'Pintado']);
+  const [newFishName, setNewFishName] = useState('');
   // ========== ESTADOS PARA RESERVAS ==========
   // Lista de reservas de pesca
   const [reservas, setReservas] = useState([
@@ -102,11 +87,6 @@ function AdminDashboard() {
       window.location.href = '/login';
     }
   };
-
-  const toggleHelp = () => {
-    setShowHelp(!showHelp);
-  };
-
   const handleConfirmarReserva = (id, tipo) => {
     if (tipo === 'restaurante') {
       setReservasRestaurante(reservasRestaurante.map(r => 
@@ -134,135 +114,54 @@ function AdminDashboard() {
       alert('Reserva cancelada!');
     }
   };
-
-  const handleContatarCliente = (telefone) => {
-    window.open(`tel:${telefone}`);
-  };
-
-  const getStatusFromQuantity = (quantidade) => {
-    const qty = parseInt(quantidade);
-    if (qty < 100) return 'Baixo';
-    if (qty <= 300) return 'Moderado';
-    return 'Abundante';
-  };
-
   const handleAddFish = () => {
-    if (!newFish.nome || !newFish.quantidade || !newFish.tamanhoMedio) {
-      alert('Todos os campos são obrigatórios!');
-      return;
-    }
-    
-    const quantidade = parseInt(newFish.quantidade);
-    if (isNaN(quantidade) || quantidade <= 0) {
-      alert('Quantidade deve ser um número maior que zero!');
-      return;
-    }
-    
-    const tamanho = parseFloat(newFish.tamanhoMedio);
-    if (isNaN(tamanho) || tamanho <= 0) {
-      alert('O tamanho médio dos peixes deve ser maior que 0.0 cm!');
-      return;
-    }
-    
-    const fish = {
-      id: Math.max(...fishData.map(f => f.id)) + 1,
-      nome: newFish.nome.trim(),
-      quantidade: quantidade,
-      tamanhoMedio: tamanho + 'cm',
-      status: getStatusFromQuantity(quantidade)
-    };
-    setFishData([...fishData, fish]);
-    setNewFish({ nome: '', quantidade: '', tamanhoMedio: '0.0', status: 'Abundante' });
-    setShowAddForm(false);
-    alert('Peixe adicionado com sucesso!');
+    const nome = newFishName.trim();
+    if (!nome) return;
+    if (fishData.includes(nome)) { alert('Peixe já está na lista!'); return; }
+    setFishData([...fishData, nome]);
+    setNewFishName('');
   };
 
-  const handleEditFish = (fish) => {
-    setEditingFish({ ...fish });
+  const handleDeleteFish = (nome) => {
+    setFishData(fishData.filter(f => f !== nome));
   };
-
-  const handleSaveFish = () => {
-    if (!editingFish.nome || !editingFish.quantidade || !editingFish.tamanhoMedio) {
-      alert('Todos os campos são obrigatórios!');
-      return;
-    }
-    
-    const quantidade = parseInt(editingFish.quantidade);
-    if (isNaN(quantidade) || quantidade <= 0) {
-      alert('Quantidade deve ser um número maior que zero!');
-      return;
-    }
-    
-    const tamanhoStr = editingFish.tamanhoMedio.replace('cm', '');
-    const tamanho = parseFloat(tamanhoStr);
-    if (isNaN(tamanho) || tamanho <= 0) {
-      alert('O tamanho médio dos peixes deve ser maior que 0.0 cm!');
-      return;
-    }
-    
-    const updatedFish = {
-      ...editingFish,
-      nome: editingFish.nome.trim(),
-      quantidade: quantidade,
-      tamanhoMedio: tamanho + 'cm',
-      status: getStatusFromQuantity(quantidade)
-    };
-    setFishData(fishData.map(f => f.id === editingFish.id ? updatedFish : f));
-    setEditingFish(null);
-    alert('Peixe atualizado com sucesso!');
-  };
-
-  const handleDeleteFish = (id) => {
-    if (confirm('Tem certeza que deseja excluir este peixe?')) {
-      setFishData(fishData.filter(f => f.id !== id));
-      alert('Peixe excluído com sucesso!');
-    }
-  };
-
   const renderDashboard = () => (
     <>
       {/* Estatísticas Expandidas */}
-      <div className="row mb-5">
+      <div className="row mb-5 justify-content-center">
         <div className="col-md-2">
           <div className="admin-stat-card">
-            <div className="stat-icon">👥</div>
+            <div className="stat-icon"></div>
             <div className="stat-number">{stats.visitasHoje}</div>
             <div className="stat-label">Visitas Hoje</div>
           </div>
         </div>
         <div className="col-md-2">
           <div className="admin-stat-card">
-            <div className="stat-icon">📊</div>
+            <div className="stat-icon"></div>
             <div className="stat-number">{stats.visitasMes}</div>
             <div className="stat-label">Visitas Este Mês</div>
           </div>
         </div>
         <div className="col-md-2">
           <div className="admin-stat-card">
-            <div className="stat-icon">⭐</div>
+            <div className="stat-icon"></div>
             <div className="stat-number">{stats.avaliacaoMedia}</div>
             <div className="stat-label">Avaliação Média</div>
           </div>
         </div>
         <div className="col-md-2">
           <div className="admin-stat-card">
-            <div className="stat-icon">💬</div>
+            <div className="stat-icon"></div>
             <div className="stat-number">{stats.totalComentarios}</div>
             <div className="stat-label">Comentários</div>
           </div>
         </div>
         <div className="col-md-2">
           <div className="admin-stat-card">
-            <div className="stat-icon">💰</div>
+            <div className="stat-icon"></div>
             <div className="stat-number">R${stats.receitaMes.toLocaleString()}</div>
             <div className="stat-label">Receita Mensal</div>
-          </div>
-        </div>
-        <div className="col-md-2">
-          <div className="admin-stat-card">
-            <div className="stat-icon">🎣</div>
-            <div className="stat-number">{stats.pescadoresAtivos}</div>
-            <div className="stat-label">Pescadores Ativos</div>
           </div>
         </div>
       </div>
@@ -272,12 +171,11 @@ function AdminDashboard() {
         <div className="col-md-6">
           <div className="card admin-main-card">
             <div className="card-body">
-              <h4>💬 Comentários Recentes</h4>
+              <h4>Comentários Recentes</h4>
               {recentComments.map(comment => (
                 <div key={comment.id} className="comment-preview mb-3">
                   <div className="d-flex justify-content-between">
                     <strong>{comment.nome}</strong>
-                    <span>{'⭐'.repeat(comment.rating)}</span>
                   </div>
                   <p className="mb-1">{comment.texto}</p>
                   <small className="text-muted">{comment.data}</small>
@@ -286,169 +184,31 @@ function AdminDashboard() {
             </div>
           </div>
         </div>
-        
+
         <div className="col-md-6">
           <div className="card admin-main-card">
             <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h4>🐟 Status dos Peixes</h4>
-                <button className="btn btn-success btn-sm" onClick={() => setShowAddForm(true)}>
-                  ➕ Adicionar
-                </button>
+              <h4 className="mb-3">Peixes Disponíveis</h4>
+              <div className="d-flex gap-2 mb-3">
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  placeholder="Nome do peixe"
+                  value={newFishName}
+                  onChange={(e) => setNewFishName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddFish()}
+                />
+                <button className="btn btn-success btn-sm" onClick={handleAddFish}>Adicionar</button>
               </div>
-              
-              {showAddForm && (
-                <div className="mb-3 p-3 border rounded">
-                  <h6>Adicionar Novo Peixe</h6>
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <input 
-                        type="text" 
-                        className="form-control form-control-sm" 
-                        placeholder="Nome" 
-                        value={newFish.nome}
-                        onChange={(e) => setNewFish({...newFish, nome: e.target.value})}
-                      />
-                    </div>
-                    <div className="col-6">
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
-                        placeholder="Quantidade" 
-                        value={newFish.quantidade}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value === '' || (!isNaN(value) && parseInt(value) >= 0)) {
-                            setNewFish({...newFish, quantidade: value});
-                          }
-                        }}
-                        min="0"
-                      />
-                    </div>
-                    <div className="col-6">
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
-                        placeholder="Tamanho médio (cm)" 
-                        value={newFish.tamanhoMedio}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value === '' || (!isNaN(value) && parseFloat(value) >= 0)) {
-                            setNewFish({...newFish, tamanhoMedio: value});
-                          }
-                        }}
-                        min="0.1"
-                        step="0.1"
-                        title="Tamanho médio dos peixes em centímetros"
-                      />
-                    </div>
-                    <div className="col-6">
-                      <input 
-                        type="text" 
-                        className="form-control form-control-sm" 
-                        placeholder="Status (automático)" 
-                        value={newFish.quantidade ? getStatusFromQuantity(newFish.quantidade) : ''}
-                        readOnly
-                        style={{backgroundColor: '#f8f9fa', color: '#6c757d'}}
-                      />
-                    </div>
-                    <div className="col-12">
-                      <button className="btn btn-success btn-sm me-2" onClick={handleAddFish}>
-                        ✅ Salvar
-                      </button>
-                      <button className="btn btn-secondary btn-sm" onClick={() => setShowAddForm(false)}>
-                        ❌ Cancelar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {fishData.map(fish => (
-                <div key={fish.id} className="fish-status-item mb-3">
-                  {editingFish && editingFish.id === fish.id ? (
-                    <div className="p-2 border rounded">
-                      <div className="row g-2 mb-2">
-                        <div className="col-6">
-                          <input 
-                            type="text" 
-                            className="form-control form-control-sm" 
-                            value={editingFish.nome}
-                            onChange={(e) => setEditingFish({...editingFish, nome: e.target.value})}
-                          />
-                        </div>
-                        <div className="col-6">
-                          <input 
-                            type="number" 
-                            className="form-control form-control-sm" 
-                            value={editingFish.quantidade}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === '' || (!isNaN(value) && parseInt(value) >= 0)) {
-                                setEditingFish({...editingFish, quantidade: value});
-                              }
-                            }}
-                            min="0"
-                          />
-                        </div>
-                        <div className="col-6">
-                          <input 
-                            type="number" 
-                            className="form-control form-control-sm" 
-                            value={editingFish.tamanhoMedio.replace('cm', '')}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              if (value === '' || (!isNaN(value) && parseFloat(value) >= 0)) {
-                                setEditingFish({...editingFish, tamanhoMedio: value});
-                              }
-                            }}
-                            min="0.1"
-                            step="0.1"
-                            placeholder="Tamanho médio (cm)"
-                            title="Tamanho médio dos peixes em centímetros"
-                          />
-                        </div>
-                        <div className="col-6">
-                          <input 
-                            type="text" 
-                            className="form-control form-control-sm" 
-                            placeholder="Status (automático)" 
-                            value={editingFish.quantidade ? getStatusFromQuantity(editingFish.quantidade) : ''}
-                            readOnly
-                            style={{backgroundColor: '#f8f9fa', color: '#6c757d'}}
-                          />
-                        </div>
-                      </div>
-                      <button className="btn btn-success btn-sm me-2" onClick={handleSaveFish}>
-                        ✅ Salvar
-                      </button>
-                      <button className="btn btn-secondary btn-sm" onClick={() => setEditingFish(null)}>
-                        ❌ Cancelar
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <strong>{fish.nome}</strong>
-                        <div className="small text-muted">
-                          Quantidade: {fish.quantidade} | Tamanho médio: {fish.tamanhoMedio}
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center gap-2">
-                        <span className={`badge ${fish.status === 'Abundante' ? 'bg-success' : fish.status === 'Moderado' ? 'bg-warning' : 'bg-danger'}`}>
-                          {fish.status}
-                        </span>
-                        <button className="btn btn-outline-primary btn-sm" onClick={() => handleEditFish(fish)}>
-                          ✏️
-                        </button>
-                        <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteFish(fish.id)}>
-                          🗑️
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+              <ul className="list-group">
+                {fishData.map((nome) => (
+                  <li key={nome} className="list-group-item d-flex justify-content-between align-items-center">
+                    {nome}
+                    <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteFish(nome)}>Remover</button>
+                  </li>
+                ))}
+              </ul>
+              {fishData.length === 0 && <p className="text-muted mt-2">Nenhum peixe cadastrado.</p>}
             </div>
           </div>
         </div>
@@ -456,27 +216,27 @@ function AdminDashboard() {
     </>
   );
 
-  const renderSettings = () => (
+    const renderSettings = () => (
     <div className="row justify-content-center">
       <div className="col-md-10">
         <div className="card admin-main-card">
           <div className="card-body">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <div>
-                <h3>📋 Gerenciar Estabelecimento</h3>
+                <h3> Gerenciar Estabelecimento</h3>
                 <p className="text-muted mb-0">Mantenha as informações sempre atualizadas para atrair mais pescadores</p>
               </div>
               {!isEditing ? (
                 <button className="btn btn-primary btn-lg" onClick={handleEdit}>
-                  ✏️ Editar Dados
+                   Editar Dados
                 </button>
               ) : (
                 <div className="d-flex gap-2">
                   <button className="btn btn-success" onClick={handleSave}>
-                    ✅ Salvar
+                     Salvar
                   </button>
                   <button className="btn btn-secondary" onClick={handleCancel}>
-                    ❌ Cancelar
+                     Cancelar
                   </button>
                 </div>
               )}
@@ -485,7 +245,7 @@ function AdminDashboard() {
             <div className="row">
               <div className="col-md-6">
                 <div className="mb-3">
-                  <h5>🏢 Informações Básicas</h5>
+                  <h5> Informações Básicas</h5>
                   <small className="text-muted">Dados principais do seu pesqueiro</small>
                 </div>
                 {isEditing ? (
@@ -543,7 +303,7 @@ function AdminDashboard() {
 
               <div className="col-md-6">
                 <div className="mb-3">
-                  <h5>⚙️ Configurações Operacionais</h5>
+                  <h5> Configurações Operacionais</h5>
                   <small className="text-muted">Horários, preços e estrutura</small>
                 </div>
                 {isEditing ? (
@@ -600,7 +360,7 @@ function AdminDashboard() {
 
             {isEditing && (
               <div className="alert alert-warning mt-4">
-                <strong>⚠️ Atenção:</strong> Lembre-se de salvar suas alterações antes de sair desta página.
+                <strong> Atenção:</strong> Lembre-se de salvar suas alterações antes de sair desta página.
               </div>
             )}
           </div>
@@ -616,7 +376,7 @@ function AdminDashboard() {
           <div className="card-body">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <div>
-                <h3>🎣 Reservas de Pesca</h3>
+                <h3> Reservas de Pesca</h3>
                 <p className="text-muted mb-0">Acompanhe e gerencie as reservas dos pescadores</p>
               </div>
               <div className="d-flex gap-2">
@@ -661,27 +421,18 @@ function AdminDashboard() {
                             <>
                               <button 
                                 className="btn btn-success" 
-                                title="Confirmar"
                                 onClick={() => handleConfirmarReserva(reserva.id, 'pesca')}
                               >
-                                ✅
+                                Aceitar
                               </button>
                               <button 
                                 className="btn btn-danger" 
-                                title="Cancelar"
                                 onClick={() => handleCancelarReserva(reserva.id, 'pesca')}
                               >
-                                ❌
+                                Recusar
                               </button>
                             </>
                           )}
-                          <button 
-                            className="btn btn-outline-primary" 
-                            title="Contatar"
-                            onClick={() => handleContatarCliente(reserva.telefone)}
-                          >
-                            📞
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -708,7 +459,7 @@ function AdminDashboard() {
           <div className="card-body">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <div>
-                <h3>🍽️ Reservas do Restaurante</h3>
+                <h3> Reservas do Restaurante</h3>
                 <p className="text-muted mb-0">Gerencie as reservas de mesa do restaurante</p>
               </div>
               <div className="d-flex gap-2">
@@ -739,7 +490,7 @@ function AdminDashboard() {
                         <strong>{reserva.nome}</strong>
                         {reserva.observacoes && (
                           <div className="small text-muted">
-                            📝 {reserva.observacoes}
+                             {reserva.observacoes}
                           </div>
                         )}
                       </td>
@@ -750,11 +501,11 @@ function AdminDashboard() {
                       <td>
                         {reserva.ocasiao && (
                           <span className="badge bg-info">
-                            {reserva.ocasiao === 'aniversario' ? '🎂 Aniversário' :
-                             reserva.ocasiao === 'encontro' ? '💕 Encontro' :
-                             reserva.ocasiao === 'familia' ? '👨‍👩‍👧‍👦 Família' :
-                             reserva.ocasiao === 'negocios' ? '💼 Negócios' :
-                             reserva.ocasiao === 'comemoracao' ? '🎉 Comemoração' : reserva.ocasiao}
+                            {reserva.ocasiao === 'aniversario' ? ' Aniversário' :
+                             reserva.ocasiao === 'encontro' ? ' Encontro' :
+                             reserva.ocasiao === 'familia' ? ' Família' :
+                             reserva.ocasiao === 'negocios' ? ' Negócios' :
+                             reserva.ocasiao === 'comemoracao' ? ' Comemoração' : reserva.ocasiao}
                           </span>
                         )}
                       </td>
@@ -772,27 +523,18 @@ function AdminDashboard() {
                             <>
                               <button 
                                 className="btn btn-success" 
-                                title="Confirmar"
                                 onClick={() => handleConfirmarReserva(reserva.id, 'restaurante')}
                               >
-                                ✅
+                                Aceitar
                               </button>
                               <button 
                                 className="btn btn-danger" 
-                                title="Cancelar"
                                 onClick={() => handleCancelarReserva(reserva.id, 'restaurante')}
                               >
-                                ❌
+                                Recusar
                               </button>
                             </>
                           )}
-                          <button 
-                            className="btn btn-outline-primary" 
-                            title="Contatar"
-                            onClick={() => handleContatarCliente(reserva.telefone)}
-                          >
-                            📞
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -819,76 +561,48 @@ function AdminDashboard() {
         <div className="container-fluid">
           <div className="d-flex justify-content-between align-items-center py-3">
             <div>
-              <h2 className="mb-1">🏢 Painel do Proprietário</h2>
+              <h2 className="mb-1"> Painel do Proprietário</h2>
               <p className="text-muted mb-0">Gerenciando: <strong>{pesqueiroData.nome}</strong></p>
-              <small className="text-success">✅ Sistema Online</small>
+              <small className="text-success"> Sistema Online</small>
             </div>
             <div className="d-flex align-items-center gap-2">
-              <button className="btn btn-outline-info btn-sm" onClick={toggleHelp}>
-                ❓ Ajuda
-              </button>
               <div className="admin-nav">
                 <button 
                   className={`btn ${activeTab === 'dashboard' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
                   onClick={() => setActiveTab('dashboard')}
                   title="Ver estatísticas e resumo"
                 >
-                  📊 Painel Principal
+                   Painel Principal
                 </button>
                 <button 
                   className={`btn ${activeTab === 'reservas' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
                   onClick={() => setActiveTab('reservas')}
                   title="Gerenciar reservas dos pescadores"
                 >
-                  🎣 Reservas Pesca
+                   Reservas Pesca
                 </button>
                 <button 
                   className={`btn ${activeTab === 'restaurante' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
                   onClick={() => setActiveTab('restaurante')}
                   title="Gerenciar reservas do restaurante"
                 >
-                  🍽️ Reservas Restaurante
+                   Reservas Restaurante
                 </button>
                 <button 
                   className={`btn ${activeTab === 'settings' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
                   onClick={() => setActiveTab('settings')}
                   title="Editar informações do pesqueiro"
                 >
-                  ⚙️ Gerenciar Dados
+                   Gerenciar Dados
                 </button>
                 <button className="btn btn-outline-danger" onClick={handleLogout}>
-                  🚪 Sair do Painel
+                   Sair do Painel
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Ajuda rápida */}
-      {showHelp && (
-        <div className="container-fluid">
-          <div className="alert alert-info mb-4">
-            <h6>💡 Guia Rápido:</h6>
-            <div className="row">
-              <div className="col-md-6">
-                <ul className="mb-0">
-                  <li><strong>Painel Principal:</strong> Veja visitantes, avaliações e receita em tempo real</li>
-                  <li><strong>Comentários:</strong> Acompanhe o que os pescadores estão falando</li>
-                </ul>
-              </div>
-              <div className="col-md-6">
-                <ul className="mb-0">
-                  <li><strong>Reservas Pesca:</strong> Confirme ou cancele reservas de pescadores</li>
-                  <li><strong>Reservas Restaurante:</strong> Gerencie mesas e ocasiões especiais</li>
-                  <li><strong>Gerenciar Dados:</strong> Atualize preços, horários e informações</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Conteúdo principal */}
       <div className="container-fluid mt-4">
         {activeTab === 'dashboard' && renderDashboard()}

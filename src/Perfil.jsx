@@ -30,29 +30,29 @@ function Perfil() {
   });
 
   const [achievements] = useState([
-    { id: 1, name: 'Primeiro Peixe', description: 'Capture seu primeiro peixe', icon: '🎉', unlocked: true, xp: 50 },
-    { id: 2, name: 'Pescador Dedicado', description: 'Visite 10 pesqueiros diferentes', icon: '🏆', unlocked: true, xp: 100 },
-    { id: 3, name: 'Mestre dos Lagos', description: 'Capture 100 peixes', icon: '👑', unlocked: false, xp: 200 },
-    { id: 4, name: 'Gigante dos Rios', description: 'Capture um peixe de mais de 5kg', icon: '🐋', unlocked: false, xp: 150 },
-    { id: 5, name: 'Madrugador', description: 'Pesque antes das 6h da manhã', icon: '🌅', unlocked: true, xp: 75 },
-    { id: 6, name: 'Noturno', description: 'Pesque depois das 22h', icon: '🌙', unlocked: false, xp: 75 }
+    { id: 1, name: 'Primeiro Peixe', description: 'Capture seu primeiro peixe', icon: '', unlocked: true, xp: 50 },
+    { id: 2, name: 'Pescador Dedicado', description: 'Visite 10 pesqueiros diferentes', icon: '', unlocked: true, xp: 100 },
+    { id: 3, name: 'Mestre dos Lagos', description: 'Capture 100 peixes', icon: '', unlocked: false, xp: 200 },
+    { id: 4, name: 'Gigante dos Rios', description: 'Capture um peixe de mais de 5kg', icon: '', unlocked: false, xp: 150 },
+    { id: 5, name: 'Madrugador', description: 'Pesque antes das 6h da manhã', icon: '', unlocked: true, xp: 75 },
+    { id: 6, name: 'Noturno', description: 'Pesque depois das 22h', icon: '', unlocked: false, xp: 75 }
   ]);
 
   const [leaderboard] = useState([
-    { rank: 1, name: 'Carlos Mestre', level: 28, xp: 8450, title: 'Lenda dos Lagos', avatar: '👑' },
-    { rank: 2, name: 'Ana Pescadora', level: 22, xp: 6200, title: 'Rainha dos Rios', avatar: '👸' },
-    { rank: 3, name: 'João Silva', level: 15, xp: 2350, title: 'Pescador Experiente', avatar: '🎣' },
-    { rank: 4, name: 'Maria Costa', level: 12, xp: 1890, title: 'Pescadora Ativa', avatar: '🌊' },
-    { rank: 5, name: 'Pedro Santos', level: 10, xp: 1450, title: 'Pescador Iniciante', avatar: '🎯' }
+    { rank: 1, name: 'Carlos Mestre', level: 28, xp: 8450, title: 'Lenda dos Lagos', avatar: '' },
+    { rank: 2, name: 'Ana Pescadora', level: 22, xp: 6200, title: 'Rainha dos Rios', avatar: '' },
+    { rank: 3, name: 'João Silva', level: 15, xp: 2350, title: 'Pescador Experiente', avatar: '' },
+    { rank: 4, name: 'Maria Costa', level: 12, xp: 1890, title: 'Pescadora Ativa', avatar: '' },
+    { rank: 5, name: 'Pedro Santos', level: 10, xp: 1450, title: 'Pescador Iniciante', avatar: '' }
   ]);
 
   const getLevelIcon = (level) => {
-    if (level >= 25) return '👑'; // Coroa
-    if (level >= 20) return '👸'; // Princesa
-    if (level >= 15) return '🎣'; // Vara de pesca
-    if (level >= 10) return '🌊'; // Onda
-    if (level >= 5) return '🎯'; // Alvo
-    return '🌱'; // Broto
+    if (level >= 25) return 'Lv.25+';
+    if (level >= 20) return 'Lv.20+';
+    if (level >= 15) return 'Lv.15+';
+    if (level >= 10) return 'Lv.10+';
+    if (level >= 5) return 'Lv.5+';
+    return 'Lv.1';
   };
 
   const getLevelTitle = (level) => {
@@ -104,7 +104,7 @@ function Perfil() {
             <div className="col-md-6">
               <div className="card admin-main-card">
                 <div className="card-body">
-                  <h3 className="mb-4">👤 Perfil Pessoal</h3>
+                  <h3 className="mb-4">Perfil Pessoal</h3>
                   
                   <div className="text-center mb-4">
                     <div className="player-avatar mb-3">
@@ -138,7 +138,7 @@ function Perfil() {
 
                   {/* Informações Pessoais */}
                   <div className="mb-4">
-                    <h6><strong>📋 Informações Pessoais:</strong></h6>
+                    <h6><strong>Informações Pessoais:</strong></h6>
                     {isEditing ? (
                       <form>
                         <div className="mb-3">
@@ -170,7 +170,7 @@ function Perfil() {
 
                   {/* Estatísticas de Pesca */}
                   <div className="mb-4">
-                    <h6><strong>🎣 Estatísticas de Pesca:</strong></h6>
+                    <h6><strong>Estatísticas de Pesca:</strong></h6>
                     {isEditing ? (
                       <div>
                         <div className="mb-3">
@@ -229,15 +229,15 @@ function Perfil() {
                     {isEditing ? (
                       <>
                         <div className="col-6">
-                          <button className="btn btn-success w-100" onClick={handleSave}>💾 Salvar</button>
+                          <button className="btn btn-success w-100" onClick={handleSave}>Salvar</button>
                         </div>
                         <div className="col-6">
-                          <button className="btn btn-secondary w-100" onClick={handleCancel}>❌ Cancelar</button>
+                          <button className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
                         </div>
                       </>
                     ) : (
                       <div className="col-12">
-                        <button className="btn btn-primary w-100" onClick={handleEdit}>✏️ Editar Perfil</button>
+                        <button className="btn btn-primary w-100" onClick={handleEdit}>Editar Perfil</button>
                       </div>
                     )}
                   </div>
@@ -249,11 +249,11 @@ function Perfil() {
             <div className="col-md-6">
               <div className="card admin-main-card">
                 <div className="card-body">
-                  <h3 className="mb-4">🏆 Conquistas & Ranking</h3>
+                  <h3 className="mb-4">Conquistas & Ranking</h3>
                   
                   {/* Conquistas Concluídas */}
                   <div className="mb-4">
-                    <h6><strong>🏆 Conquistas Concluídas:</strong></h6>
+                    <h6><strong>Conquistas Concluídas:</strong></h6>
                     <div className="achievements-grid">
                       {achievements.filter(achievement => achievement.unlocked).map(achievement => (
                         <div key={achievement.id} className="achievement-card unlocked">
@@ -273,11 +273,11 @@ function Perfil() {
 
                   {/* Conquistas Não Concluídas */}
                   <div className="mb-4">
-                    <h6><strong>🔒 Conquistas Pendentes:</strong></h6>
+                    <h6><strong>Conquistas Pendentes:</strong></h6>
                     <div className="achievements-grid">
                       {achievements.filter(achievement => !achievement.unlocked).map(achievement => (
                         <div key={achievement.id} className="achievement-card locked">
-                          <div className="achievement-icon">🔒</div>
+                          <div className="achievement-icon">-</div>
                           <div className="achievement-info">
                             <h6>{achievement.name}</h6>
                             <p>{achievement.description}</p>
@@ -287,13 +287,13 @@ function Perfil() {
                       ))}
                     </div>
                     {achievements.filter(achievement => !achievement.unlocked).length === 0 && (
-                      <p className="text-success text-center">🎉 Todas as conquistas desbloqueadas!</p>
+                      <p className="text-success text-center">Todas as conquistas desbloqueadas!</p>
                     )}
                   </div>
 
                   {/* Ranking dos Melhores Pescadores */}
                   <div className="leaderboard">
-                    <h6><strong>🏅 Top Pescadores:</strong></h6>
+                    <h6><strong>Top Pescadores:</strong></h6>
                     {leaderboard.map(player => (
                       <div key={player.rank} className={`leaderboard-item ${player.rank === playerData.rank ? 'current-player' : ''}`}>
                         <div className="rank-position">#{player.rank}</div>

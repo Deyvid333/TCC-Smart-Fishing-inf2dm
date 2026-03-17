@@ -55,7 +55,7 @@ function Login() {
                 onChange={(e) => setTipoUsuario(e.target.value)}
               />
               <span className="user-type-text">
-                <span className="user-type-icon">🎣</span>
+                <span className="user-type-icon">Pescador</span>
                 <span className="user-type-title">Usuário</span>
                 <span className="user-type-desc">Pescador</span>
               </span>
@@ -70,7 +70,7 @@ function Login() {
                 onChange={(e) => setTipoUsuario(e.target.value)}
               />
               <span className="user-type-text">
-                <span className="user-type-icon">🏢</span>
+                <span className="user-type-icon">Proprietário</span>
                 <span className="user-type-title">Dono de Pesqueiro</span>
                 <span className="user-type-desc">Proprietário</span>
               </span>
@@ -86,9 +86,7 @@ function Login() {
         <button type="button" onClick={handleLogin}>Entrar</button>
         
         {/* Divisor visual */}
-        <div className="divider">
-          <span>ou</span>
-        </div>
+    
         
         {/* ========== BOTÕES DE LOGIN SOCIAL ========== */}
         <div className="social-buttons">
@@ -108,7 +106,6 @@ function Login() {
             className="social-btn facebook-btn"
             onClick={() => handleSocialLogin('Facebook')}
           >
-            <span className="social-icon">📘</span>
             Entrar com Facebook
           </button>
           
@@ -118,7 +115,6 @@ function Login() {
             className="social-btn apple-btn"
             onClick={() => handleSocialLogin('Apple')}
           >
-            <span className="social-icon">🍎</span>
             Entrar com Apple
           </button>
         </div>

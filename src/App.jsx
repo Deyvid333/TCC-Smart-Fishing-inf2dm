@@ -13,7 +13,6 @@ import Pesqueiro from './Pesqueiro';
 import Pesqueiro2 from './Pesqueiro2';
 import Pesqueiro3 from './Pesqueiro3';
 import AdminDashboard from './AdminDashboard';
-import Conscientizacao from './Conscientizacao';
 // Importa estilos globais da aplicação
 import './App.css';
 
@@ -47,8 +46,7 @@ function App() {
         {/* Páginas institucionais */}
         <Route path="/sobre" element={<Sobre />} />
         <Route path="/contato" element={<Contato />} />
-        <Route path="/conscientizacao" element={<Conscientizacao />} />
-        
+
         {/* ========== ROTAS PRIVADAS ========== */}
         {/* Página do perfil do usuário */}
         <Route path="/perfil" element={<Perfil />} />

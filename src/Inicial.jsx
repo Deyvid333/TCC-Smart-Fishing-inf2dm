@@ -20,7 +20,7 @@ function Inicial() {
       <div className="hero-section">
         <div className="hero-content">
           {/* Título principal da aplicação */}
-          <h1 className="hero-title">🎣 Smart Fishing</h1>
+          <h1 className="hero-title">Smart Fishing</h1>
           {/* Subtítulo */}
           <p className="hero-subtitle">Descubra os melhores pesqueiros da região</p>
           {/* Descrição detalhada */}
@@ -46,7 +46,7 @@ function Inicial() {
             {/* Funcionalidade 1: Localização */}
             <div className="col-md-4">
               <div className="feature-card">
-                <div className="feature-icon">🗺️</div>
+                <div className="feature-icon"></div>
                 <h4>Localização Precisa</h4>
                 <p>Encontre pesqueiros próximos com informações detalhadas de localização e acesso.</p>
               </div>
@@ -55,7 +55,7 @@ function Inicial() {
             {/* Funcionalidade 2: Catálogo de Peixes */}
             <div className="col-md-4">
               <div className="feature-card">
-                <div className="feature-icon">🐟</div>
+                <div className="feature-icon"></div>
                 <h4>Catálogo de Peixes</h4>
                 <p>Conheça os tipos de peixes disponíveis, horários ideais e dicas de pesca.</p>
               </div>
@@ -64,7 +64,7 @@ function Inicial() {
             {/* Funcionalidade 3: Avaliações */}
             <div className="col-md-4">
               <div className="feature-card">
-                <div className="feature-icon">⭐</div>
+                <div className="feature-icon"></div>
                 <h4>Avaliações Reais</h4>
                 <p>Leia avaliações de outros pescadores e compartilhe suas experiências.</p>
               </div>

@@ -96,7 +96,7 @@ function Cadastro() {
                 onChange={handleInputChange} // Atualiza o estado
               />
               <span className="user-type-text">
-                <span className="user-type-icon">🎣</span>
+                <span className="user-type-icon">Pescador</span>
                 <span className="user-type-title">Usuário</span>
                 <span className="user-type-desc">Quero encontrar pesqueiros</span>
               </span>
@@ -112,7 +112,7 @@ function Cadastro() {
                 onChange={handleInputChange}
               />
               <span className="user-type-text">
-                <span className="user-type-icon">🏢</span>
+                <span className="user-type-icon">Proprietário</span>
                 <span className="user-type-title">Dono de Pesqueiro</span>
                 <span className="user-type-desc">Quero cadastrar meu pesqueiro</span>
               </span>
@@ -173,7 +173,6 @@ function Cadastro() {
             className="social-btn facebook-btn"
             onClick={() => handleSocialLogin('Facebook')}
           >
-            <span className="social-icon">📘</span>
             Entrar com Facebook
           </button>
           
@@ -182,7 +181,6 @@ function Cadastro() {
             className="social-btn apple-btn"
             onClick={() => handleSocialLogin('Apple')}
           >
-            <span className="social-icon">🍎</span>
             Entrar com Apple
           </button>
         </div>
