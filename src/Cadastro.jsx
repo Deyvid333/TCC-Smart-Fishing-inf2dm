@@ -1,10 +1,9 @@
 // ========== IMPORTAÇÕES ==========
 // Importa estilos CSS
 import './App.css';
-// Importa componentes do React Router para navegação
 import { Link, useNavigate } from 'react-router-dom';
-// Importa hook useState para gerenciar estado
 import { useState } from 'react';
+import UsuarioService from './services/UsuarioService';
 
 // ========== COMPONENTE DE CADASTRO ==========
 function Cadastro() {
@@ -18,30 +17,41 @@ function Cadastro() {
     email: '',
     senha: '',
     confirmarSenha: '',
-    tipoUsuario: 'usuario' // Valor padrão
+    tipoUsuario: 'usuario'
   });
+  const [loading, setLoading] = useState(false);
 
   // ========== FUNÇÕES DE MANIPULAÇÃO ==========
   
   // Função para processar o cadastro do usuário
-  const handleCadastro = () => {
-    // Validação: verifica se todos os campos estão preenchidos
+  const handleCadastro = async () => {
     if (!formData.nome || !formData.email || !formData.senha || !formData.confirmarSenha) {
       alert('Por favor, preencha todos os campos!');
       return;
     }
-    
-    // Validação: verifica se as senhas coincidem
     if (formData.senha !== formData.confirmarSenha) {
       alert('As senhas não coincidem!');
       return;
     }
-    
-    // Redireciona baseado no tipo de usuário selecionado
-    if (formData.tipoUsuario === 'dono') {
-      navigate('/admin'); // Vai para painel administrativo
-    } else {
-      navigate('/inicial'); // Vai para página inicial do usuário
+    setLoading(true);
+    try {
+      await UsuarioService.cadastrar({
+        nome: formData.nome,
+        email: formData.email,
+        senha: formData.senha,
+        nivelAcesso: formData.tipoUsuario === 'dono' ? 'admin' : 'usuario',
+        statusUsuario: true,
+      });
+      alert('Cadastro realizado com sucesso!');
+      if (formData.tipoUsuario === 'dono') {
+        navigate('/admin');
+      } else {
+        navigate('/inicial');
+      }
+    } catch (err) {
+      alert('Erro ao cadastrar. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -152,43 +162,12 @@ function Cadastro() {
         />
         
         {/* Botão principal de cadastro */}
-        <button type="button" onClick={handleCadastro}>Cadastrar-se</button>
-        
-        <div className="divider">
-          <span>ou</span>
-        </div>
-        
-        <div className="social-buttons">
-          <button 
-            type="button" 
-            className="social-btn google-btn"
-            onClick={() => handleSocialLogin('Google')}
-          >
-            <span className="social-icon">G</span>
-            Entrar com Google
-          </button>
-          
-          <button 
-            type="button" 
-            className="social-btn facebook-btn"
-            onClick={() => handleSocialLogin('Facebook')}
-          >
-            Entrar com Facebook
-          </button>
-          
-          <button 
-            type="button" 
-            className="social-btn apple-btn"
-            onClick={() => handleSocialLogin('Apple')}
-          >
-            Entrar com Apple
-          </button>
-        </div>
-        
-        {/* ========== LINK PARA LOGIN ========== */}
+        <button type="button" onClick={handleCadastro} disabled={loading}>
+          {loading ? 'Cadastrando...' : 'Cadastrar-se'}
+        </button>
+
         <h3 className="h2index">Já tem uma conta?</h3>
         <div className="register-link">
-          {/* Link para página de login */}
           <Link to="/login">Fazer Login</Link>
         </div>
       </form>

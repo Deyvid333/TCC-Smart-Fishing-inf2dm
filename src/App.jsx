@@ -27,7 +27,7 @@ function App() {
       <Routes>
         {/* ========== ROTAS PÚBLICAS ========== */}
         {/* Rota inicial - página de entrada */}
-        <Route path="/" element={<Inicial />} />
+        <Route path="/" element={<Login />} />
         <Route path="/inicial" element={<Inicial />} />
         
         {/* Rotas de autenticação */}

@@ -1,74 +1,32 @@
-import http from '../common/http-common';
-const API_URL = "api/v1/usuario/";
+import http from '../../http-common';
+const API_URL = 'api/v1/usuario';
 
-const findAll = () => {
-    return http.mainInstance.get(API_URL + 'listar');
+const findAll = () => http.mainInstance.get(API_URL);
+
+const findById = (id) => http.mainInstance.get(`${API_URL}/${id}`);
+
+const cadastrar = (data) => http.mainInstance.post(API_URL, {
+  ...data,
+  dataCadastro: new Date().toISOString().split('T')[0],
+});
+
+const login = async (email, senha) => {
+  const response = await http.mainInstance.get(API_URL);
+  const usuarios = response.data;
+  const usuario = usuarios.find(u => u.email === email && u.senha === senha);
+  if (!usuario) throw new Error('Email ou senha inválidos');
+  localStorage.setItem('user', JSON.stringify(usuario));
+  return usuario;
 };
 
-const findById = (id) => {
-    return http.mainInstance.get(API_URL + `buscar/${id}`);
-};
+const logout = () => localStorage.removeItem('user');
 
-const signin = async (email, senha) => {
-    const response = await http.mainInstance
-        .post(API_URL + "logar", {
-            email,
-            senha,
-        });
-    if (response.data) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-    }
-    return response.data;
-};
+const getCurrentUser = () => JSON.parse(localStorage.getItem('user'));
 
-const logout = () => {
-    localStorage.removeItem("Usuario");
-};
+const update = (id, data) => http.mainInstance.put(`${API_URL}/${id}`, data);
 
-const getCurrentUser = () => {
-    return JSON.parse(localStorage.getItem("Usuario"));
-};
+const remove = (id) => http.mainInstance.delete(`${API_URL}/${id}`);
 
-const update = (id, data) => {
-    return http.multipartInstance.put(API_URL + `atualizar/${id}`, data);
-};
-
-const inativar = (id) => {
-    return http.multipartInstance.put(API_URL + `inativar/${id}`);
-};
-
-const reativar = (id) => {
-    return http.multipartInstance.put(API_URL + `reativar/${id}`);
-};
-
-const cadastrar = () => {
-    return http.multipartInstance.post(API_URL + `/cadastrar`);
-};
-
-const alterarSenha = (id, data) => {
-    const formData = new FormData();
-    formData.append('senha', data.senha);
- 
-    return http.mainInstance.put(API_URL + `alterarSenha/${id}`, formData);
-};
-
-const findByNome = nome => {
-    return http.mainInstance.get(API_URL + `findByNome?nome=${nome}`);
-};
-
-
-const UsuarioService = {
-    findAll,
-    findById,
-    signin,
-    logout,
-    getCurrentUser,
-    update,
-    inativar,
-    reativar,
-    alterarSenha,
-    findByNome,
-    cadastrar,
-}
+const UsuarioService = { findAll, findById, cadastrar, login, logout, getCurrentUser, update, remove };
 
 export default UsuarioService;

@@ -1,26 +1,40 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './App.css';
+import UsuarioService from './services/UsuarioService';
 
 function Login() {
   const navigate = useNavigate();
   const [tipoUsuario, setTipoUsuario] = useState('usuario');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const email = e.target.form.email.value;
-    const senha = e.target.form.senha.value;
-    
+  const handleLogin = async () => {
     if (!email || !senha) {
       alert('Por favor, preencha todos os campos!');
       return;
     }
-    
-    // Redireciona baseado no tipo de usuário
-    if (tipoUsuario === 'dono') {
-      navigate('/admin');
-    } else {
-      navigate('/inicial');
+    setLoading(true);
+    try {
+      const usuario = await UsuarioService.login(email, senha);
+      if (tipoUsuario === 'dono' && usuario.nivelAcesso !== 'admin') {
+        alert('Essa conta não é de dono de pesqueiro!');
+        return;
+      }
+      if (tipoUsuario === 'usuario' && usuario.nivelAcesso === 'admin') {
+        alert('Essa conta é de dono de pesqueiro. Selecione a opção correta!');
+        return;
+      }
+      if (usuario.nivelAcesso === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/inicial');
+      }
+    } catch (err) {
+      alert('Email ou senha inválidos!');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,51 +92,15 @@ function Login() {
           </div>
         </div>
         
-        <input name="email" type="email" placeholder="E-mail" required />
-        <input name="senha" type="password" placeholder="Senha" required />
+        <input name="email" type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input name="senha" type="password" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} required />
+
+        <button type="button" onClick={handleLogin} disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
         
-        
-        
-        <button type="button" onClick={handleLogin}>Entrar</button>
-        
-        {/* Divisor visual */}
-    
-        
-        {/* ========== BOTÕES DE LOGIN SOCIAL ========== */}
-        <div className="social-buttons">
-          {/* Botão Google */}
-          <button 
-            type="button" 
-            className="social-btn google-btn"
-            onClick={() => handleSocialLogin('Google')} // Chama função com parâmetro
-          >
-            <span className="social-icon">G</span>
-            Entrar com Google
-          </button>
-          
-          {/* Botão Facebook */}
-          <button 
-            type="button" 
-            className="social-btn facebook-btn"
-            onClick={() => handleSocialLogin('Facebook')}
-          >
-            Entrar com Facebook
-          </button>
-          
-          {/* Botão Apple */}
-          <button 
-            type="button" 
-            className="social-btn apple-btn"
-            onClick={() => handleSocialLogin('Apple')}
-          >
-            Entrar com Apple
-          </button>
-        </div>
-        
-        {/* ========== LINK PARA CADASTRO ========== */}
         <h3 className="h2index">Não tem uma conta?</h3>
         <div className="register-link">
-          {/* Link para página de cadastro */}
           <Link to="/cadastro">Cadastre-se!</Link>
         </div>
       </form>
