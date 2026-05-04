@@ -35,13 +35,14 @@ function Cadastro() {
     }
     setLoading(true);
     try {
-      await UsuarioService.cadastrar({
+      const response = await UsuarioService.cadastrar({
         nome: formData.nome,
         email: formData.email,
         senha: formData.senha,
         nivelAcesso: formData.tipoUsuario === 'dono' ? 'admin' : 'usuario',
         statusUsuario: true,
       });
+      localStorage.setItem('user', JSON.stringify(response.data));
       alert('Cadastro realizado com sucesso!');
       if (formData.tipoUsuario === 'dono') {
         navigate('/admin');
