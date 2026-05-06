@@ -8,8 +8,7 @@ const Navbar = () => {
         <div className="d-flex justify-content-between align-items-center py-3">
           <div>
             <h2 className="mb-1">Smart Fishing</h2>
-            <p className="text-muted mb-0">Plataforma de <strong>Pesqueiros</strong></p>
-            <small className="text-success">Sistema Online</small>
+        
           </div>
           <div className="d-flex align-items-center gap-2">
             <input 
@@ -23,12 +22,6 @@ const Navbar = () => {
               </Link>
               <Link to="/pesqueiros" className="btn btn-outline-primary me-2" title="Explorar pesqueiros">
                 Pesqueiros
-              </Link>
-              <Link to="/sobre" className="btn btn-outline-primary me-2" title="Sobre nós">
-                Sobre
-              </Link>
-              <Link to="/contato" className="btn btn-outline-primary me-2" title="Entre em contato">
-                Contato
               </Link>
               <Link to="/perfil" className="btn btn-outline-primary me-2" title="Meu perfil">
                 Perfil

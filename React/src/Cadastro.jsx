@@ -42,6 +42,7 @@ function Cadastro() {
         nivelAcesso: formData.tipoUsuario === 'dono' ? 'admin' : 'usuario',
         statusUsuario: true,
       });
+      // Salvar o usuário criado no localStorage
       localStorage.setItem('user', JSON.stringify(response.data));
       alert('Cadastro realizado com sucesso!');
       if (formData.tipoUsuario === 'dono') {

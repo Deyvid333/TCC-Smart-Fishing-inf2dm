@@ -26,6 +26,8 @@ function Login() {
         alert('Essa conta é de dono de pesqueiro. Selecione a opção correta!');
         return;
       }
+      // Dispara evento customizado para notificar mudança no localStorage
+      window.dispatchEvent(new Event('storage'));
       if (usuario.nivelAcesso === 'admin') {
         navigate('/admin');
       } else {

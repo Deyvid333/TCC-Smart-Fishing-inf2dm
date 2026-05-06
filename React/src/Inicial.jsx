@@ -32,8 +32,6 @@ function Inicial() {
           <div className="hero-buttons">
             {/* Botão primário - leva para lista de pesqueiros */}
             <Link to="/pesqueiros" className="btn btn-hero-primary">Explorar Pesqueiros</Link>
-            {/* Botão secundário - leva para página sobre */}
-            <Link to="/sobre" className="btn btn-hero-secondary">Saiba Mais</Link>
           </div>
         </div>
       </div>

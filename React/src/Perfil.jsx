@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
 import './App.css';
 import UsuarioService from './services/UsuarioService';
 
 function Perfil() {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [usuario, setUsuario] = useState(null);
   const [profileData, setProfileData] = useState({ nome: '', email: '' });
 
   useEffect(() => {
-    const user = UsuarioService.getCurrentUser();
-    if (user) {
-      setUsuario(user);
-      setProfileData({ nome: user.nome, email: user.email });
-    }
+    const loadUser = () => {
+      const user = UsuarioService.getCurrentUser();
+      if (user) {
+        setUsuario(user);
+        setProfileData({ nome: user.nome, email: user.email });
+      }
+    };
+
+    loadUser();
+
+    // Recarregar quando o localStorage mudar
+    const handleStorageChange = () => loadUser();
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const handleSave = async () => {
@@ -26,10 +38,27 @@ function Perfil() {
       const novosDados = atualizado.data;
       localStorage.setItem('user', JSON.stringify(novosDados));
       setUsuario(novosDados);
+      setProfileData({ nome: novosDados.nome, email: novosDados.email });
       setIsEditing(false);
       alert('Perfil atualizado com sucesso!');
     } catch (err) {
       alert('Erro ao atualizar perfil.');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')) {
+      return;
+    }
+    try {
+      await UsuarioService.remove(usuario.id);
+      localStorage.removeItem('user');
+      setUsuario(null);
+      setProfileData({ nome: '', email: '' });
+      alert('Conta excluída com sucesso.');
+      navigate('/login');
+    } catch (err) {
+      alert('Erro ao excluir conta. Tente novamente.');
     }
   };
 
@@ -94,6 +123,10 @@ function Perfil() {
                   <p><strong>Email:</strong> {profileData.email}</p>
                   <p><strong>Tipo de conta:</strong> {usuario.nivelAcesso === 'admin' ? 'Dono de Pesqueiro' : 'Pescador'}</p>
                   <p><strong>Membro desde:</strong> {usuario.dataCadastro}</p>
+                  <div className="d-flex gap-2 mt-4">
+                    <button className="btn btn-primary w-100" onClick={() => setIsEditing(true)}>Editar perfil</button>
+                    <button className="btn btn-danger w-100" onClick={handleDelete}>Excluir conta</button>
+                  </div>
                 </div>
               )}
 

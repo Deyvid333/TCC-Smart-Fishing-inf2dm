@@ -56,12 +56,6 @@ function AdminDashboard() {
   ]);
 
   // Lista de reservas do restaurante
-  const [reservasRestaurante, setReservasRestaurante] = useState([
-    { id: 1, nome: 'Patricia Oliveira', data: '2025-06-15', horario: '12:30', pessoas: 4, telefone: '(11) 88888-1111', status: 'Confirmada', ocasiao: 'aniversario', observacoes: 'Mesa com vista para o lago' },
-    { id: 2, nome: 'Fernando Costa', data: '2025-06-15', horario: '19:00', pessoas: 2, telefone: '(11) 88888-2222', status: 'Pendente', ocasiao: 'encontro', observacoes: '' },
-    { id: 3, nome: 'Família Silva', data: '2025-06-16', horario: '13:00', pessoas: 6, telefone: '(11) 88888-3333', status: 'Confirmada', ocasiao: 'familia', observacoes: 'Criança com alergia a frutos do mar' }
-  ]);
-
   const handleEdit = () => {
     setIsEditing(true);
   };
@@ -87,30 +81,18 @@ function AdminDashboard() {
       window.location.href = '/login';
     }
   };
-  const handleConfirmarReserva = (id, tipo) => {
-    if (tipo === 'restaurante') {
-      setReservasRestaurante(reservasRestaurante.map(r => 
-        r.id === id ? { ...r, status: 'Confirmada' } : r
-      ));
-    } else {
-      setReservas(reservas.map(r => 
-        r.id === id ? { ...r, status: 'Confirmada' } : r
-      ));
-    }
+  const handleConfirmarReserva = (id) => {
+    setReservas(reservas.map(r => 
+      r.id === id ? { ...r, status: 'Confirmada' } : r
+    ));
     alert('Reserva confirmada com sucesso!');
   };
 
-  const handleCancelarReserva = (id, tipo) => {
+  const handleCancelarReserva = (id) => {
     if (confirm('Tem certeza que deseja cancelar esta reserva?')) {
-      if (tipo === 'restaurante') {
-        setReservasRestaurante(reservasRestaurante.map(r => 
-          r.id === id ? { ...r, status: 'Cancelada' } : r
-        ));
-      } else {
-        setReservas(reservas.map(r => 
-          r.id === id ? { ...r, status: 'Cancelada' } : r
-        ));
-      }
+      setReservas(reservas.map(r => 
+        r.id === id ? { ...r, status: 'Cancelada' } : r
+      ));
       alert('Reserva cancelada!');
     }
   };
@@ -452,108 +434,6 @@ function AdminDashboard() {
     </div>
   );
 
-  const renderReservasRestaurante = () => (
-    <div className="row">
-      <div className="col-12">
-        <div className="card admin-main-card">
-          <div className="card-body">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <div>
-                <h3> Reservas do Restaurante</h3>
-                <p className="text-muted mb-0">Gerencie as reservas de mesa do restaurante</p>
-              </div>
-              <div className="d-flex gap-2">
-                <span className="badge bg-success">Confirmadas: {reservasRestaurante.filter(r => r.status === 'Confirmada').length}</span>
-                <span className="badge bg-warning">Pendentes: {reservasRestaurante.filter(r => r.status === 'Pendente').length}</span>
-                <span className="badge bg-danger">Canceladas: {reservasRestaurante.filter(r => r.status === 'Cancelada').length}</span>
-              </div>
-            </div>
-            
-            <div className="table-responsive">
-              <table className="table table-hover">
-                <thead className="table-light">
-                  <tr>
-                    <th>Nome</th>
-                    <th>Data</th>
-                    <th>Horário</th>
-                    <th>Pessoas</th>
-                    <th>Telefone</th>
-                    <th>Ocasião</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {reservasRestaurante.map(reserva => (
-                    <tr key={reserva.id}>
-                      <td>
-                        <strong>{reserva.nome}</strong>
-                        {reserva.observacoes && (
-                          <div className="small text-muted">
-                             {reserva.observacoes}
-                          </div>
-                        )}
-                      </td>
-                      <td>{new Date(reserva.data).toLocaleDateString('pt-BR')}</td>
-                      <td>{reserva.horario}</td>
-                      <td>{reserva.pessoas} pessoa{reserva.pessoas > 1 ? 's' : ''}</td>
-                      <td>{reserva.telefone}</td>
-                      <td>
-                        {reserva.ocasiao && (
-                          <span className="badge bg-info">
-                            {reserva.ocasiao === 'aniversario' ? ' Aniversário' :
-                             reserva.ocasiao === 'encontro' ? ' Encontro' :
-                             reserva.ocasiao === 'familia' ? ' Família' :
-                             reserva.ocasiao === 'negocios' ? ' Negócios' :
-                             reserva.ocasiao === 'comemoracao' ? ' Comemoração' : reserva.ocasiao}
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        <span className={`badge ${
-                          reserva.status === 'Confirmada' ? 'bg-success' :
-                          reserva.status === 'Pendente' ? 'bg-warning' : 'bg-danger'
-                        }`}>
-                          {reserva.status}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="btn-group btn-group-sm">
-                          {reserva.status === 'Pendente' && (
-                            <>
-                              <button 
-                                className="btn btn-success" 
-                                onClick={() => handleConfirmarReserva(reserva.id, 'restaurante')}
-                              >
-                                Aceitar
-                              </button>
-                              <button 
-                                className="btn btn-danger" 
-                                onClick={() => handleCancelarReserva(reserva.id, 'restaurante')}
-                              >
-                                Recusar
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {reservasRestaurante.length === 0 && (
-              <div className="text-center py-4">
-                <p className="text-muted">Nenhuma reserva de restaurante encontrada.</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="admin-layout">
       {/* Header melhorado */}
@@ -582,13 +462,6 @@ function AdminDashboard() {
                    Reservas Pesca
                 </button>
                 <button 
-                  className={`btn ${activeTab === 'restaurante' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
-                  onClick={() => setActiveTab('restaurante')}
-                  title="Gerenciar reservas do restaurante"
-                >
-                   Reservas Restaurante
-                </button>
-                <button 
                   className={`btn ${activeTab === 'settings' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
                   onClick={() => setActiveTab('settings')}
                   title="Editar informações do pesqueiro"
@@ -607,7 +480,6 @@ function AdminDashboard() {
       <div className="container-fluid mt-4">
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'reservas' && renderReservas()}
-        {activeTab === 'restaurante' && renderReservasRestaurante()}
         {activeTab === 'settings' && renderSettings()}
       </div>
     </div>

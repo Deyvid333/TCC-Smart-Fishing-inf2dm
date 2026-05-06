@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
 import './App.css';
 import imgBagre from './assets/fotoCatalogo/Catfish.jpg';
@@ -21,6 +21,49 @@ function Pesqueiro3() {
     { id: 2, nome: 'Lucia Ferreira', rating: 4, texto: 'Lugar tradicional e acolhedor. Sempre tem peixe! O pessoal é muito simpático e prestativo.', data: 'há 4 dias' },
     { id: 3, nome: 'Marcos Oliveira', rating: 5, texto: 'Venho aqui há anos! Nunca decepciona. Tambaquis enormes e carpas briguentas. Recomendo demais!', data: 'há 1 semana' }
   ]);
+  const [commentText, setCommentText] = useState('');
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) setCurrentUser(JSON.parse(stored));
+  }, []);
+
+  const authorName = currentUser?.nome || 'Visitante';
+
+  const renderStars = (count) => Array.from({ length: 5 }, (_, i) => (
+    <span key={i} style={{ color: i < count ? '#ffc107' : '#ddd', fontSize: '1rem' }}>
+      ★
+    </span>
+  ));
+
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+    if (!rating || !commentText.trim()) {
+      alert('Por favor, selecione a avaliação e escreva sua experiência.');
+      return;
+    }
+    const newComment = {
+      id: Date.now(),
+      nome: authorName,
+      rating,
+      texto: commentText.trim(),
+      data: 'agora'
+    };
+    setComments([newComment, ...comments]);
+    setRating(0);
+    setHoverRating(0);
+    setCommentText('');
+    alert('Comentário enviado!');
+  };
+
+  const handleDeleteComment = (id) => {
+    setComments((prevComments) => prevComments.filter((comment) => comment.id !== id));
+  };
+
+  const isCommentOwner = (comment) => currentUser && comment.nome === currentUser.nome;
 
   const [selectedDate, setSelectedDate] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
@@ -209,34 +252,40 @@ function Pesqueiro3() {
           <div className="card">
             <div className="card-body">
               <h3 className="mb-4">Comentários</h3>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const nome = formData.get('nome');
-                const rating = parseInt(formData.get('rating'));
-                const texto = formData.get('texto');
-                if (nome && rating && texto) {
-                  setComments([{ id: Date.now(), nome, rating, texto, data: 'agora' }, ...comments]);
-                  e.target.reset();
-                  alert('Comentário enviado!');
-                }
-              }}>
+              <form onSubmit={handleCommentSubmit}>
                 <div className="row g-3 mb-4">
-                  <div className="col-md-6">
-                    <input type="text" name="nome" className="form-control" placeholder="Seu nome" required />
-                  </div>
-                  <div className="col-md-6">
-                    <select name="rating" className="form-select" required>
-                      <option value="">Avaliação</option>
-                      <option value="1">1 estrela</option>
-                      <option value="2">2 estrelas</option>
-                      <option value="3">3 estrelas</option>
-                      <option value="4">4 estrelas</option>
-                      <option value="5">5 estrelas</option>
-                    </select>
+                  <div className="col-12">
+                    <div className="mb-3">
+                      <label className="form-label"><strong>Comentário como:</strong> {authorName}</label>
+                    </div>
                   </div>
                   <div className="col-12">
-                    <textarea name="texto" className="form-control" rows="3" placeholder="Sua experiência..." required></textarea>
+                    <label className="form-label"><strong>Avaliação</strong></label>
+                    <div className="d-flex align-items-center mb-2">
+                      {[1, 2, 3, 4, 5].map((value) => (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setRating(value)}
+                          onMouseEnter={() => setHoverRating(value)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '1.8rem',
+                            color: value <= (hoverRating || rating) ? '#ffc107' : '#ccc',
+                            padding: '0 4px'
+                          }}
+                        >
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                    {rating === 0 && <small className="text-muted">Clique nas estrelas para avaliar.</small>}
+                  </div>
+                  <div className="col-12">
+                    <textarea value={commentText} onChange={(e) => setCommentText(e.target.value)} className="form-control" rows="3" placeholder="Sua experiência..." required />
                   </div>
                   <div className="col-12">
                     <button type="submit" className="btn btn-primary">Enviar</button>
@@ -248,8 +297,18 @@ function Pesqueiro3() {
               {comments.map((comment) => (
                 <div key={comment.id} className="border-bottom pb-3 mb-3">
                   <div className="d-flex justify-content-between align-items-start mb-2">
-                    <strong>{comment.nome}</strong>
-                    <small className="text-muted">{comment.data}</small>
+                    <div>
+                      <strong>{comment.nome}</strong>
+                      <div>{renderStars(comment.rating)}</div>
+                    </div>
+                    <div className="text-end">
+                      <small className="text-muted">{comment.data}</small>
+                      {isCommentOwner(comment) && (
+                        <button type="button" className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteComment(comment.id)}>
+                          Excluir
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p className="mb-0">{comment.texto}</p>
                 </div>

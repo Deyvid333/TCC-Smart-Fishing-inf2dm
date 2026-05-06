@@ -6,8 +6,6 @@ import Login from './Login';
 import Cadastro from './Cadastro';
 import Inicial from './Inicial';
 import Home from './Home';
-import Sobre from './Sobre';
-import Contato from './Contato';
 import Perfil from './Perfil';
 import Pesqueiro from './Pesqueiro';
 import Pesqueiro2 from './Pesqueiro2';
@@ -43,10 +41,6 @@ function App() {
         <Route path="/Pesqueiro2" element={<Pesqueiro2 />} />
         <Route path="/Pesqueiro3" element={<Pesqueiro3 />} />
         
-        {/* Páginas institucionais */}
-        <Route path="/sobre" element={<Sobre />} />
-        <Route path="/contato" element={<Contato />} />
-
         {/* ========== ROTAS PRIVADAS ========== */}
         {/* Página do perfil do usuário */}
         <Route path="/perfil" element={<Perfil />} />
@@ -60,8 +54,5 @@ function App() {
 
 // ========== EXPORTAÇÃO DO COMPONENTE ==========
 export default App;
-
-// Log para debug - indica que o App foi carregado
-console.log("App carregou");
 
 
