@@ -34,9 +34,7 @@ function Pesqueiro3() {
   const authorName = currentUser?.nome || 'Visitante';
 
   const renderStars = (count) => Array.from({ length: 5 }, (_, i) => (
-    <span key={i} style={{ color: i < count ? '#ffc107' : '#ddd', fontSize: '1rem' }}>
-      ★
-    </span>
+    <span key={i} style={{ color: i < count ? '#ffc107' : '#ddd', fontSize: '1rem' }}>★</span>
   ));
 
   const handleCommentSubmit = (e) => {
@@ -45,61 +43,40 @@ function Pesqueiro3() {
       alert('Por favor, selecione a avaliação e escreva sua experiência.');
       return;
     }
-    const newComment = {
-      id: Date.now(),
-      nome: authorName,
-      rating,
-      texto: commentText.trim(),
-      data: 'agora'
-    };
-    setComments([newComment, ...comments]);
+    setComments([{ id: Date.now(), nome: authorName, rating, texto: commentText.trim(), data: 'agora' }, ...comments]);
     setRating(0);
     setHoverRating(0);
     setCommentText('');
     alert('Comentário enviado!');
   };
 
-  const handleDeleteComment = (id) => {
-    setComments((prevComments) => prevComments.filter((comment) => comment.id !== id));
-  };
-
+  const handleDeleteComment = (id) => setComments((prev) => prev.filter((c) => c.id !== id));
   const isCommentOwner = (comment) => currentUser && comment.nome === currentUser.nome;
 
   const [selectedDate, setSelectedDate] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [peixeIndex, setPeixeIndex] = useState(0);
 
   const peixes = [
-    { nome: 'Bagre-Africano' },
-    { nome: 'Carpa' },
-    { nome: 'Tambaqui' },
-    { nome: 'Tilápia' },
-    { nome: 'Traíra' },
-    { nome: 'Trairão' },
-    { nome: 'Catfish' },
-    { nome: 'Dourado' },
-    { nome: 'Patinga' },
-    { nome: 'Carpa-cabeçuda' },
-    { nome: 'Carpa-húngara' },
-    { nome: 'Curimbatá' },
-    { nome: 'Lambari' },
+    { nome: 'Bagre-Africano', img: imgBagre, descricao: 'Peixe de couro resistente, muito usado em pesqueiros.' },
+    { nome: 'Carpa', img: imgCarpa, descricao: 'Peixe resistente e saboroso, muito encontrado em lagos.' },
+    { nome: 'Tambaqui', img: imgTambaqui, descricao: 'Um dos maiores peixes de escama da Amazônia.' },
+    { nome: 'Tilápia', img: imgTilapia, descricao: 'Peixe muito popular em pesqueiros, resistente e saboroso.' },
+    { nome: 'Traíra', img: imgTraira, descricao: 'Peixe ágil e voraz, desafio para qualquer pescador.' },
+    { nome: 'Trairão', img: imgTrairao, descricao: 'Versão maior da Traíra, muito temida pelos pescadores.' },
+    { nome: 'Catfish', img: imgCatfish, descricao: 'Peixe de couro americano, muito popular na pesca esportiva.' },
+    { nome: 'Dourado', img: imgDourado, descricao: 'Conhecido pela briga intensa, é um dos favoritos dos pescadores.' },
+    { nome: 'Patinga', img: imgPatinga, descricao: 'Híbrido entre Pacu e Tambaqui, cresce rápido e briga muito.' },
+    { nome: 'Carpa-cabeçuda', img: imgCarpaCabecuda, descricao: 'Carpa de grande porte, conhecida pela cabeça grande.' },
+    { nome: 'Carpa-húngara', img: imgCarpaHungara, descricao: 'Carpa europeia muito comum em pesqueiros brasileiros.' },
+    { nome: 'Curimbatá', img: imgCurimbata, descricao: 'Peixe de fundo, muito comum em rios e pesqueiros.' },
+    { nome: 'Lambari', img: imgLambari, descricao: 'Pequeno mas abundante, ótimo para pesca com vara simples.' },
   ];
 
-  const peixeImagens = {
-    'Bagre-Africano': imgBagre,
-    'Carpa': imgCarpa,
-    'Tambaqui': imgTambaqui,
-    'Tilápia': imgTilapia,
-    'Traíra': imgTraira,
-    'Trairão': imgTrairao,
-    'Catfish': imgCatfish,
-    'Dourado': imgDourado,
-    'Patinga': imgPatinga,
-    'Carpa-cabeçuda': imgCarpaCabecuda,
-    'Carpa-húngara': imgCarpaHungara,
-    'Curimbatá': imgCurimbata,
-    'Lambari': imgLambari,
-  };
+  const peixeAtual = peixes[peixeIndex];
+  const proximoPeixe = () => setPeixeIndex((peixeIndex + 1) % peixes.length);
+  const peixeAnterior = () => setPeixeIndex((peixeIndex - 1 + peixes.length) % peixes.length);
 
   const getDateLimits = () => {
     const tomorrow = new Date();
@@ -231,19 +208,19 @@ function Pesqueiro3() {
         </div>
 
         <h2 className="text-center mb-4">Peixes Disponíveis</h2>
-        <div className="card mb-5">
-          <div className="card-body">
-            <div className="row g-3">
-              {peixes.map((peixe, index) => (
-                <div key={index} className="col-6 col-sm-4 col-md-3 col-lg-2 text-center">
-                  <div style={{ border: '1px solid #DBE2EF', borderRadius: '10px', overflow: 'hidden', background: '#F9F7F7' }}>
-                    <img src={peixeImagens[peixe.nome] || imgTilapia} alt={peixe.nome} style={{ width: '100%', height: '90px', objectFit: 'cover' }} />
-                    <div style={{ padding: '6px 4px', fontSize: '0.85rem', fontWeight: '600', color: '#112D4E' }}>
-                      {peixe.nome}
-                    </div>
-                  </div>
-                </div>
-              ))}
+        <div className="card mb-5" style={{ height: '320px', width: '100%' }}>
+          <div className="card-body" style={{ height: '100%', overflow: 'hidden' }}>
+            <div className="d-flex align-items-center gap-4" style={{ height: '220px' }}>
+              <img src={peixeAtual.img} alt={peixeAtual.nome} style={{ width: '400px', height: '280px', objectFit: 'contain', borderRadius: '10px', flexShrink: 0, background: '#f0f0f0' }} />
+              <div style={{ flex: 1, height: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+                <h4>{peixeAtual.nome}</h4>
+                <p className="text-muted mb-0">{peixeAtual.descricao}</p>
+              </div>
+            </div>
+            <div className="d-flex justify-content-center gap-3 mt-3">
+              <button className="btn btn-outline-primary" onClick={peixeAnterior}>&#8592; Anterior</button>
+              <span className="align-self-center text-muted">{peixeIndex + 1} / {peixes.length}</span>
+              <button className="btn btn-outline-primary" onClick={proximoPeixe}>Próximo &#8594;</button>
             </div>
           </div>
         </div>
@@ -255,31 +232,15 @@ function Pesqueiro3() {
               <form onSubmit={handleCommentSubmit}>
                 <div className="row g-3 mb-4">
                   <div className="col-12">
-                    <div className="mb-3">
-                      <label className="form-label"><strong>Comentário como:</strong> {authorName}</label>
-                    </div>
+                    <label className="form-label"><strong>Comentário como:</strong> {authorName}</label>
                   </div>
                   <div className="col-12">
                     <label className="form-label"><strong>Avaliação</strong></label>
                     <div className="d-flex align-items-center mb-2">
                       {[1, 2, 3, 4, 5].map((value) => (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => setRating(value)}
-                          onMouseEnter={() => setHoverRating(value)}
-                          onMouseLeave={() => setHoverRating(0)}
-                          style={{
-                            background: 'transparent',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '1.8rem',
-                            color: value <= (hoverRating || rating) ? '#ffc107' : '#ccc',
-                            padding: '0 4px'
-                          }}
-                        >
-                          ★
-                        </button>
+                        <button key={value} type="button" onClick={() => setRating(value)}
+                          onMouseEnter={() => setHoverRating(value)} onMouseLeave={() => setHoverRating(0)}
+                          style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.8rem', color: value <= (hoverRating || rating) ? '#ffc107' : '#ccc', padding: '0 4px' }}>★</button>
                       ))}
                     </div>
                     {rating === 0 && <small className="text-muted">Clique nas estrelas para avaliar.</small>}
@@ -304,9 +265,7 @@ function Pesqueiro3() {
                     <div className="text-end">
                       <small className="text-muted">{comment.data}</small>
                       {isCommentOwner(comment) && (
-                        <button type="button" className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteComment(comment.id)}>
-                          Excluir
-                        </button>
+                        <button type="button" className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteComment(comment.id)}>Excluir</button>
                       )}
                     </div>
                   </div>

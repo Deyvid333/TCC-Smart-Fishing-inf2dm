@@ -74,42 +74,29 @@ function Pesqueiro() {
   const [selectedDate, setSelectedDate] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [peixeIndex, setPeixeIndex] = useState(0);
 
   const peixes = [
-    { nome: 'Tilápia', extincao: false },
-    { nome: 'Dourado', extincao: false },
-    { nome: 'Carpa', extincao: false },
-    { nome: 'Pintado', extincao: true },
-    { nome: 'Pacu', extincao: false },
-    { nome: 'Tambaqui', extincao: false },
-    { nome: 'Traíra', extincao: false },
-    { nome: 'Curimbatá', extincao: false },
-    { nome: 'Lambari', extincao: false },
-    { nome: 'Piau', extincao: false },
-    { nome: 'Patinga', extincao: false },
-    { nome: 'Jundiá', extincao: false },
-    { nome: 'Matrinxã', extincao: true },
-    { nome: 'Tucunaré', extincao: true },
-    { nome: 'Tambacu', extincao: false },
+    { nome: 'Tilápia', img: imgTilapia, descricao: 'Peixe muito popular em pesqueiros, resistente e saboroso.' },
+    { nome: 'Dourado', img: imgDourado, descricao: 'Conhecido pela briga intensa, é um dos favoritos dos pescadores.' },
+    { nome: 'Carpa', img: imgCarpa, descricao: 'Peixe resistente e saboroso, muito encontrado em lagos.' },
+    { nome: 'Pintado', img: imgPintado, descricao: 'Espécie ameaçada, símbolo da pesca esportiva brasileira.' },
+    { nome: 'Pacu', img: imgPacu, descricao: 'Peixe de grande porte, muito apreciado pela carne saborosa.' },
+    { nome: 'Tambaqui', img: imgTambaqui, descricao: 'Um dos maiores peixes de escama da Amazônia.' },
+    { nome: 'Traíra', img: imgTraira, descricao: 'Peixe ágil e voraz, desafio para qualquer pescador.' },
+    { nome: 'Curimbatá', img: imgCurimbata, descricao: 'Peixe de fundo, muito comum em rios e pesqueiros.' },
+    { nome: 'Lambari', img: imgLambari, descricao: 'Pequeno mas abundante, ótimo para pesca com vara simples.' },
+    { nome: 'Piau', img: imgPiau, descricao: 'Peixe de couro muito apreciado no interior do Brasil.' },
+    { nome: 'Patinga', img: imgPatinga, descricao: 'Híbrido entre Pacu e Tambaqui, cresce rápido e briga muito.' },
+    { nome: 'Jundiá', img: imgJundia, descricao: 'Peixe de couro muito apreciado no sul do Brasil.' },
+    { nome: 'Matrinxã', img: imgMatrinxa, descricao: 'Peixe veloz e saltador, desafio para pescadores experientes.' },
+    { nome: 'Tucunaré', img: imgTucunare, descricao: 'Rei da pesca esportiva, famoso pela agressividade.' },
+    { nome: 'Tambacu', img: imgTambacu, descricao: 'Híbrido entre Tambaqui e Pacu, muito comum em pesqueiros.' },
   ];
 
-  const peixeImagens = {
-    'Tilápia': imgTilapia,
-    'Dourado': imgDourado,
-    'Carpa': imgCarpa,
-    'Pintado': imgPintado,
-    'Pacu': imgPacu,
-    'Tambaqui': imgTambaqui,
-    'Traíra': imgTraira,
-    'Curimbatá': imgCurimbata,
-    'Lambari': imgLambari,
-    'Piau': imgPiau,
-    'Patinga': imgPatinga,
-    'Jundiá': imgJundia,
-    'Matrinxã': imgMatrinxa,
-    'Tucunaré': imgTucunare,
-    'Tambacu': imgTambacu,
-  };
+  const peixeAtual = peixes[peixeIndex];
+  const proximoPeixe = () => setPeixeIndex((peixeIndex + 1) % peixes.length);
+  const peixeAnterior = () => setPeixeIndex((peixeIndex - 1 + peixes.length) % peixes.length);
 
   const getDateLimits = () => {
     const tomorrow = new Date();
@@ -242,23 +229,19 @@ function Pesqueiro() {
         </div>
 
         <h2 className="text-center mb-4">Peixes Disponíveis</h2>
-        <div className="card mb-5">
-          <div className="card-body">
-            <div className="row g-3">
-              {peixes.map((peixe, index) => (
-                <div key={index} className="col-6 col-sm-4 col-md-3 col-lg-2 text-center">
-                  <div style={{ border: '1px solid #DBE2EF', borderRadius: '10px', overflow: 'hidden', background: '#F9F7F7' }}>
-                    <img
-                      src={peixeImagens[peixe.nome] || imgTilapia}
-                      alt={peixe.nome}
-                      style={{ width: '100%', height: '90px', objectFit: 'cover' }}
-                    />
-                    <div style={{ padding: '6px 4px', fontSize: '0.85rem', fontWeight: '600', color: '#112D4E' }}>
-                      {peixe.nome}
-                    </div>
-                  </div>
-                </div>
-              ))}
+        <div className="card mb-5" style={{ height: '320px', width: '100%' }}>
+          <div className="card-body" style={{ height: '100%', overflow: 'hidden' }}>
+            <div className="d-flex align-items-center gap-4" style={{ height: '220px' }}>
+              <img src={peixeAtual.img} alt={peixeAtual.nome} style={{ width: '400px', height: '280px', objectFit: 'contain', borderRadius: '10px', flexShrink: 0, background: '#f0f0f0' }} />
+              <div style={{ flex: 1, height: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+                <h4>{peixeAtual.nome}</h4>
+                <p className="text-muted mb-0">{peixeAtual.descricao}</p>
+              </div>
+            </div>
+            <div className="d-flex justify-content-center gap-3 mt-3">
+              <button className="btn btn-outline-primary" onClick={peixeAnterior}>&#8592; Anterior</button>
+              <span className="align-self-center text-muted">{peixeIndex + 1} / {peixes.length}</span>
+              <button className="btn btn-outline-primary" onClick={proximoPeixe}>Próximo &#8594;</button>
             </div>
           </div>
         </div>
