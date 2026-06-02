@@ -4,6 +4,8 @@ import './App.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import UsuarioService from './services/UsuarioService';
+import PesqueiroService from './services/PesqueiroService';
+import UsuarioPesqueiroService from './services/UsuarioPesqueiroService';
 
 // ========== COMPONENTE DE CADASTRO ==========
 function Cadastro() {
@@ -17,22 +19,61 @@ function Cadastro() {
     email: '',
     senha: '',
     confirmarSenha: '',
-    tipoUsuario: 'usuario'
+    tipoUsuario: 'usuario',
+    nomePesqueiro: '',
+    descricaoPesqueiro: '',
+    informacoesRapidas: '',
+    regrasPermitido: '',
+    regrasProibido: '',
+    catalogoPeixes: '',
+    cep: '',
+    numero: '',
+    complemento: '',
   });
   const [loading, setLoading] = useState(false);
 
   // ========== FUNÇÕES DE MANIPULAÇÃO ==========
   
+  const formatInformacao = () => {
+    return JSON.stringify({
+      detalhamento: formData.informacoesRapidas || '',
+      catalogoPeixes: (formData.catalogoPeixes || '')
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean),
+      regrasPermitido: (formData.regrasPermitido || '')
+        .split('\n')
+        .map((item) => item.trim())
+        .filter(Boolean),
+      regrasProibido: (formData.regrasProibido || '')
+        .split('\n')
+        .map((item) => item.trim())
+        .filter(Boolean),
+    });
+  };
+
+  const validarFormulario = () => {
+    if (!formData.nome.trim()) return 'Preencha seu nome completo.';
+    if (!formData.email.trim()) return 'Preencha seu e-mail.';
+    if (!formData.senha.trim()) return 'Preencha sua senha.';
+    if (formData.senha !== formData.confirmarSenha) return 'As senhas não coincidem.';
+    if (formData.tipoUsuario === 'dono') {
+      if (!formData.nomePesqueiro.trim()) return 'Preencha o nome do pesqueiro.';
+      if (!formData.descricaoPesqueiro.trim()) return 'Descreva seu pesqueiro.';
+      if (!formData.informacoesRapidas.trim()) return 'Adicione informações do pesqueiro (preço, horário, área etc).';
+      if (!formData.catalogoPeixes.trim()) return 'Liste pelo menos um tipo de peixe disponível.';
+    }
+    return '';
+  };
+
   // Função para processar o cadastro do usuário
   const handleCadastro = async () => {
-    if (!formData.nome || !formData.email || !formData.senha || !formData.confirmarSenha) {
-      alert('Por favor, preencha todos os campos!');
+    const erroValidacao = validarFormulario();
+    if (erroValidacao) {
+      alert(erroValidacao);
       return;
     }
-    if (formData.senha !== formData.confirmarSenha) {
-      alert('As senhas não coincidem!');
-      return;
-    }
+
     setLoading(true);
     try {
       await UsuarioService.cadastrar({
@@ -42,13 +83,39 @@ function Cadastro() {
         nivelAcesso: formData.tipoUsuario === 'dono' ? 'admin' : 'usuario',
         statusUsuario: true,
       });
-      alert('Cadastro realizado com sucesso!');
+
+      const usuarioLogado = await UsuarioService.login(formData.email, formData.senha);
+
       if (formData.tipoUsuario === 'dono') {
+        const novoPesqueiro = {
+          nome: formData.nomePesqueiro,
+          telefone: '',
+          descricao: formData.descricaoPesqueiro,
+          informacao: formatInformacao(),
+          cep: formData.cep,
+          numero: formData.numero,
+          complemento: formData.complemento,
+          statusPesqueiro: true,
+          dataCadastro: new Date().toISOString().split('T')[0],
+        };
+
+        const response = await PesqueiroService.criar(novoPesqueiro);
+
+        await UsuarioPesqueiroService.criar({
+          usuarioId: usuarioLogado.id,
+          pesqueiroId: response.data.id,
+          statusUsuarioPesqueiro: true,
+        });
+
+        alert('Cadastro de proprietário concluído! Seu pesqueiro já foi registrado.');
         navigate('/admin');
-      } else {
-        navigate('/inicial');
+        return;
       }
+
+      alert('Cadastro realizado com sucesso!');
+      navigate('/inicial');
     } catch (err) {
+      console.error(err);
       alert('Erro ao cadastrar. Tente novamente.');
     } finally {
       setLoading(false);
@@ -77,7 +144,7 @@ function Cadastro() {
 
   // ========== RENDERIZAÇÃO DO COMPONENTE ==========
   return (
-    <div className="container">
+    <div className="form-wrapper">
       {/* Formulário principal de cadastro */}
       <form className="custom-form">
         <h1>Seja Bem Vindo à Smart Fishing</h1>
@@ -160,7 +227,84 @@ function Cadastro() {
           onChange={handleInputChange}
           required
         />
-        
+
+        {formData.tipoUsuario === 'dono' && (
+          <div className="owner-section">
+            <h2>Dados do seu pesqueiro</h2>
+            <input
+              name="nomePesqueiro"
+              type="text"
+              placeholder="Nome do pesqueiro"
+              value={formData.nomePesqueiro}
+              onChange={handleInputChange}
+            />
+            <textarea
+              name="descricaoPesqueiro"
+              placeholder="Descrição do pesqueiro"
+              value={formData.descricaoPesqueiro}
+              onChange={handleInputChange}
+              rows={3}
+            />
+            <textarea
+              name="informacoesRapidas"
+              placeholder="Informações rápidas (área, horário, preço, serviços, etc.)"
+              value={formData.informacoesRapidas}
+              onChange={handleInputChange}
+              rows={4}
+            />
+            <textarea
+              name="regrasPermitido"
+              placeholder="Regras permitidas (uma por linha)"
+              value={formData.regrasPermitido}
+              onChange={handleInputChange}
+              rows={3}
+            />
+            <textarea
+              name="regrasProibido"
+              placeholder="Regras proibidas (uma por linha)"
+              value={formData.regrasProibido}
+              onChange={handleInputChange}
+              rows={3}
+            />
+            <input
+              name="catalogoPeixes"
+              type="text"
+              placeholder="Catálogo de peixes (separado por vírgula)"
+              value={formData.catalogoPeixes}
+              onChange={handleInputChange}
+            />
+            <div className="row g-3">
+              <div className="col-6">
+                <input
+                  name="cep"
+                  type="text"
+                  placeholder="CEP"
+                  value={formData.cep}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="col-3">
+                <input
+                  name="numero"
+                  type="text"
+                  placeholder="Número"
+                  value={formData.numero}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="col-3">
+                <input
+                  name="complemento"
+                  type="text"
+                  placeholder="Complemento"
+                  value={formData.complemento}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Botão principal de cadastro */}
         <button type="button" onClick={handleCadastro} disabled={loading}>
           {loading ? 'Cadastrando...' : 'Cadastrar-se'}

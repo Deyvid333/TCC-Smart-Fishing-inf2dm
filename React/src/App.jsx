@@ -11,6 +11,8 @@ import Pesqueiro from './Pesqueiro';
 import Pesqueiro2 from './Pesqueiro2';
 import Pesqueiro3 from './Pesqueiro3';
 import AdminDashboard from './AdminDashboard';
+import CadastroPesqueiro from './CadastroPesqueiro';
+import PesqueiroDinamico from './PesqueiroDinamico';
 // Importa estilos globais da aplicação
 import './App.css';
 
@@ -47,6 +49,9 @@ function App() {
         
         {/* Painel administrativo */}
         <Route path="/admin" element={<AdminDashboard />} />
+        {/* Página separada para cadastro de pesqueiro após usuário proprietario se cadastrar */}
+        <Route path="/cadastro-pesqueiro" element={<CadastroPesqueiro />} />
+        <Route path="/pesqueiro-dinamico" element={<PesqueiroDinamico />} />
       </Routes>
     </Router>
   );

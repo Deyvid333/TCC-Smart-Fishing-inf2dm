@@ -5,10 +5,13 @@ const findAll = () => http.mainInstance.get(API_URL);
 
 const findById = (id) => http.mainInstance.get(`${API_URL}/${id}`);
 
-const cadastrar = (data) => http.mainInstance.post(API_URL, {
-  ...data,
-  dataCadastro: new Date().toISOString().split('T')[0],
-});
+const cadastrar = (data) => {
+  const hoje = new Date();
+  return http.mainInstance.post(API_URL, {
+    ...data,
+    dataCadastro: `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`,
+  });
+};
 
 const login = async (email, senha) => {
   const response = await http.mainInstance.get(API_URL);

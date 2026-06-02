@@ -11,46 +11,56 @@ function Cadastro() {
   // Hook para navegação programática entre páginas
   const navigate = useNavigate();
   
-  // Estado para armazenar todos os dados do formulário
+  // Estado para armazenar os dados básicos do formulário
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
     senha: '',
     confirmarSenha: '',
-    tipoUsuario: 'usuario'
+    tipoUsuario: 'usuario',
   });
   const [loading, setLoading] = useState(false);
 
   // ========== FUNÇÕES DE MANIPULAÇÃO ==========
   
   // Função para processar o cadastro do usuário
+  const validarFormulario = () => {
+    if (!formData.nome.trim()) return 'Preencha seu nome completo.';
+    if (!formData.email.trim()) return 'Preencha seu e-mail.';
+    if (!formData.senha.trim()) return 'Preencha sua senha.';
+    if (formData.senha !== formData.confirmarSenha) return 'As senhas não coincidem.';
+    return '';
+  };
+
   const handleCadastro = async () => {
-    if (!formData.nome || !formData.email || !formData.senha || !formData.confirmarSenha) {
-      alert('Por favor, preencha todos os campos!');
+    const erroValidacao = validarFormulario();
+    if (erroValidacao) {
+      alert(erroValidacao);
       return;
     }
-    if (formData.senha !== formData.confirmarSenha) {
-      alert('As senhas não coincidem!');
-      return;
-    }
+
     setLoading(true);
     try {
-      const response = await UsuarioService.cadastrar({
+      await UsuarioService.cadastrar({
         nome: formData.nome,
         email: formData.email,
         senha: formData.senha,
         nivelAcesso: formData.tipoUsuario === 'dono' ? 'admin' : 'usuario',
         statusUsuario: true,
       });
-      // Salvar o usuário criado no localStorage
-      localStorage.setItem('user', JSON.stringify(response.data));
-      alert('Cadastro realizado com sucesso!');
+
+      await UsuarioService.login(formData.email, formData.senha);
+
       if (formData.tipoUsuario === 'dono') {
-        navigate('/admin');
-      } else {
-        navigate('/inicial');
+        // após cadastro, levar o dono para página separada de cadastro do pesqueiro
+        navigate('/cadastro-pesqueiro');
+        return;
       }
+
+      alert('Cadastro realizado com sucesso!');
+      navigate('/inicial');
     } catch (err) {
+      console.error(err);
       alert('Erro ao cadastrar. Tente novamente.');
     } finally {
       setLoading(false);
@@ -162,8 +172,9 @@ function Cadastro() {
           onChange={handleInputChange}
           required
         />
-        
-        {/* Botão principal de cadastro */}
+
+        {/* Se for proprietário, o preenchimento dos dados do pesqueiro é feito na página separada após o cadastro */}
+
         <button type="button" onClick={handleCadastro} disabled={loading}>
           {loading ? 'Cadastrando...' : 'Cadastrar-se'}
         </button>

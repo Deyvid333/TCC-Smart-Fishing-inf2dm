@@ -53,7 +53,7 @@ function Login() {
   };
 
   return (
-    <div className="container">
+    <div className="form-wrapper">
       <form className="custom-form">
         <h1>Seja Bem Vindo de Volta</h1>
         

@@ -39,6 +39,7 @@ function App() {
         <Route path="/pesqueiros" element={<Home />} />
         
         {/* Páginas dos pesqueiros individuais */}
+        <Route path="/pesqueiro/:id" element={<Pesqueiro />} />
         <Route path="/Pesqueiro" element={<Pesqueiro />} />
         <Route path="/Pesqueiro2" element={<Pesqueiro2 />} />
         <Route path="/Pesqueiro3" element={<Pesqueiro3 />} />
