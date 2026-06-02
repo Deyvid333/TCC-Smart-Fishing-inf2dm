@@ -99,8 +99,8 @@ function PesqueiroDinamico() {
   }
 
   const partes = pesqueiro.informacao ? pesqueiro.informacao.split('|') : [];
-  const catalogoPart = partes.find(p => p.startsWith('F:'))?.replace('F:', '') || '';
-  const infoRapida = pesqueiro.descricao?.includes(' | ') ? pesqueiro.descricao.split(' | ')[1] || '' : '';
+  const catalogoPart = pesqueiro.descricao?.split(' | ').find(p => p.startsWith('F:'))?.replace('F:', '') || '';
+  const infoRapida = pesqueiro.descricao?.split(' | ').find(p => p.startsWith('Info:'))?.replace('Info:', '') || '';
   const descricaoTexto = pesqueiro.descricao?.split(' | ')[0] || '';
   const regrasPermitido = partes.find(p => p.startsWith('P:'))?.replace('P:', '') || '';
   const regrasProibido = partes.find(p => p.startsWith('X:'))?.replace('X:', '') || '';
@@ -129,7 +129,7 @@ function PesqueiroDinamico() {
                 <div className="col-md-8">
                   <h2 className="info-title">{pesqueiro.nome}</h2>
                   {descricaoTexto && <p className="info-description">{descricaoTexto}</p>}
-                  {infoRapida && <p className="info-highlight">{infoRapida}</p>}
+                  {infoRapida && <p className="info-highlight" style={{ whiteSpace: 'pre-wrap' }}>{infoRapida}</p>}
                 </div>
                 <div className="col-md-4">
                   <div className="info-details">

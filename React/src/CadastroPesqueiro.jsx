@@ -5,6 +5,12 @@ import PesqueiroService from './services/PesqueiroService';
 import UsuarioPesqueiroService from './services/UsuarioPesqueiroService';
 import UsuarioService from './services/UsuarioService';
 
+const PEIXES_DISPONIVEIS = [
+  'tilapia','dourado','carpa','pacu','tambaqui','pintado','traira',
+  'curimbata','lambari','piau','patinga','jundia','matrinxa','tucunare',
+  'tambacu','cachara','bicuda','trairao','catfish'
+];
+
 function CadastroPesqueiro() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -25,6 +31,16 @@ function CadastroPesqueiro() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const togglePeixe = (peixe) => {
+    const selecionados = formData.catalogoPeixes
+      ? formData.catalogoPeixes.split(',').map(p => p.trim().toLowerCase()).filter(Boolean)
+      : [];
+    const novos = selecionados.includes(peixe)
+      ? selecionados.filter(p => p !== peixe)
+      : [...selecionados, peixe];
+    setFormData({ ...formData, catalogoPeixes: novos.join(', ') });
+  };
+
   const handleSubmit = async () => {
     if (!formData.nomePesqueiro.trim()) {
       alert('Preencha o nome do pesqueiro.');
@@ -39,31 +55,30 @@ function CadastroPesqueiro() {
         return;
       }
 
+      // Construir descrição com catálogo de peixes
+      const partesDescricao = [
+        formData.descricaoPesqueiro,
+        formData.informacoesRapidas ? 'Info:' + formData.informacoesRapidas : '',
+        formData.catalogoPeixes ? 'F:' + formData.catalogoPeixes : '',
+      ].filter(Boolean);
+
+      // Construir informação com regras
+      const partesInformacao = [
+        formData.regrasPermitido ? 'P:' + formData.regrasPermitido.substring(0, 80) : '',
+        formData.regrasProibido ? 'X:' + formData.regrasProibido.substring(0, 80) : '',
+      ].filter(Boolean);
+
       const novoPesqueiro = {
         nome: formData.nomePesqueiro,
         telefone: formData.telefone || null,
-        descricao: formData.descricaoPesqueiro || null,
-        informacao: formData.catalogoPeixes || null,
+        descricao: partesDescricao.join(' | ').substring(0, 600) || null,
+        informacao: partesInformacao.join('|').substring(0, 100) || null,
         cep: formData.cep ? formData.cep.replace(/\D/g, '').substring(0, 8) : null,
         numero: formData.numero ? formData.numero.substring(0, 10) : null,
         complemento: formData.complemento ? formData.complemento.substring(0, 50) : null,
         statusPesqueiro: true,
         dataCadastro: new Date().toISOString().split('T')[0],
       };
-
-      if (formData.regrasPermitido || formData.regrasProibido || formData.informacoesRapidas) {
-        novoPesqueiro.descricao = [
-          formData.descricaoPesqueiro,
-          formData.informacoesRapidas,
-        ].filter(Boolean).join(' | ') || null;
-
-        const regras = [
-          formData.regrasPermitido ? 'P:' + formData.regrasPermitido.substring(0, 80) : '',
-          formData.regrasProibido ? 'X:' + formData.regrasProibido.substring(0, 80) : '',
-          formData.catalogoPeixes ? 'F:' + formData.catalogoPeixes.substring(0, 80) : '',
-        ].filter(Boolean).join('|');
-        novoPesqueiro.informacao = regras.substring(0, 250) || null;
-      }
 
       const responsePesqueiro = await PesqueiroService.criar(novoPesqueiro);
 
@@ -179,14 +194,41 @@ function CadastroPesqueiro() {
         {/* SEÇÃO 4 - Catálogo */}
         <div className="card info-card mb-5">
           <div className="card-body p-4">
-            <h5 className="mb-2" style={{ color: '#112D4E', borderBottom: '2px solid #DBE2EF', paddingBottom: '10px' }}>
+            <h5 className="mb-3" style={{ color: '#112D4E', borderBottom: '2px solid #DBE2EF', paddingBottom: '10px' }}>
               🐟 Catálogo de Peixes
             </h5>
             <small className="text-muted d-block mb-3">
-              Digite os nomes separados por vírgula, sem acento. Nomes reconhecidos:
-              <strong> tilapia, dourado, carpa, pacu, tambaqui, pintado, traira, lambari, piau, patinga, jundia, matrinxa, tucunare, tambacu, cachara, bicuda, trairao, catfish</strong>
+              Clique para selecionar os peixes disponíveis no seu pesqueiro:
             </small>
-            <input className="form-control" name="catalogoPeixes" placeholder="Ex: tilapia, dourado, carpa, pacu" value={formData.catalogoPeixes} onChange={handleInputChange} />
+            <div className="row g-2">
+              {PEIXES_DISPONIVEIS.map(peixe => {
+                const peixesSelecionados = formData.catalogoPeixes
+                  ? formData.catalogoPeixes.split(',').map(p => p.trim().toLowerCase()).filter(Boolean)
+                  : [];
+                const marcado = peixesSelecionados.includes(peixe);
+                return (
+                  <div key={peixe} className="col-6 col-md-3">
+                    <div
+                      onClick={() => togglePeixe(peixe)}
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        border: marcado ? '2px solid #3F72AF' : '2px solid #DBE2EF',
+                        background: marcado ? '#DBE2EF' : '#F9F7F7',
+                        fontWeight: marcado ? '600' : '400',
+                        color: marcado ? '#112D4E' : '#666',
+                        textTransform: 'capitalize',
+                        userSelect: 'none',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {marcado ? '✓ ' : ''}{peixe}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
