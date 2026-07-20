@@ -14,10 +14,8 @@ const cadastrar = (data) => {
 };
 
 const login = async (email, senha) => {
-  const response = await http.mainInstance.get(API_URL);
-  const usuarios = response.data;
-  const usuario = usuarios.find(u => u.email === email && u.senha === senha);
-  if (!usuario) throw new Error('Email ou senha inválidos');
+  const response = await http.mainInstance.post(`${API_URL}/login`, { email, senha });
+  const usuario = response.data;
   localStorage.setItem('user', JSON.stringify(usuario));
   return usuario;
 };

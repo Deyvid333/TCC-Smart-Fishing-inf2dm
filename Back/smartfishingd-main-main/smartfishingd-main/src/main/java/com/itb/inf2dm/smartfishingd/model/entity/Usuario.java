@@ -24,7 +24,7 @@ public class Usuario {
     @Column(name = "nivelAcesso")
     private String nivelAcesso;
     @Column(name = "foto")
-    private String foto;
+    private byte[] foto;
     @Column(name = "dataCadastro")
     private LocalDate dataCadastro;
     @Column(name = "statusUsuario")
@@ -71,11 +71,11 @@ public class Usuario {
         this.nivelAcesso = nivelAcesso;
     }
 
-    public String getFoto() {
+    public byte[] getFoto() {
         return foto;
     }
 
-    public void setFoto(String foto) {
+    public void setFoto(byte[] foto) {
         this.foto = foto;
     }
 

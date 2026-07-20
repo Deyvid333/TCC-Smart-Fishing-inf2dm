@@ -1,17 +1,22 @@
 package com.itb.inf2dm.smartfishingd.controller;
 
-import com.itb.inf2dm.smartfishingd.model.entity.Usuario;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.itb.inf2dm.smartfishingd.services.UsuarioService;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import com.itb.inf2dm.smartfishingd.model.entity.Usuario;
+import com.itb.inf2dm.smartfishingd.services.UsuarioService;
 
 @RestController
 @RequestMapping("/api/v1/usuario")
@@ -76,6 +81,25 @@ public class ControllerUsuario {
             );
         }
     }
+
+        @PostMapping("/login")
+public ResponseEntity<Object> login(@RequestBody Usuario usuario) {
+    try {
+        Usuario usuarioLogado = usuarioService.login(
+            usuario.getEmail(), 
+            usuario.getSenha()
+        );
+        return ResponseEntity.ok(usuarioLogado);
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(401).body(
+            Map.of(
+                "status", 401,
+                "error", "Unauthorized",
+                "message", e.getMessage()
+            )
+        );
+    }
+}
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletarUsuarioPorId(@PathVariable String id) {
