@@ -1,0 +1,560 @@
+/* ==========================================================================
+   SMART FISHING — Estilos das páginas de autenticação (Login e Cadastro)
+   --------------------------------------------------------------------------
+   Paleta oficial do projeto:
+     #001242  azul profundo  -> base escura, painel da marca
+     #3685b5  azul médio     -> estrutura e apoio (cor secundária)
+     #7bcdba  verde água     -> realces sobre fundo escuro
+     #285238  verde escuro   -> cor de destaque (botões de ação)
+     #ffffff  branco         -> superfícies
+   ========================================================================== */
+
+.auth-page {
+  /* ---- Paleta ---- */
+  --navy: #001242;
+  --navy-soft: #05235f;
+  --blue: #3685b5;
+  --blue-light: #6fb0d8;
+  --mint: #7bcdba;
+  --green: #285238;
+  --green-light: #34694a;
+
+  --white: #ffffff;
+  --surface: #f4f8fb;   /* branco levemente azulado, evita o "branco seco" */
+  --line: #dfe8f0;
+
+  --text: #0d1b33;
+  --text-soft: #5a6a83;
+  --text-on-dark: rgba(255, 255, 255, 0.82);
+
+  /* ---- Escala de espaçamento (mantém tudo alinhado) ---- */
+  --sp-1: 6px;
+  --sp-2: 12px;
+  --sp-3: 18px;
+  --sp-4: 26px;
+  --sp-5: 40px;
+
+  --radius: 14px;
+  --radius-lg: 24px;
+
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  background: var(--surface);
+  color: var(--text);
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+}
+
+/* Neutraliza a transição global do App.css dentro destas páginas */
+.auth-page * {
+  transition: none;
+}
+
+/* ==========================================================================
+   PAINEL DA MARCA (lado esquerdo) — azul descendo do profundo ao médio
+   ========================================================================== */
+
+.auth-brand {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--sp-5) clamp(32px, 5vw, 72px);
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-soft) 45%, var(--blue) 100%);
+  color: var(--white);
+  isolation: isolate;
+}
+
+/* Brilho suave verde-água no canto, dá profundidade ao azul */
+.auth-brand::before {
+  content: '';
+  position: absolute;
+  inset: auto -20% -35% -20%;
+  height: 70%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(123, 205, 186, 0.28), transparent 70%);
+  z-index: -1;
+}
+
+/* Ondas decorativas no rodapé do painel */
+.auth-waves {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 120px;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
+}
+
+.auth-logo-mark {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(140deg, var(--mint), var(--blue));
+  box-shadow: 0 8px 20px rgba(0, 18, 66, 0.45);
+}
+
+.auth-logo-mark svg {
+  width: 26px;
+  height: 26px;
+  color: var(--navy);
+}
+
+.auth-logo-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.auth-logo-text span {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mint);
+}
+
+.auth-brand-title {
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: var(--sp-3);
+  max-width: 12ch;
+  /* Anula o h2 global do App.css, que pintava o texto de azul escuro */
+  color: var(--white);
+  text-shadow: none;
+}
+
+.auth-brand-title em {
+  font-style: normal;
+  color: var(--mint);
+}
+
+.auth-brand-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-on-dark);
+  max-width: 42ch;
+  margin-bottom: var(--sp-5);
+}
+
+.auth-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.auth-highlights li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 0.95rem;
+  color: var(--text-on-dark);
+}
+
+.auth-highlights svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  padding: 4px;
+  border-radius: 50%;
+  background: rgba(123, 205, 186, 0.16);
+  color: var(--mint);
+}
+
+/* ==========================================================================
+   PAINEL DO FORMULÁRIO (lado direito)
+   ========================================================================== */
+
+.auth-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-5) clamp(24px, 4vw, 56px);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-card-header {
+  margin-bottom: var(--sp-4);
+}
+
+.auth-card h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 var(--sp-1);
+  text-shadow: none;      /* remove a sombra herdada do App.css */
+  letter-spacing: -0.01em;
+}
+
+.auth-card-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-soft);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+/* ---- Seletor de tipo de usuário (segmentado) ---- */
+
+.auth-segment-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: var(--sp-1);
+}
+
+.auth-segment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+.auth-segment-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.auth-segment-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.auth-segment-face {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  height: 100%;
+  padding: 14px 14px 13px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.auth-segment-face svg {
+  width: 22px;
+  height: 22px;
+  color: var(--blue);
+  margin-bottom: 3px;
+}
+
+.auth-segment-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.2;
+}
+
+.auth-segment-desc {
+  font-size: 0.76rem;
+  color: var(--text-soft);
+  line-height: 1.35;
+}
+
+.auth-segment-option:hover .auth-segment-face {
+  border-color: var(--blue-light);
+}
+
+.auth-segment-option input:checked + .auth-segment-face {
+  border-color: var(--green);
+  background: rgba(123, 205, 186, 0.12);
+  box-shadow: 0 0 0 3px rgba(123, 205, 186, 0.22);
+}
+
+.auth-segment-option input:checked + .auth-segment-face svg,
+.auth-segment-option input:checked + .auth-segment-face .auth-segment-title {
+  color: var(--green);
+}
+
+.auth-segment-option input:focus-visible + .auth-segment-face {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* ---- Campos ---- */
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.auth-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.auth-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input > svg {
+  position: absolute;
+  left: 15px;
+  width: 19px;
+  height: 19px;
+  color: var(--blue);
+  pointer-events: none;
+}
+
+.auth-input input {
+  width: 100%;
+  height: 50px;
+  padding: 0 16px 0 46px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  outline: none;
+  box-shadow: none;
+}
+
+.auth-input input::placeholder {
+  color: #9aa8bd;
+}
+
+.auth-input input:hover {
+  border-color: #c3d3e2;
+}
+
+.auth-input input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(54, 133, 181, 0.18);
+}
+
+/* Campo com senha: espaço para o botão do olho */
+.auth-input.has-toggle input {
+  padding-right: 48px;
+}
+
+.auth-toggle-eye {
+  position: absolute;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.auth-toggle-eye svg {
+  width: 19px;
+  height: 19px;
+}
+
+.auth-toggle-eye:hover {
+  background: var(--surface);
+  color: var(--navy);
+}
+
+/* Duas colunas para senha + confirmar senha em telas largas */
+.auth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+/* ---- Mensagens ---- */
+
+.auth-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font-size: 0.87rem;
+  line-height: 1.45;
+}
+
+.auth-alert svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.auth-alert.is-error {
+  background: #fdecec;
+  border: 1px solid #f5c6c6;
+  color: #a12626;
+}
+
+.auth-alert.is-success {
+  background: rgba(123, 205, 186, 0.16);
+  border: 1px solid var(--mint);
+  color: var(--green);
+}
+
+/* ---- Botão principal (verde = cor de destaque) ---- */
+
+.auth-submit {
+  height: 52px;
+  margin-top: var(--sp-1);
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(40, 82, 56, 0.28);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.auth-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(40, 82, 56, 0.34);
+  filter: brightness(1.06);
+}
+
+.auth-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ---- Link de senha esquecida ---- */
+
+.auth-forgot {
+  align-self: flex-end;
+  margin-top: -4px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+.auth-forgot:hover {
+  color: var(--navy);
+  text-decoration: underline;
+}
+
+/* ---- Rodapé do card ---- */
+
+.auth-footer {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line);
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+.auth-footer a {
+  color: var(--green);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+.auth-terms {
+  margin-top: var(--sp-2);
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--text-soft);
+  text-align: center;
+}
+
+/* ==========================================================================
+   RESPONSIVO
+   ========================================================================== */
+
+@media (max-width: 980px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-brand {
+    padding: var(--sp-4) var(--sp-4) var(--sp-5);
+    text-align: center;
+    align-items: center;
+  }
+
+  .auth-logo {
+    margin-bottom: var(--sp-3);
+  }
+
+  .auth-brand-title {
+    max-width: none;
+    font-size: 1.8rem;
+    margin-bottom: var(--sp-2);
+  }
+
+  .auth-brand-text {
+    margin-bottom: 0;
+  }
+
+  /* Os diferenciais só aparecem no desktop, para não alongar o mobile */
+  .auth-highlights,
+  .auth-waves {
+    display: none;
+  }
+
+  .auth-panel {
+    padding: var(--sp-4) var(--sp-3) var(--sp-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-segment,
+  .auth-row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card h1 {
+    font-size: 1.55rem;
+  }
+}
