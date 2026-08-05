@@ -11,6 +11,7 @@ import AuthLayout, {
   IconeOlhoFechado,
   IconeAlerta,
 } from './Componentes/Auth/AuthLayout';
+import { validarEmail, validarSenha, SENHA_DICA, EMAIL_DICA } from './Componentes/Auth/validacao';
 
 // ========== COMPONENTE DE LOGIN ==========
 function Login() {
@@ -27,8 +28,15 @@ function Login() {
   const handleLogin = async () => {
     setErro('');
 
-    if (!email || !senha) {
-      setErro('Por favor, preencha o e-mail e a senha.');
+    const erroEmail = validarEmail(email);
+    if (erroEmail) {
+      setErro(erroEmail);
+      return;
+    }
+
+    const erroSenha = validarSenha(senha);
+    if (erroSenha) {
+      setErro(erroSenha);
       return;
     }
 
@@ -129,13 +137,14 @@ function Login() {
               id="email"
               name="email"
               type="email"
-              placeholder="seuemail@exemplo.com"
+              placeholder="seuemail@gmail.com"
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
+          <p className="auth-hint">{EMAIL_DICA}</p>
         </div>
 
         {/* ===== Senha ===== */}
@@ -162,6 +171,7 @@ function Login() {
               {mostrarSenha ? <IconeOlhoFechado /> : <IconeOlhoAberto />}
             </button>
           </div>
+          <p className="auth-hint">{SENHA_DICA}</p>
         </div>
 
         <button type="button" className="auth-forgot" onClick={handleForgotPassword}>

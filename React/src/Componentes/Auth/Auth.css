@@ -363,6 +363,14 @@
   padding-right: 48px;
 }
 
+/* Texto de ajuda abaixo de um campo (ex: regras da senha) */
+.auth-hint {
+  font-size: 0.76rem;
+  color: var(--text-soft);
+  margin: 2px 2px 0;
+  line-height: 1.4;
+}
+
 .auth-toggle-eye {
   position: absolute;
   right: 8px;

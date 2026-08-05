@@ -12,6 +12,7 @@ import AuthLayout, {
   IconeAlerta,
   IconeCheck,
 } from './Componentes/Auth/AuthLayout';
+import { validarEmail, validarSenha, SENHA_DICA, EMAIL_DICA } from './Componentes/Auth/validacao';
 
 // ========== COMPONENTE DE CADASTRO ==========
 function Cadastro() {
@@ -37,9 +38,13 @@ function Cadastro() {
 
   const validarFormulario = () => {
     if (!formData.nome.trim()) return 'Preencha seu nome completo.';
-    if (!formData.email.trim()) return 'Preencha seu e-mail.';
-    if (!formData.senha.trim()) return 'Preencha sua senha.';
-    if (formData.senha.length < 6) return 'A senha precisa ter pelo menos 6 caracteres.';
+
+    const erroEmail = validarEmail(formData.email);
+    if (erroEmail) return erroEmail;
+
+    const erroSenha = validarSenha(formData.senha);
+    if (erroSenha) return erroSenha;
+
     if (formData.senha !== formData.confirmarSenha) return 'As senhas não coincidem.';
     return '';
   };
@@ -173,13 +178,14 @@ function Cadastro() {
               id="email"
               name="email"
               type="email"
-              placeholder="seuemail@exemplo.com"
+              placeholder="seuemail@gmail.com"
               autoComplete="email"
               value={formData.email}
               onChange={handleInputChange}
               required
             />
           </div>
+          <p className="auth-hint">{EMAIL_DICA}</p>
         </div>
 
         {/* ===== Senhas (lado a lado no desktop) ===== */}
@@ -192,7 +198,7 @@ function Cadastro() {
                 id="senha"
                 name="senha"
                 type={mostrarSenha ? 'text' : 'password'}
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Crie uma senha"
                 autoComplete="new-password"
                 value={formData.senha}
                 onChange={handleInputChange}
@@ -207,6 +213,7 @@ function Cadastro() {
                 {mostrarSenha ? <IconeOlhoFechado /> : <IconeOlhoAberto />}
               </button>
             </div>
+            <p className="auth-hint">{SENHA_DICA}</p>
           </div>
 
           <div className="auth-field">
