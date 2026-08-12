@@ -1,7 +1,14 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/"; //local(desenvolvimento)
-//const API_URL = "https://special-umbrella-r49pj9qjw7625gxg-8080.app.github.dev/"; //codespace
+const getApiUrl = () => {
+  const { hostname } = window.location;
+  if (hostname.endsWith(".app.github.dev")) {
+    return `https://${hostname.replace(/-\d+\.app\.github\.dev$/, "-8080.app.github.dev")}/`;
+  }
+  return "http://localhost:8080/";
+};
+
+const API_URL = getApiUrl();
 
 const mainInstance = axios.create({
   baseURL: API_URL,
