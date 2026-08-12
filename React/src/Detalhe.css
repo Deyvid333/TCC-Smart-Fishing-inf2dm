@@ -1,0 +1,439 @@
+/* ==========================================================================
+   SMART FISHING — Detalhe do pesqueiro (PesqueiroDinamico.jsx)
+   ========================================================================== */
+
+.detalhe-page {
+  --navy: #001242;
+  --navy-soft: #05235f;
+  --blue: #3685b5;
+  --blue-light: #6fb0d8;
+  --mint: #7bcdba;
+  --green: #285238;
+  --green-light: #34694a;
+
+  --white: #ffffff;
+  --surface: #f4f8fb;
+  --line: #dfe8f0;
+
+  --text: #0d1b33;
+  --text-soft: #5a6a83;
+  --text-on-dark: rgba(255, 255, 255, 0.82);
+
+  --radius: 14px;
+  --radius-lg: 24px;
+
+  min-height: 100vh;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--surface);
+  padding-bottom: 50px;
+}
+
+.detalhe-page * {
+  transition: none;
+}
+
+/* ---- Hero ---- */
+
+.detalhe-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 80px 24px 90px;
+  text-align: center;
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-soft) 45%, var(--blue) 100%);
+  color: var(--white);
+}
+
+.detalhe-hero::before {
+  content: '';
+  position: absolute;
+  inset: auto -20% -60% -20%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(123, 205, 186, 0.28), transparent 70%);
+  z-index: -1;
+}
+
+.detalhe-hero h1 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+  text-shadow: none;
+}
+
+.detalhe-waves {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 100px;
+}
+
+/* ---- Layout geral ---- */
+
+.detalhe-content {
+  max-width: 1080px;
+  margin: -36px auto 0;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.detalhe-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(0, 18, 66, 0.07);
+  padding: 34px clamp(20px, 4vw, 42px);
+  margin-bottom: 28px;
+}
+
+.detalhe-card h2 {
+  color: var(--navy);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  text-shadow: none;
+}
+
+/* ---- Info principal ---- */
+
+.detalhe-info-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 32px;
+}
+
+.detalhe-description {
+  color: var(--text-soft);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 12px;
+  white-space: pre-wrap;
+}
+
+.detalhe-highlight {
+  color: var(--green);
+  font-weight: 600;
+  font-style: italic;
+  margin: 0;
+}
+
+.detalhe-quickinfo {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.detalhe-quickinfo h5 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-bottom: 14px;
+}
+
+.detalhe-quickinfo-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.detalhe-quickinfo-row:last-child {
+  border-bottom: none;
+}
+
+.detalhe-quickinfo-row svg {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: var(--blue);
+}
+
+.detalhe-quickinfo-row strong {
+  color: var(--navy);
+}
+
+/* ---- Regras ---- */
+
+.detalhe-rules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.detalhe-rules-col {
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.detalhe-rules-col.is-allowed {
+  border-left: 4px solid var(--mint);
+}
+
+.detalhe-rules-col.is-forbidden {
+  border-left: 4px solid #e0847a;
+}
+
+.detalhe-rules-col h6 {
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.detalhe-rules-col.is-allowed h6 {
+  color: var(--green);
+}
+
+.detalhe-rules-col.is-forbidden h6 {
+  color: #b3453a;
+}
+
+.detalhe-rules-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.detalhe-rules-col li {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-soft);
+  font-size: 0.88rem;
+}
+
+.detalhe-rules-col li:last-child {
+  border-bottom: none;
+}
+
+/* ---- Peixes ---- */
+
+.detalhe-fish {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.detalhe-fish img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.detalhe-fish-info h4 {
+  color: var(--navy);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.detalhe-fish-info p {
+  color: var(--text-soft);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.detalhe-fish-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.detalhe-fish-nav-btn {
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--white);
+  color: var(--navy);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.detalhe-fish-nav-btn:hover {
+  border-color: var(--blue-light);
+  color: var(--blue);
+}
+
+.detalhe-fish-nav-count {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+/* ---- Comentários ---- */
+
+.detalhe-comment-you {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  margin-bottom: 14px;
+}
+
+.detalhe-comment-you strong {
+  color: var(--navy);
+}
+
+.detalhe-stars-input {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.detalhe-stars-input button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.7rem;
+  padding: 0 3px;
+  line-height: 1;
+}
+
+.detalhe-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  resize: vertical;
+  min-height: 90px;
+}
+
+.detalhe-textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(54, 133, 181, 0.18);
+}
+
+.detalhe-comment-submit {
+  margin-top: 14px;
+  height: 46px;
+  padding: 0 28px;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
+  color: var(--white);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(40, 82, 56, 0.28);
+}
+
+.detalhe-comment-submit:hover {
+  filter: brightness(1.06);
+}
+
+.detalhe-comment-list {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.detalhe-comment-list h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+.detalhe-comment-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.detalhe-comment-item:last-child {
+  border-bottom: none;
+}
+
+.detalhe-comment-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+  gap: 12px;
+}
+
+.detalhe-comment-name {
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.detalhe-comment-date {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+
+.detalhe-comment-delete {
+  margin-left: 10px;
+  border: 1.5px solid #f5c6c6;
+  background: transparent;
+  color: #a12626;
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.detalhe-comment-delete:hover {
+  background: #fdecec;
+}
+
+.detalhe-comment-text {
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.detalhe-empty {
+  text-align: center;
+  color: var(--text-soft);
+  padding: 20px 0 4px;
+}
+
+.detalhe-not-found {
+  text-align: center;
+  color: var(--text-soft);
+  padding: 80px 24px;
+}
+
+@media (max-width: 860px) {
+  .detalhe-info-grid,
+  .detalhe-rules-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detalhe-fish {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .detalhe-fish img {
+    width: 100%;
+    max-width: 280px;
+    height: 200px;
+  }
+}

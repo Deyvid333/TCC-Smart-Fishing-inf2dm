@@ -1,44 +1,43 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
 import pesqueiro from './assets/imagensPeixes/pesqueiro1home.jpg';
 import pesqueiro2 from './assets/imagensPeixes/pesqueiro2home.jpg';
 import pesqueiro3 from './assets/imagensPeixes/pesqueiro3home.jpg';
 import { Link } from 'react-router-dom';
 import PesqueiroService from './services/PesqueiroService';
-import './App.css';
+import './Explorar.css';
 
-const samplePesqueiros = [
-  {
-    id: 'sample-1',
-    nome: 'Pesqueiro Águas Claras',
-    imagem: pesqueiro,
-    avaliacao: '4.7',
-    horario: '8h às 22h30',
-    preco: 'R$18 (úteis) | R$25 (fins de semana)',
-    servicos: 'Restaurante, quiosque, estacionamento',
-    link: '/Pesqueiro',
-  },
-  {
-    id: 'sample-2',
-    nome: 'Pesqueiro Lago do Pescador',
-    imagem: pesqueiro2,
-    avaliacao: '4.3',
-    horario: '8h às 19h',
-    preco: 'R$20 por dia',
-    servicos: 'Restaurante, peixes frescos',
-    link: '/Pesqueiro2',
-  },
-  {
-    id: 'sample-3',
-    nome: 'Lago da Rocha do Norte',
-    imagem: pesqueiro3,
-    avaliacao: '4.7',
-    horario: 'Aberto 24h',
-    preco: 'R$15 por dia',
-    servicos: 'Quiosque, estacionamento',
-    link: '/Pesqueiro3',
-  },
-];
+const IconeEstrela = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 3.5l2.6 5.4 5.9.9-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.2 5.9-.9L12 3.5z" />
+  </svg>
+);
+
+const IconeRelogio = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3.5 2" />
+  </svg>
+);
+
+const IconeEtiqueta = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20.5 12.5 12 21l-9-9L11.5 3.5H20a1.5 1.5 0 0 1 1.5 1.5v7.5z" />
+    <circle cx="16" cy="8" r="1.2" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const IconeQuiosque = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M3 9l1.5-5h15L21 9" />
+    <path d="M4 9v11h16V9" />
+    <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" />
+    <path d="M10 20v-5h4v5" />
+  </svg>
+);
 
 function Home() {
   const [backendPesqueiros, setBackendPesqueiros] = useState([]);
@@ -59,7 +58,6 @@ function Home() {
             horario: item.informacao || 'Consulte o pesqueiro',
             preco: 'Consulte o pesqueiro',
             servicos: item.descricao || 'Serviços não informados',
-            link: '/pesqueiro-dinamico',
             pesqueiroData: item,
           };
         });
@@ -75,65 +73,59 @@ function Home() {
     fetchPesqueiros();
   }, []);
 
-  const pesqueiros = [...samplePesqueiros, ...backendPesqueiros];
-
   return (
-    <>
+    <div className="explorar-page">
       <Navbar />
-      <div className="user-page-content">
-        <div className="pesqueiros-hero">
-          <div className="container text-center">
-            <h1 className="hero-title">Explore os Pesqueiros</h1>
-            <p className="hero-subtitle">Descubra os melhores locais para sua pescaria</p>
-          </div>
-        </div>
 
-        <div className="pesqueiros-map-section">
-          <div className="container">
-            <h2 className="section-title text-center mb-5">Pesqueiros Disponíveis</h2>
-            {loading && (
-              <div className="text-center mb-4 text-white">Carregando pesqueiros...</div>
-            )}
-            <div className="row g-4">
-              {pesqueiros.map((pesqueiroItem, index) => (
-                <div key={pesqueiroItem.id ?? index} className="col-lg-4 col-md-6">
-                  <div className="card h-100">
-                    <div className="position-relative">
-                      <img
-                        src={pesqueiroItem.imagem}
-                        className="card-img-top"
-                        alt={pesqueiroItem.nome}
-                        style={{ height: '200px', objectFit: 'cover' }}
-                      />
-                      <span className="position-absolute top-0 end-0 m-2 badge bg-primary">
-                        {pesqueiroItem.avaliacao}
-                      </span>
-                    </div>
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title">{pesqueiroItem.nome}</h5>
-                      <div className="mb-3 flex-grow-1">
-                        <p className="mb-2">{pesqueiroItem.horario}</p>
-                        <p className="mb-2">{pesqueiroItem.preco}</p>
-                        <p className="mb-0">{pesqueiroItem.servicos}</p>
-                      </div>
-                      <Link
-                        to={pesqueiroItem.pesqueiroData ? '/pesqueiro-dinamico' : pesqueiroItem.link}
-                        state={pesqueiroItem.pesqueiroData ? { pesqueiro: pesqueiroItem.pesqueiroData } : undefined}
-                        className="btn btn-primary mt-auto"
-                      >
-                        Explorar Pesqueiro
-                      </Link>
-                    </div>
-                  </div>
+      <section className="explorar-hero">
+        <h1>Explore os Pesqueiros</h1>
+        <p>Descubra os melhores locais para sua pescaria</p>
+
+        <svg className="explorar-waves" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="rgba(123,205,186,0.35)" d="M0 55c180-35 300 35 480 26s300-60 480-43 300 52 480 34v43H0z" />
+          <path fill="#f4f8fb" d="M0 78c200-26 340 22 520 13s320-48 480-31 260 39 440 26v22H0z" />
+        </svg>
+      </section>
+
+      <section className="explorar-section">
+        {loading && (
+          <div className="explorar-status">Carregando pesqueiros...</div>
+        )}
+
+        {!loading && backendPesqueiros.length === 0 && (
+          <div className="explorar-status">Nenhum pesqueiro cadastrado ainda.</div>
+        )}
+
+        {!loading && backendPesqueiros.length > 0 && (
+          <div className="explorar-grid">
+            {backendPesqueiros.map((pesqueiroItem) => (
+              <div key={pesqueiroItem.id} className="explorar-card">
+                <div className="explorar-card-image">
+                  <img src={pesqueiroItem.imagem} alt={pesqueiroItem.nome} />
+                  <span className="explorar-card-rating"><IconeEstrela /> {pesqueiroItem.avaliacao}</span>
+                  <h3 className="explorar-card-name">{pesqueiroItem.nome}</h3>
                 </div>
-              ))}
-            </div>
+                <div className="explorar-card-body">
+                  <div className="explorar-card-facts">
+                    <div className="explorar-card-fact"><IconeRelogio /> {pesqueiroItem.horario}</div>
+                    <div className="explorar-card-fact"><IconeEtiqueta /> {pesqueiroItem.preco}</div>
+                    <div className="explorar-card-fact"><IconeQuiosque /> {pesqueiroItem.servicos}</div>
+                  </div>
+                  <Link
+                    to="/pesqueiro-dinamico"
+                    state={{ pesqueiro: pesqueiroItem.pesqueiroData }}
+                    className="explorar-card-btn"
+                  >
+                    Explorar Pesqueiro
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </div>
-    </>
+        )}
+      </section>
+    </div>
   );
 }
 
 export default Home;
-

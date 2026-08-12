@@ -1,7 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
-import './App.css';
+import './Detalhe.css';
+
+const IconeTelefone = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .6 2.9a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.5 2.9.6a2 2 0 0 1 1.7 2.1z" />
+  </svg>
+);
+
+const IconePin = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z" />
+    <circle cx="12" cy="9.5" r="2.5" />
+  </svg>
+);
+
+const IconeCalendario = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3" y="5" width="18" height="16" rx="2" />
+    <path d="M8 3v4M16 3v4M3 10h18" />
+  </svg>
+);
 
 import imgTilapia from './assets/fotoCatalogo/Tilapia.jpg';
 import imgDourado from './assets/fotoCatalogo/Dourado.jpg';
@@ -72,7 +95,7 @@ function PesqueiroDinamico() {
   const authorName = currentUser?.nome || 'Visitante';
 
   const renderStars = (count) => Array.from({ length: 5 }, (_, i) => (
-    <span key={i} style={{ color: i < count ? '#ffc107' : '#ddd', fontSize: '1rem' }}>★</span>
+    <span key={i} style={{ color: i < count ? '#f0b429' : '#d8dfe8', fontSize: '1rem' }}>★</span>
   ));
 
   const handleCommentSubmit = (e) => {
@@ -91,10 +114,10 @@ function PesqueiroDinamico() {
 
   if (!pesqueiro) {
     return (
-      <>
+      <div className="detalhe-page">
         <Navbar />
-        <div className="container mt-4 text-center text-white"><h2>Pesqueiro não encontrado.</h2></div>
-      </>
+        <div className="detalhe-not-found"><h2>Pesqueiro não encontrado.</h2></div>
+      </div>
     );
   }
 
@@ -116,144 +139,137 @@ function PesqueiroDinamico() {
   const peixeAtual = peixes[peixeIndex];
 
   return (
-    <>
+    <div className="detalhe-page">
       <Navbar />
-      <div className="user-page-content">
-      <div style={{ width: '90%', maxWidth: '1200px', margin: '0 auto', paddingTop: '20px' }}>
-        <h1 className="text-center mb-4 text-white">{pesqueiro.nome}</h1>
 
-        <div className="info-section mb-5">
-          <div className="card info-card">
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-8">
-                  <h2 className="info-title">{pesqueiro.nome}</h2>
-                  {descricaoTexto && <p className="info-description">{descricaoTexto}</p>}
-                  {infoRapida && <p className="info-highlight" style={{ whiteSpace: 'pre-wrap' }}>{infoRapida}</p>}
-                </div>
-                <div className="col-md-4">
-                  <div className="info-details">
-                    <h5 className="mb-3">Informações Rápidas</h5>
-                    {pesqueiro.telefone && <div className="detail-row"><span><strong>Telefone:</strong> {pesqueiro.telefone}</span></div>}
-                    {pesqueiro.cep && <div className="detail-row"><span><strong>CEP:</strong> {pesqueiro.cep}</span></div>}
-                    {pesqueiro.numero && <div className="detail-row"><span><strong>Número:</strong> {pesqueiro.numero}</span></div>}
-                    {pesqueiro.complemento && <div className="detail-row"><span><strong>Complemento:</strong> {pesqueiro.complemento}</span></div>}
-                    {pesqueiro.dataCadastro && <div className="detail-row"><span><strong>Cadastrado em:</strong> {pesqueiro.dataCadastro}</span></div>}
+      <section className="detalhe-hero">
+        <h1>{pesqueiro.nome}</h1>
+        <svg className="detalhe-waves" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="rgba(123,205,186,0.35)" d="M0 50c180-32 300 32 480 24s300-55 480-39 300 47 480 31v39H0z" />
+          <path fill="#f4f8fb" d="M0 71c200-24 340 20 520 12s320-44 480-28 260 35 440 24v20H0z" />
+        </svg>
+      </section>
+
+      <div className="detalhe-content">
+        <div className="detalhe-card">
+          <div className="detalhe-info-grid">
+            <div>
+              <h2>{pesqueiro.nome}</h2>
+              {descricaoTexto && <p className="detalhe-description">{descricaoTexto}</p>}
+              {infoRapida && <p className="detalhe-highlight">{infoRapida}</p>}
+            </div>
+            <div className="detalhe-quickinfo">
+              <h5>Informações Rápidas</h5>
+              {pesqueiro.telefone && (
+                <div className="detalhe-quickinfo-row"><IconeTelefone /><span><strong>Telefone:</strong> {pesqueiro.telefone}</span></div>
+              )}
+              {pesqueiro.cep && (
+                <div className="detalhe-quickinfo-row"><IconePin /><span><strong>CEP:</strong> {pesqueiro.cep}</span></div>
+              )}
+              {pesqueiro.numero && (
+                <div className="detalhe-quickinfo-row"><IconePin /><span><strong>Número:</strong> {pesqueiro.numero}</span></div>
+              )}
+              {pesqueiro.complemento && (
+                <div className="detalhe-quickinfo-row"><IconePin /><span><strong>Complemento:</strong> {pesqueiro.complemento}</span></div>
+              )}
+              {pesqueiro.dataCadastro && (
+                <div className="detalhe-quickinfo-row"><IconeCalendario /><span><strong>Cadastrado em:</strong> {pesqueiro.dataCadastro}</span></div>
+              )}
+            </div>
+          </div>
+
+          {(regrasPermitido || regrasProibido) && (
+            <div style={{ marginTop: '26px' }}>
+              <h2 style={{ fontSize: '1.15rem', textAlign: 'center' }}>Regras do Pesqueiro</h2>
+              <div className="detalhe-rules-grid">
+                {regrasPermitido && (
+                  <div className="detalhe-rules-col is-allowed">
+                    <h6>Permitido</h6>
+                    <ul>
+                      {regrasPermitido.split('\n').filter(r => r.trim()).map((r, i) => <li key={i}>{r.trim()}</li>)}
+                    </ul>
                   </div>
-                </div>
+                )}
+                {regrasProibido && (
+                  <div className="detalhe-rules-col is-forbidden">
+                    <h6>Proibido</h6>
+                    <ul>
+                      {regrasProibido.split('\n').filter(r => r.trim()).map((r, i) => <li key={i}>{r.trim()}</li>)}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
-
-            {(regrasPermitido || regrasProibido) && (
-              <div className="row mt-4">
-                <div className="col-12">
-                  <div className="rules-section">
-                    <h4 className="rules-title">Regras do Pesqueiro</h4>
-                    <div className="row">
-                      {regrasPermitido && (
-                        <div className="col-md-6">
-                          <div className="rules-allowed">
-                            <h6>Permitido:</h6>
-                            <ul>
-                              {regrasPermitido.split('\n').filter(r => r.trim()).map((r, i) => <li key={i}>{r.trim()}</li>)}
-                            </ul>
-                          </div>
-                        </div>
-                      )}
-                      {regrasProibido && (
-                        <div className="col-md-6">
-                          <div className="rules-forbidden">
-                            <h6>Proibido:</h6>
-                            <ul>
-                              {regrasProibido.split('\n').filter(r => r.trim()).map((r, i) => <li key={i}>{r.trim()}</li>)}
-                            </ul>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
         {peixes.length > 0 && (
-          <>
-            <h2 className="text-center mb-4">Peixes Disponíveis</h2>
-            <div className="card mb-5" style={{ height: '320px', width: '100%' }}>
-              <div className="card-body" style={{ height: '100%', overflow: 'hidden' }}>
-                <div className="d-flex align-items-center gap-4" style={{ height: '220px' }}>
-                  <img src={peixeAtual.img} alt={peixeAtual.nome} style={{ width: '400px', height: '280px', objectFit: 'contain', borderRadius: '10px', flexShrink: 0, background: '#f0f0f0' }} />
-                  <div style={{ flex: 1, height: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
-                    <h4>{peixeAtual.nome}</h4>
-                    <p className="text-muted mb-0">{peixeAtual.descricao}</p>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-center gap-3 mt-3">
-                  <button className="btn btn-outline-primary" onClick={() => setPeixeIndex((peixeIndex - 1 + peixes.length) % peixes.length)}>&#8592; Anterior</button>
-                  <span className="align-self-center text-muted">{peixeIndex + 1} / {peixes.length}</span>
-                  <button className="btn btn-outline-primary" onClick={() => setPeixeIndex((peixeIndex + 1) % peixes.length)}>Próximo &#8594;</button>
-                </div>
+          <div className="detalhe-card">
+            <h2>Peixes Disponíveis</h2>
+            <div className="detalhe-fish">
+              <img src={peixeAtual.img} alt={peixeAtual.nome} />
+              <div className="detalhe-fish-info">
+                <h4>{peixeAtual.nome}</h4>
+                <p>{peixeAtual.descricao}</p>
               </div>
             </div>
-          </>
+            <div className="detalhe-fish-nav">
+              <button className="detalhe-fish-nav-btn" onClick={() => setPeixeIndex((peixeIndex - 1 + peixes.length) % peixes.length)}>&#8592; Anterior</button>
+              <span className="detalhe-fish-nav-count">{peixeIndex + 1} / {peixes.length}</span>
+              <button className="detalhe-fish-nav-btn" onClick={() => setPeixeIndex((peixeIndex + 1) % peixes.length)}>Próximo &#8594;</button>
+            </div>
+          </div>
         )}
 
-        <div className="comments-section mb-5">
-          <div className="card">
-            <div className="card-body">
-              <h3 className="mb-4">Comentários</h3>
-              <form onSubmit={handleCommentSubmit}>
-                <div className="row g-3 mb-4">
-                  <div className="col-12">
-                    <label className="form-label"><strong>Comentário como:</strong> {authorName}</label>
-                  </div>
-                  <div className="col-12">
-                    <label className="form-label"><strong>Avaliação</strong></label>
-                    <div className="d-flex align-items-center mb-2">
-                      {[1, 2, 3, 4, 5].map((value) => (
-                        <button key={value} type="button" onClick={() => setRating(value)}
-                          onMouseEnter={() => setHoverRating(value)} onMouseLeave={() => setHoverRating(0)}
-                          style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.8rem', color: value <= (hoverRating || rating) ? '#ffc107' : '#ccc', padding: '0 4px' }}>★</button>
-                      ))}
-                    </div>
-                    {rating === 0 && <small className="text-muted">Clique nas estrelas para avaliar.</small>}
-                  </div>
-                  <div className="col-12">
-                    <textarea value={commentText} onChange={(e) => setCommentText(e.target.value)} className="form-control" rows="3" placeholder="Sua experiência..." required />
-                  </div>
-                  <div className="col-12">
-                    <button type="submit" className="btn btn-primary">Enviar</button>
-                  </div>
-                </div>
-              </form>
-              <hr />
-              <h5>Comentários ({comments.length})</h5>
-              {comments.map((comment) => (
-                <div key={comment.id} className="border-bottom pb-3 mb-3">
-                  <div className="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                      <strong>{comment.nome}</strong>
-                      <div>{renderStars(comment.rating)}</div>
-                    </div>
-                    <div className="text-end">
-                      <small className="text-muted">{comment.data}</small>
-                      {isCommentOwner(comment) && (
-                        <button type="button" className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteComment(comment.id)}>Excluir</button>
-                      )}
-                    </div>
-                  </div>
-                  <p className="mb-0">{comment.texto}</p>
-                </div>
+        <div className="detalhe-card">
+          <h2>Comentários</h2>
+          <form onSubmit={handleCommentSubmit}>
+            <p className="detalhe-comment-you"><strong>Comentário como:</strong> {authorName}</p>
+
+            <div className="detalhe-stars-input">
+              {[1, 2, 3, 4, 5].map((value) => (
+                <button key={value} type="button" onClick={() => setRating(value)}
+                  onMouseEnter={() => setHoverRating(value)} onMouseLeave={() => setHoverRating(0)}
+                  style={{ color: value <= (hoverRating || rating) ? '#f0b429' : '#d8dfe8' }}>★</button>
               ))}
-              {comments.length === 0 && <p className="text-muted text-center">Nenhum comentário ainda.</p>}
             </div>
+            {rating === 0 && <small style={{ color: 'var(--text-soft)' }}>Clique nas estrelas para avaliar.</small>}
+
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              className="detalhe-textarea"
+              style={{ marginTop: '12px' }}
+              placeholder="Sua experiência..."
+              required
+            />
+            <button type="submit" className="detalhe-comment-submit">Enviar</button>
+          </form>
+
+          <div className="detalhe-comment-list">
+            <h5>Comentários ({comments.length})</h5>
+            {comments.map((comment) => (
+              <div key={comment.id} className="detalhe-comment-item">
+                <div className="detalhe-comment-head">
+                  <div>
+                    <span className="detalhe-comment-name">{comment.nome}</span>
+                    <div>{renderStars(comment.rating)}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span className="detalhe-comment-date">{comment.data}</span>
+                    {isCommentOwner(comment) && (
+                      <button type="button" className="detalhe-comment-delete" onClick={() => handleDeleteComment(comment.id)}>Excluir</button>
+                    )}
+                  </div>
+                </div>
+                <p className="detalhe-comment-text">{comment.texto}</p>
+              </div>
+            ))}
+            {comments.length === 0 && <p className="detalhe-empty">Nenhum comentário ainda.</p>}
           </div>
         </div>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
 

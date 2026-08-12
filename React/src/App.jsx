@@ -7,9 +7,6 @@ import Cadastro from './Cadastro';
 import Inicial from './Inicial';
 import Home from './Home';
 import Perfil from './Perfil';
-import Pesqueiro from './Pesqueiro';
-import Pesqueiro2 from './Pesqueiro2';
-import Pesqueiro3 from './Pesqueiro3';
 import AdminDashboard from './AdminDashboard';
 import CadastroPesqueiro from './CadastroPesqueiro';
 import PesqueiroDinamico from './PesqueiroDinamico';
@@ -37,11 +34,6 @@ function App() {
         {/* ========== ROTAS DO USUÁRIO ========== */}
         {/* Página principal com lista de pesqueiros */}
         <Route path="/pesqueiros" element={<Home />} />
-        
-        {/* Páginas dos pesqueiros individuais */}
-        <Route path="/Pesqueiro" element={<Pesqueiro />} />
-        <Route path="/Pesqueiro2" element={<Pesqueiro2 />} />
-        <Route path="/Pesqueiro3" element={<Pesqueiro3 />} />
         
         {/* ========== ROTAS PRIVADAS ========== */}
         {/* Página do perfil do usuário */}

@@ -24,6 +24,9 @@ public class Comentario {
     @Column(name = "usuarioId")
     private Long usuarioId;
 
+    @Column(name = "nota")
+    private Integer nota;
+
     @Column(name = "dataCadastro")
     private LocalDate dataCadastro;
 
@@ -57,6 +60,14 @@ public class Comentario {
 
     public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
+    }
+
+    public Integer getNota() {
+        return nota;
+    }
+
+    public void setNota(Integer nota) {
+        this.nota = nota;
     }
 
     public LocalDate getDataCadastro() {

@@ -1,14 +1,57 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
-import './App.css';
 import UsuarioService from './services/UsuarioService';
+import './Perfil.css';
+
+const IconeUsuario = () => (
+  <svg className="perfil-avatar-placeholder" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
+const IconeCamera = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+    <circle cx="12" cy="14" r="3.5" />
+  </svg>
+);
+
+// Redimensiona a imagem no navegador antes de enviar, pra não mandar um arquivo gigante pro banco.
+const redimensionarImagem = (file, tamanhoMax = 320, qualidade = 0.8) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const escala = Math.min(1, tamanhoMax / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * escala;
+        canvas.height = img.height * escala;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', qualidade));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+const soBase64 = (dataUrl) => dataUrl.split(',')[1] || '';
 
 function Perfil() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
   const [usuario, setUsuario] = useState(null);
   const [profileData, setProfileData] = useState({ nome: '', email: '' });
+  const [fotoPreview, setFotoPreview] = useState(null);
+  const [enviandoFoto, setEnviandoFoto] = useState(false);
 
   useEffect(() => {
     const loadUser = () => {
@@ -21,7 +64,6 @@ function Perfil() {
 
     loadUser();
 
-    // Recarregar quando o localStorage mudar
     const handleStorageChange = () => loadUser();
     window.addEventListener('storage', handleStorageChange);
 
@@ -46,6 +88,30 @@ function Perfil() {
     }
   };
 
+  const handleFotoSelecionada = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    try {
+      const dataUrl = await redimensionarImagem(file);
+      setFotoPreview(dataUrl);
+      setEnviandoFoto(true);
+      const atualizado = await UsuarioService.update(usuario.id, {
+        ...usuario,
+        foto: soBase64(dataUrl),
+      });
+      const novosDados = atualizado.data;
+      localStorage.setItem('user', JSON.stringify(novosDados));
+      setUsuario(novosDados);
+    } catch (err) {
+      alert('Não foi possível atualizar a foto. Tente uma imagem menor.');
+      setFotoPreview(null);
+    } finally {
+      setEnviandoFoto(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!window.confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')) {
       return;
@@ -64,77 +130,120 @@ function Perfil() {
 
   if (!usuario) {
     return (
-      <>
+      <div className="perfil-page">
         <Navbar />
-        <div className="user-page-content">
-          <div className="container mt-4 text-center">
-            <p>Você precisa estar logado para ver o perfil.</p>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <Navbar />
-      <div className="user-page-content">
-        <div style={{ width: '70%', margin: '2rem auto' }}>
-          <h2 className="text-center mb-5">Meu Perfil</h2>
-          <div className="card admin-main-card">
-            <div className="card-body p-5">
-
-              <div className="text-center mb-4">
-                <div style={{ fontSize: '4rem' }}>👤</div>
-                <h4 className="mt-2">{profileData.nome}</h4>
-                <span className="badge bg-primary">
-                  {usuario.nivelAcesso === 'admin' ? 'Dono de Pesqueiro' : 'Pescador'}
-                </span>
-              </div>
-
-              {isEditing ? (
-                <div>
-                  <div className="mb-3">
-                    <label className="form-label"><strong>Nome:</strong></label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={profileData.nome}
-                      onChange={(e) => setProfileData({ ...profileData, nome: e.target.value })}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label"><strong>Email:</strong></label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      value={profileData.email}
-                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                    />
-                  </div>
-                  <div className="d-flex gap-2">
-                    <button className="btn btn-success w-100" onClick={handleSave}>Salvar</button>
-                    <button className="btn btn-secondary w-100" onClick={() => setIsEditing(false)}>Cancelar</button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <p><strong>Nome:</strong> {profileData.nome}</p>
-                  <p><strong>Email:</strong> {profileData.email}</p>
-                  <p><strong>Tipo de conta:</strong> {usuario.nivelAcesso === 'admin' ? 'Dono de Pesqueiro' : 'Pescador'}</p>
-                  <p><strong>Membro desde:</strong> {usuario.dataCadastro}</p>
-                  <div className="d-flex gap-2 mt-4">
-                    <button className="btn btn-primary w-100" onClick={() => setIsEditing(true)}>Editar perfil</button>
-                    <button className="btn btn-danger w-100" onClick={handleDelete}>Excluir conta</button>
-                  </div>
-                </div>
-              )}
-
-            </div>
+        <div className="perfil-card">
+          <div className="perfil-card-inner text-center">
+            <p className="mb-0">Você precisa estar logado para ver o perfil.</p>
           </div>
         </div>
       </div>
-    </>
+    );
+  }
+
+  const fotoAtual = fotoPreview || (usuario.foto ? `data:image/jpeg;base64,${usuario.foto}` : null);
+
+  return (
+    <div className="perfil-page">
+      <Navbar />
+
+      <div className="perfil-cover">
+        <svg className="perfil-waves" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="rgba(123,205,186,0.35)" d="M0 45c180-30 300 30 480 22s300-52 480-37 300 45 480 30v30H0z" />
+          <path fill="#f4f8fb" d="M0 65c200-22 340 18 520 11s320-40 480-26 260 33 440 22v20H0z" />
+        </svg>
+      </div>
+
+      <div className="perfil-header">
+        <div className="perfil-avatar-wrap">
+          <div className="perfil-avatar">
+            {fotoAtual ? <img src={fotoAtual} alt={profileData.nome} /> : <IconeUsuario />}
+          </div>
+          <button
+            type="button"
+            className="perfil-avatar-edit"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={enviandoFoto}
+            title="Alterar foto"
+          >
+            <IconeCamera />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="perfil-avatar-input"
+            onChange={handleFotoSelecionada}
+          />
+        </div>
+
+        <h2 className="perfil-name">{profileData.nome}</h2>
+        <span className="perfil-badge">
+          {usuario.nivelAcesso === 'admin' ? 'Dono de Pesqueiro' : 'Pescador'}
+        </span>
+      </div>
+
+      <div className="perfil-card">
+        <div className="perfil-card-inner">
+          {isEditing ? (
+            <div>
+              <div className="perfil-field">
+                <label className="perfil-field-label">Nome</label>
+                <input
+                  type="text"
+                  className="perfil-input"
+                  value={profileData.nome}
+                  onChange={(e) => setProfileData({ ...profileData, nome: e.target.value })}
+                />
+              </div>
+              <div className="perfil-field">
+                <label className="perfil-field-label">Email</label>
+                <input
+                  type="email"
+                  className="perfil-input"
+                  value={profileData.email}
+                  onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                />
+              </div>
+              <div className="perfil-actions">
+                <button className="perfil-btn perfil-btn-primary" onClick={handleSave}>Salvar</button>
+                <button className="perfil-btn perfil-btn-ghost" onClick={() => setIsEditing(false)}>Cancelar</button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="perfil-field">
+                <span className="perfil-field-label">Nome</span>
+                <span className="perfil-field-value">{profileData.nome}</span>
+              </div>
+              <div className="perfil-field">
+                <span className="perfil-field-label">Email</span>
+                <span className="perfil-field-value">{profileData.email}</span>
+              </div>
+              <div className="perfil-field">
+                <span className="perfil-field-label">Tipo de conta</span>
+                <span className="perfil-field-value">{usuario.nivelAcesso === 'admin' ? 'Dono de Pesqueiro' : 'Pescador'}</span>
+              </div>
+              <div className="perfil-field">
+                <span className="perfil-field-label">Membro desde</span>
+                <span className="perfil-field-value">{usuario.dataCadastro}</span>
+              </div>
+
+              <div className="perfil-actions">
+                <button className="perfil-btn perfil-btn-primary" onClick={() => setIsEditing(true)}>Editar perfil</button>
+              </div>
+
+              <div className="perfil-danger-zone">
+                <p>Excluir sua conta é permanente e não pode ser desfeito.</p>
+                <button className="perfil-btn perfil-btn-danger" style={{ flex: '0 0 auto', padding: '0 28px' }} onClick={handleDelete}>
+                  Excluir conta
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
