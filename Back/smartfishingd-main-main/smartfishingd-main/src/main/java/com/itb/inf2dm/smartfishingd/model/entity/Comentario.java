@@ -24,11 +24,11 @@ public class Comentario {
     @Column(name = "usuarioId")
     private Long usuarioId;
 
-    @Column(name = "nota")
-    private Integer nota;
-
     @Column(name = "dataCadastro")
     private LocalDate dataCadastro;
+
+    @Column(name = "nota")
+    private Integer nota;
 
     public Long getId() {
         return id;
@@ -62,19 +62,19 @@ public class Comentario {
         this.usuarioId = usuarioId;
     }
 
-    public Integer getNota() {
-        return nota;
-    }
-
-    public void setNota(Integer nota) {
-        this.nota = nota;
-    }
-
     public LocalDate getDataCadastro() {
         return dataCadastro;
     }
 
     public void setDataCadastro(LocalDate dataCadastro) {
         this.dataCadastro = dataCadastro;
+    }
+
+    public Integer getNota() {
+        return nota;
+    }
+
+    public void setNota(Integer nota) {
+        this.nota = nota;
     }
 }

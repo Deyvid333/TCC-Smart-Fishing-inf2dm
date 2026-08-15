@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itb.inf2dm.smartfishingd.model.entity.Usuario;
+import com.itb.inf2dm.smartfishingd.security.JwtUtil;
 import com.itb.inf2dm.smartfishingd.services.UsuarioService;
 
 @RestController
@@ -24,6 +25,9 @@ public class ControllerUsuario {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<Usuario>> findAll() {
@@ -86,10 +90,21 @@ public class ControllerUsuario {
 public ResponseEntity<Object> login(@RequestBody Usuario usuario) {
     try {
         Usuario usuarioLogado = usuarioService.login(
-            usuario.getEmail(), 
+            usuario.getEmail(),
             usuario.getSenha()
         );
-        return ResponseEntity.ok(usuarioLogado);
+        usuarioLogado.setSenha(null);
+        String token = jwtUtil.gerarToken(
+            usuarioLogado.getId(),
+            usuarioLogado.getEmail(),
+            usuarioLogado.getNivelAcesso()
+        );
+        return ResponseEntity.ok(
+            Map.of(
+                "token", token,
+                "usuario", usuarioLogado
+            )
+        );
     } catch (RuntimeException e) {
         return ResponseEntity.status(401).body(
             Map.of(

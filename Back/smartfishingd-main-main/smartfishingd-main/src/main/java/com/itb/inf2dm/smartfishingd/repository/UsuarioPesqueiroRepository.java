@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 
 public interface UsuarioPesqueiroRepository extends JpaRepository<UsuarioPesqueiro, Long> {
-    void deleteByPesqueiroId(Long pesqueiroId);
 }

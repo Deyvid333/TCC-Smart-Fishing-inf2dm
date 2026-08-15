@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
-    void deleteByPesqueiroId(Long pesqueiroId);
-    List<Comentario> findByPesqueiroIdOrderByIdDesc(Long pesqueiroId);
+
+    List<Comentario> findByPesqueiroIdOrderByDataCadastroDesc(Long pesqueiroId);
+
 }

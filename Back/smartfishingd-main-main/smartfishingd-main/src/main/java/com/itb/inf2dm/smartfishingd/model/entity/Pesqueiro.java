@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
+
 
 @Entity
 
@@ -12,6 +14,8 @@ public class Pesqueiro {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+    @Transient
+    private Long usuarioId;
     @Column(name = "nome")
     private String nome;
     @Column(name = "telefone")
@@ -34,6 +38,8 @@ public class Pesqueiro {
     private String dataCadastro;
     @Column(name = "statusPesqueiro")
     private Boolean statusPesqueiro;
+    @Column(name = "aprovado")
+    private Boolean aprovado;
 
     public Long getId() {
         return id;
@@ -112,6 +118,14 @@ public class Pesqueiro {
         this.statusPesqueiro = statusPesqueiro;
     }
 
+    public Boolean getAprovado() {
+        return aprovado;
+    }
+
+    public void setAprovado(Boolean aprovado) {
+        this.aprovado = aprovado;
+    }
+
     public String getTelefone() {
         return telefone;
     }
@@ -135,4 +149,13 @@ public class Pesqueiro {
     public void setDataCadastro(String dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
+    public Long getUsuarioId() {
+    return usuarioId;
 }
+
+    public void setUsuarioId(Long usuarioId) {
+    this.usuarioId = usuarioId;
+}
+}
+
+    

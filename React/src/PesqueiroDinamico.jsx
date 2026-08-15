@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
+import ComentarioService from './services/ComentarioService';
+import UsuarioService from './services/UsuarioService';
 import './Detalhe.css';
 
 const IconeTelefone = () => (
@@ -94,23 +96,71 @@ function PesqueiroDinamico() {
 
   const authorName = currentUser?.nome || 'Visitante';
 
+  const carregarComentarios = () => {
+    if (!pesqueiro?.id) return;
+    Promise.all([
+      ComentarioService.findByPesqueiro(pesqueiro.id),
+      UsuarioService.findAll(),
+    ]).then(([comentariosRes, usuariosRes]) => {
+      const nomesPorId = {};
+      usuariosRes.data.forEach((u) => { nomesPorId[u.id] = u.nome; });
+      const mapeados = comentariosRes.data.map((c) => ({
+        id: c.id,
+        usuarioId: c.usuarioId,
+        nome: nomesPorId[c.usuarioId] || 'Usuário',
+        rating: c.nota,
+        texto: c.descricao,
+        data: c.dataCadastro,
+      }));
+      setComments(mapeados);
+    }).catch((err) => console.error('Erro ao carregar comentários', err));
+  };
+
+  useEffect(() => {
+    carregarComentarios();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pesqueiro?.id]);
+
   const renderStars = (count) => Array.from({ length: 5 }, (_, i) => (
     <span key={i} style={{ color: i < count ? '#f0b429' : '#d8dfe8', fontSize: '1rem' }}>★</span>
   ));
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      alert('Você precisa estar logado para comentar.');
+      return;
+    }
     if (!rating || !commentText.trim()) {
       alert('Por favor, selecione a avaliação e escreva sua experiência.');
       return;
     }
-    setComments([{ id: Date.now(), nome: authorName, rating, texto: commentText.trim(), data: 'agora' }, ...comments]);
-    setRating(0); setHoverRating(0); setCommentText('');
-    alert('Comentário enviado!');
+    const hoje = new Date();
+    const dataCadastro = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+    ComentarioService.criar({
+      descricao: commentText.trim(),
+      pesqueiroId: pesqueiro.id,
+      usuarioId: currentUser.id,
+      dataCadastro,
+      nota: rating,
+    }).then(() => {
+      setRating(0); setHoverRating(0); setCommentText('');
+      carregarComentarios();
+    }).catch((err) => {
+      console.error('Erro ao enviar comentário', err);
+      alert('Não foi possível enviar o comentário. Tente novamente.');
+    });
   };
 
-  const handleDeleteComment = (id) => setComments(prev => prev.filter(c => c.id !== id));
-  const isCommentOwner = (comment) => currentUser && comment.nome === currentUser.nome;
+  const handleDeleteComment = (id) => {
+    ComentarioService.remove(id).then(() => {
+      setComments((prev) => prev.filter((c) => c.id !== id));
+    }).catch((err) => {
+      console.error('Erro ao excluir comentário', err);
+      alert('Não foi possível excluir o comentário.');
+    });
+  };
+  const isCommentOwner = (comment) => currentUser && comment.usuarioId === currentUser.id;
 
   if (!pesqueiro) {
     return (

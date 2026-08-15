@@ -17,8 +17,8 @@ public class ComentarioService {
         return comentarioRepository.findAll();
     }
 
-    public List<Comentario> findByPesqueiroId(Long pesqueiroId) {
-        return comentarioRepository.findByPesqueiroIdOrderByIdDesc(pesqueiroId);
+    public List<Comentario> findByPesqueiro(Long pesqueiroId) {
+        return comentarioRepository.findByPesqueiroIdOrderByDataCadastroDesc(pesqueiroId);
     }
 
     public Comentario save(Comentario comentario) {
@@ -30,8 +30,8 @@ public class ComentarioService {
         comentarioExistente.setDescricao(comentario.getDescricao());
         comentarioExistente.setPesqueiroId(comentario.getPesqueiroId());
         comentarioExistente.setUsuarioId(comentario.getUsuarioId());
-        comentarioExistente.setNota(comentario.getNota());
         comentarioExistente.setDataCadastro(comentario.getDataCadastro());
+        comentarioExistente.setNota(comentario.getNota());
         comentarioExistente.setId(id);
         return comentarioRepository.save(comentarioExistente);
     }

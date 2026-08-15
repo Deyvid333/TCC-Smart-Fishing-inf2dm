@@ -15,12 +15,16 @@ const cadastrar = (data) => {
 
 const login = async (email, senha) => {
   const response = await http.mainInstance.post(`${API_URL}/login`, { email, senha });
-  const usuario = response.data;
+  const { token, usuario } = response.data;
   localStorage.setItem('user', JSON.stringify(usuario));
+  if (token) localStorage.setItem('token', token);
   return usuario;
 };
 
-const logout = () => localStorage.removeItem('user');
+const logout = () => {
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+};
 
 const getCurrentUser = () => JSON.parse(localStorage.getItem('user'));
 

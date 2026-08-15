@@ -22,6 +22,11 @@ public class ControllerPesqueiro {
         return ResponseEntity.ok(pesqueiroService.findAll());
     }
 
+    @GetMapping("/pendentes")
+    public ResponseEntity<List<Pesqueiro>> findPendentes() {
+        return ResponseEntity.ok(pesqueiroService.findPendentes());
+    }
+
     @PostMapping
     public ResponseEntity<Pesqueiro> salvarCatalogo(@RequestBody Pesqueiro pesqueiro) {
         Pesqueiro novoPesqueiro = pesqueiroService.save(pesqueiro);
@@ -74,6 +79,52 @@ public class ControllerPesqueiro {
             );
         }
     }
+    @PutMapping("/{id}/aprovar")
+    public ResponseEntity<Object> aprovarPesqueiro(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(pesqueiroService.aprovar(Long.parseLong(id)));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of(
+                            "status", 400,
+                            "error", "Bad Request",
+                            "message", "O id informado não é válido: " + id
+                    )
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(
+                    Map.of(
+                            "status", 404,
+                            "error", "Not Found",
+                            "message", "Pesqueiro não encontrado com o id: " + id
+                    )
+            );
+        }
+    }
+
+    @PutMapping("/{id}/negar")
+    public ResponseEntity<Object> negarPesqueiro(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(pesqueiroService.negar(Long.parseLong(id)));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of(
+                            "status", 400,
+                            "error", "Bad Request",
+                            "message", "O id informado não é válido: " + id
+                    )
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(
+                    Map.of(
+                            "status", 404,
+                            "error", "Not Found",
+                            "message", "Pesqueiro não encontrado com o id: " + id
+                    )
+            );
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletarProdutoPorId(@PathVariable String id) {
         try {
