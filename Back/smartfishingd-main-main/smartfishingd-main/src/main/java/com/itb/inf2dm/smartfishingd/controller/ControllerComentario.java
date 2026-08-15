@@ -32,6 +32,11 @@ public class ControllerComentario {
         return ResponseEntity.status(HttpStatus.CREATED).body(novoComentario);
     }
 
+    @GetMapping("/pesqueiro/{pesqueiroId}")
+    public ResponseEntity<List<Comentario>> listarPorPesqueiro(@PathVariable Long pesqueiroId) {
+        return ResponseEntity.ok(comentarioService.findByPesqueiro(pesqueiroId));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> listarComentarioPorId(@PathVariable String id) {
         try {
