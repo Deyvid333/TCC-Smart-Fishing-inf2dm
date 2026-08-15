@@ -22,6 +22,7 @@ private BCryptPasswordEncoder passwordEncoder;
 
     public Usuario save(Usuario usuario) {
     usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+    usuario.setNivelAcesso("USUARIO");
     return usuarioRepository.save(usuario);
 }
 
@@ -40,7 +41,9 @@ private BCryptPasswordEncoder passwordEncoder;
         Usuario usuarioExistente = findById(id);
         usuarioExistente.setNome(usuario.getNome());
         usuarioExistente.setEmail(usuario.getEmail());
-        usuarioExistente.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        if (usuario.getSenha() != null && !usuario.getSenha().isBlank()) {
+            usuarioExistente.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        }
         usuarioExistente.setId(id);
         usuarioExistente.setFoto(usuario.getFoto());
         usuarioExistente.setNivelAcesso(usuario.getNivelAcesso());

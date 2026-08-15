@@ -26,11 +26,6 @@ public class ControllerComentario {
         return ResponseEntity.ok(comentarioService.findAll());
     }
 
-    @GetMapping("/pesqueiro/{pesqueiroId}")
-    public ResponseEntity<List<Comentario>> listarPorPesqueiro(@PathVariable Long pesqueiroId) {
-        return ResponseEntity.ok(comentarioService.findByPesqueiroId(pesqueiroId));
-    }
-
     @PostMapping
     public ResponseEntity<Comentario> salvarComentario(@RequestBody Comentario comentario) {
         Comentario novoComentario = comentarioService.save(comentario);

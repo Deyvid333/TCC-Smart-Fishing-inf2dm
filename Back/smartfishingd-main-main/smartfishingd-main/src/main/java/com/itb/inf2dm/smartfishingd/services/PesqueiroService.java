@@ -1,29 +1,37 @@
 package com.itb.inf2dm.smartfishingd.services;
-import com.itb.inf2dm.smartfishingd.model.entity.Pesqueiro;
-import com.itb.inf2dm.smartfishingd.repository.ComentarioRepository;
-import com.itb.inf2dm.smartfishingd.repository.PesqueiroRepository;
-import com.itb.inf2dm.smartfishingd.repository.UsuarioPesqueiroRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-import jakarta.transaction.Transactional;
-
+import com.itb.inf2dm.smartfishingd.model.entity.Pesqueiro;
+import com.itb.inf2dm.smartfishingd.model.entity.UsuarioPesqueiro;
+import com.itb.inf2dm.smartfishingd.repository.PesqueiroRepository;
+import com.itb.inf2dm.smartfishingd.repository.UsuarioPesqueiroRepository;
 @Service
 public class PesqueiroService {
     @Autowired
+    
+private UsuarioPesqueiroRepository usuarioPesqueiroRepository;
+
+    @Autowired
     private PesqueiroRepository pesqueiroRepository;
-    @Autowired
-    private UsuarioPesqueiroRepository usuarioPesqueiroRepository;
-    @Autowired
-    private ComentarioRepository comentarioRepository;
+    public List<Pesqueiro> findAll() {return pesqueiroRepository.findByAprovadoTrue();}
 
-    public List<Pesqueiro> findAll() {return pesqueiroRepository.findAll();}
+    public List<Pesqueiro> findPendentes() {return pesqueiroRepository.findByAprovadoIsNull();}
 
-    public Pesqueiro save(Pesqueiro pesqueiro) {
-        return pesqueiroRepository.save(pesqueiro);
-    }
+   public Pesqueiro save(Pesqueiro pesqueiro) {
+    pesqueiro.setAprovado(null);
+    Pesqueiro novoPesqueiro = pesqueiroRepository.save(pesqueiro);
+
+    UsuarioPesqueiro vinculo = new UsuarioPesqueiro();
+    vinculo.setusuarioId(pesqueiro.getUsuarioId());
+    vinculo.setpesqueiroId(novoPesqueiro.getId());
+    vinculo.setStatusUsuarioPesqueiro(true);
+    usuarioPesqueiroRepository.save(vinculo);
+
+    return novoPesqueiro;
+}
     public Pesqueiro update (Long id, Pesqueiro pesqueiro) {
     Pesqueiro pesqueiroExistente = findById(id);
     pesqueiroExistente.setNome(pesqueiro.getNome());
@@ -34,21 +42,27 @@ public class PesqueiroService {
     pesqueiroExistente.setTelefone(pesqueiro.getTelefone());
     pesqueiroExistente.setId(id);
     pesqueiroExistente.setDataCadastro(pesqueiro.getDataCadastro());
-    pesqueiroExistente.setStatusPesqueiro(pesqueiro.getStatusPesqueiro());
     pesqueiroExistente.setFoto(pesqueiro.getFoto());
     pesqueiroExistente.setInformacao(pesqueiro.getInformacao());
     pesqueiroExistente.setMapa(pesqueiro.getMapa());
+        return pesqueiroRepository.save(pesqueiroExistente);
+    }
+    public Pesqueiro aprovar(Long id) {
+        Pesqueiro pesqueiroExistente = findById(id);
+        pesqueiroExistente.setAprovado(true);
+        return pesqueiroRepository.save(pesqueiroExistente);
+    }
+    public Pesqueiro negar(Long id) {
+        Pesqueiro pesqueiroExistente = findById(id);
+        pesqueiroExistente.setAprovado(false);
         return pesqueiroRepository.save(pesqueiroExistente);
     }
     public Pesqueiro findById(Long id) {
         return pesqueiroRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Catalogo nao encontrado com o id " + id));
     }
-    @Transactional
     public void delete(Long id) {
         Pesqueiro pesqueiroExistente = findById(id);
-        usuarioPesqueiroRepository.deleteByPesqueiroId(id);
-        comentarioRepository.deleteByPesqueiroId(id);
         pesqueiroRepository.delete(pesqueiroExistente);
     }
 
