@@ -1,5 +1,6 @@
 package com.itb.inf2dm.smartfishingd.services;
 import com.itb.inf2dm.smartfishingd.model.entity.Peixe;
+import com.itb.inf2dm.smartfishingd.repository.CatalogoRepository;
 import com.itb.inf2dm.smartfishingd.repository.PeixeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,9 @@ import java.util.List;
 public class PeixeService {
     @Autowired
     private PeixeRepository peixeRepository;
+
+    @Autowired
+    private CatalogoRepository catalogoRepository;
     public List<Peixe> findAll() {return peixeRepository.findAll();}
 
     public Peixe save(Peixe peixe) {
@@ -30,6 +34,7 @@ public class PeixeService {
     }
     public void delete(Long id) {
         Peixe peixeExistente = findById(id);
+        catalogoRepository.deleteByPeixeId(String.valueOf(id));
         peixeRepository.delete(peixeExistente);
     }
 }

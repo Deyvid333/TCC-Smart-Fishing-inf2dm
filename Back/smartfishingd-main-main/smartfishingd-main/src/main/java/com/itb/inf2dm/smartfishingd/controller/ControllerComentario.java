@@ -8,6 +8,7 @@ import com.itb.inf2dm.smartfishingd.services.ComentarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,14 +28,10 @@ public class ControllerComentario {
     }
 
     @PostMapping
-    public ResponseEntity<Comentario> salvarComentario(@RequestBody Comentario comentario) {
-        Comentario novoComentario = comentarioService.save(comentario);
+    public ResponseEntity<Comentario> salvarComentario(@RequestBody Comentario comentario, Authentication authentication) {
+        Long usuarioId = (Long) authentication.getPrincipal();
+        Comentario novoComentario = comentarioService.save(comentario, usuarioId);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoComentario);
-    }
-
-    @GetMapping("/pesqueiro/{pesqueiroId}")
-    public ResponseEntity<List<Comentario>> listarPorPesqueiro(@PathVariable Long pesqueiroId) {
-        return ResponseEntity.ok(comentarioService.findByPesqueiro(pesqueiroId));
     }
 
     @GetMapping("/{id}")
@@ -61,15 +58,24 @@ public class ControllerComentario {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> atualizarComentario(@PathVariable String id, @RequestBody Comentario comentario) {
+    public ResponseEntity<Object> atualizarComentario(@PathVariable String id, @RequestBody Comentario comentario, Authentication authentication) {
         try {
-            return ResponseEntity.ok(comentarioService.update(Long.parseLong(id), comentario));
+            Long usuarioId = (Long) authentication.getPrincipal();
+            return ResponseEntity.ok(comentarioService.update(Long.parseLong(id), comentario, usuarioId));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(
                 Map.of(
                     "status", 400,
                     "error", "Bad Request",
                     "message", "O id informado não é válido: " + id
+                )
+            );
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(
+                Map.of(
+                    "status", 403,
+                    "error", "Forbidden",
+                    "message", e.getMessage()
                 )
             );
         } catch (RuntimeException e) {
@@ -84,9 +90,12 @@ public class ControllerComentario {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deletarComentarioPorId(@PathVariable String id) {
+    public ResponseEntity<Object> deletarComentarioPorId(@PathVariable String id, Authentication authentication) {
         try {
-            comentarioService.delete(Long.parseLong(id));
+            Long usuarioId = (Long) authentication.getPrincipal();
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            comentarioService.delete(Long.parseLong(id), usuarioId, isAdmin);
             return ResponseEntity.ok().body(
                 Map.of(
                     "status", 200,
@@ -99,6 +108,14 @@ public class ControllerComentario {
                     "status", 400,
                     "error", "Bad Request",
                     "message", "O id informado não é válido: " + id
+                )
+            );
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(
+                Map.of(
+                    "status", 403,
+                    "error", "Forbidden",
+                    "message", e.getMessage()
                 )
             );
         } catch (RuntimeException e) {

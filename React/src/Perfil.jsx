@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
 import UsuarioService from './services/UsuarioService';
+import FavoritoService from './services/FavoritoService';
+import HistoricoService from './services/HistoricoService';
 import './Perfil.css';
 
 const IconeUsuario = () => (
@@ -52,6 +54,8 @@ function Perfil() {
   const [profileData, setProfileData] = useState({ nome: '', email: '' });
   const [fotoPreview, setFotoPreview] = useState(null);
   const [enviandoFoto, setEnviandoFoto] = useState(false);
+  const [favoritos, setFavoritos] = useState([]);
+  const [historico, setHistorico] = useState([]);
 
   useEffect(() => {
     const loadUser = () => {
@@ -69,6 +73,21 @@ function Perfil() {
 
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
+
+  useEffect(() => {
+    if (!usuario) return;
+    FavoritoService.listar().then((res) => setFavoritos(res.data)).catch((err) => console.error('Erro ao carregar favoritos', err));
+    HistoricoService.listar().then((res) => setHistorico(res.data)).catch((err) => console.error('Erro ao carregar histórico', err));
+  }, [usuario]);
+
+  const handleRemoverFavorito = (pesqueiroId) => {
+    FavoritoService.desfavoritar(pesqueiroId)
+      .then(() => setFavoritos((prev) => prev.filter((p) => p.id !== pesqueiroId)))
+      .catch((err) => {
+        console.error('Erro ao remover favorito', err);
+        alert('Não foi possível remover o favorito.');
+      });
+  };
 
   const handleSave = async () => {
     try {
@@ -241,6 +260,33 @@ function Perfil() {
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="perfil-card">
+        <div className="perfil-card-inner">
+          <h5 style={{ marginBottom: '16px' }}>Pesqueiros favoritos ({favoritos.length})</h5>
+          {favoritos.length === 0 && <p className="perfil-field-value">Você ainda não favoritou nenhum pesqueiro.</p>}
+          {favoritos.map((p) => (
+            <div key={p.id} className="perfil-field" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Link to="/pesqueiro-dinamico" state={{ pesqueiro: p }} className="perfil-field-value">{p.nome}</Link>
+              <button type="button" className="perfil-btn perfil-btn-ghost" style={{ padding: '4px 14px', height: 'auto' }} onClick={() => handleRemoverFavorito(p.id)}>
+                Remover
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="perfil-card">
+        <div className="perfil-card-inner">
+          <h5 style={{ marginBottom: '16px' }}>Histórico de pesqueiros visitados ({historico.length})</h5>
+          {historico.length === 0 && <p className="perfil-field-value">Você ainda não visitou nenhum pesqueiro.</p>}
+          {historico.map((p) => (
+            <div key={p.id} className="perfil-field">
+              <Link to="/pesqueiro-dinamico" state={{ pesqueiro: p }} className="perfil-field-value">{p.nome}</Link>
+            </div>
+          ))}
         </div>
       </div>
     </div>

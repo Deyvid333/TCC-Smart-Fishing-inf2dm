@@ -6,16 +6,24 @@ import org.springframework.stereotype.Service;
 
 import com.itb.inf2dm.smartfishingd.model.entity.Pesqueiro;
 import com.itb.inf2dm.smartfishingd.model.entity.UsuarioPesqueiro;
+import com.itb.inf2dm.smartfishingd.repository.CatalogoRepository;
+import com.itb.inf2dm.smartfishingd.repository.ComentarioRepository;
 import com.itb.inf2dm.smartfishingd.repository.PesqueiroRepository;
 import com.itb.inf2dm.smartfishingd.repository.UsuarioPesqueiroRepository;
 @Service
 public class PesqueiroService {
     @Autowired
-    
+
 private UsuarioPesqueiroRepository usuarioPesqueiroRepository;
 
     @Autowired
     private PesqueiroRepository pesqueiroRepository;
+
+    @Autowired
+    private ComentarioRepository comentarioRepository;
+
+    @Autowired
+    private CatalogoRepository catalogoRepository;
     public List<Pesqueiro> findAll() {return pesqueiroRepository.findByAprovadoTrue();}
 
     public List<Pesqueiro> findPendentes() {return pesqueiroRepository.findByAprovadoIsNull();}
@@ -45,6 +53,7 @@ private UsuarioPesqueiroRepository usuarioPesqueiroRepository;
     pesqueiroExistente.setFoto(pesqueiro.getFoto());
     pesqueiroExistente.setInformacao(pesqueiro.getInformacao());
     pesqueiroExistente.setMapa(pesqueiro.getMapa());
+    pesqueiroExistente.setCnpj(pesqueiro.getCnpj());
         return pesqueiroRepository.save(pesqueiroExistente);
     }
     public Pesqueiro aprovar(Long id) {
@@ -63,6 +72,9 @@ private UsuarioPesqueiroRepository usuarioPesqueiroRepository;
     }
     public void delete(Long id) {
         Pesqueiro pesqueiroExistente = findById(id);
+        usuarioPesqueiroRepository.deleteByPesqueiroId(id);
+        comentarioRepository.deleteByPesqueiroId(id);
+        catalogoRepository.deleteByPesqueiroId(String.valueOf(id));
         pesqueiroRepository.delete(pesqueiroExistente);
     }
 

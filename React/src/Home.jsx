@@ -5,7 +5,16 @@ import pesqueiro2 from './assets/imagensPeixes/pesqueiro2home.jpg';
 import pesqueiro3 from './assets/imagensPeixes/pesqueiro3home.jpg';
 import { Link } from 'react-router-dom';
 import PesqueiroService from './services/PesqueiroService';
+import FavoritoService from './services/FavoritoService';
+import UsuarioService from './services/UsuarioService';
 import './Explorar.css';
+
+const IconeCoracao = ({ preenchido }) => (
+  <svg viewBox="0 0 24 24" fill={preenchido ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+  </svg>
+);
 
 const IconeEstrela = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -42,6 +51,40 @@ const IconeQuiosque = () => (
 function Home() {
   const [backendPesqueiros, setBackendPesqueiros] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [favoritoIds, setFavoritoIds] = useState(new Set());
+  const usuarioLogado = UsuarioService.getCurrentUser();
+
+  useEffect(() => {
+    if (!usuarioLogado) return;
+    FavoritoService.listar()
+      .then((res) => setFavoritoIds(new Set(res.data.map((p) => p.id))))
+      .catch((err) => console.error('Erro ao carregar favoritos', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleToggleFavorito = (pesqueiroId) => {
+    if (!usuarioLogado) {
+      alert('Você precisa estar logado para favoritar.');
+      return;
+    }
+    const jaFavoritado = favoritoIds.has(pesqueiroId);
+    const acao = jaFavoritado
+      ? FavoritoService.desfavoritar(pesqueiroId)
+      : FavoritoService.favoritar(pesqueiroId);
+    acao
+      .then(() => {
+        setFavoritoIds((prev) => {
+          const novo = new Set(prev);
+          if (jaFavoritado) novo.delete(pesqueiroId);
+          else novo.add(pesqueiroId);
+          return novo;
+        });
+      })
+      .catch((err) => {
+        console.error('Erro ao favoritar/desfavoritar', err);
+        alert('Não foi possível atualizar o favorito. Tente novamente.');
+      });
+  };
 
   useEffect(() => {
     const fetchPesqueiros = async () => {
@@ -103,6 +146,21 @@ function Home() {
                 <div className="explorar-card-image">
                   <img src={pesqueiroItem.imagem} alt={pesqueiroItem.nome} />
                   <span className="explorar-card-rating"><IconeEstrela /> {pesqueiroItem.avaliacao}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleFavorito(pesqueiroItem.id)}
+                    title={favoritoIds.has(pesqueiroItem.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                    style={{
+                      position: 'absolute', top: '14px', left: '14px', zIndex: 2,
+                      background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%',
+                      width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: favoritoIds.has(pesqueiroItem.id) ? '#e0475a' : '#4a5a68', cursor: 'pointer', padding: 0,
+                    }}
+                  >
+                    <span style={{ width: '16px', height: '16px', display: 'block' }}>
+                      <IconeCoracao preenchido={favoritoIds.has(pesqueiroItem.id)} />
+                    </span>
+                  </button>
                   <h3 className="explorar-card-name">{pesqueiroItem.nome}</h3>
                 </div>
                 <div className="explorar-card-body">

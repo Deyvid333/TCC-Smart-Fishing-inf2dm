@@ -3,7 +3,16 @@ import { useLocation } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
 import ComentarioService from './services/ComentarioService';
 import UsuarioService from './services/UsuarioService';
+import FavoritoService from './services/FavoritoService';
+import HistoricoService from './services/HistoricoService';
 import './Detalhe.css';
+
+const IconeCoracao = ({ preenchido }) => (
+  <svg viewBox="0 0 24 24" fill={preenchido ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+  </svg>
+);
 
 const IconeTelefone = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -88,11 +97,44 @@ function PesqueiroDinamico() {
   const [hoverRating, setHoverRating] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
   const [peixeIndex, setPeixeIndex] = useState(0);
+  const [isFavorito, setIsFavorito] = useState(false);
+  const [favoritoCarregando, setFavoritoCarregando] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
     if (stored) setCurrentUser(JSON.parse(stored));
   }, []);
+
+  useEffect(() => {
+    if (!currentUser || !pesqueiro?.id) return;
+
+    HistoricoService.registrar(pesqueiro.id).catch((err) =>
+      console.error('Erro ao registrar histórico', err)
+    );
+
+    FavoritoService.listar()
+      .then((res) => setIsFavorito(res.data.some((p) => p.id === pesqueiro.id)))
+      .catch((err) => console.error('Erro ao carregar favoritos', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, pesqueiro?.id]);
+
+  const handleToggleFavorito = () => {
+    if (!currentUser) {
+      alert('Você precisa estar logado para favoritar.');
+      return;
+    }
+    setFavoritoCarregando(true);
+    const acao = isFavorito
+      ? FavoritoService.desfavoritar(pesqueiro.id)
+      : FavoritoService.favoritar(pesqueiro.id);
+    acao
+      .then(() => setIsFavorito(!isFavorito))
+      .catch((err) => {
+        console.error('Erro ao favoritar/desfavoritar', err);
+        alert('Não foi possível atualizar o favorito. Tente novamente.');
+      })
+      .finally(() => setFavoritoCarregando(false));
+  };
 
   const authorName = currentUser?.nome || 'Visitante';
 
@@ -140,7 +182,6 @@ function PesqueiroDinamico() {
     ComentarioService.criar({
       descricao: commentText.trim(),
       pesqueiroId: pesqueiro.id,
-      usuarioId: currentUser.id,
       dataCadastro,
       nota: rating,
     }).then(() => {
@@ -194,6 +235,20 @@ function PesqueiroDinamico() {
 
       <section className="detalhe-hero">
         <h1>{pesqueiro.nome}</h1>
+        <button
+          type="button"
+          onClick={handleToggleFavorito}
+          disabled={favoritoCarregando}
+          title={isFavorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          style={{
+            position: 'absolute', top: '18px', right: '18px', zIndex: 2,
+            background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%',
+            width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: isFavorito ? '#e0475a' : '#4a5a68', cursor: 'pointer',
+          }}
+        >
+          <span style={{ width: '22px', height: '22px', display: 'block' }}><IconeCoracao preenchido={isFavorito} /></span>
+        </button>
         <svg className="detalhe-waves" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true">
           <path fill="rgba(123,205,186,0.35)" d="M0 50c180-32 300 32 480 24s300-55 480-39 300 47 480 31v39H0z" />
           <path fill="#f4f8fb" d="M0 71c200-24 340 20 520 12s320-44 480-28 260 35 440 24v20H0z" />

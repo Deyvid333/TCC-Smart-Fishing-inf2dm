@@ -13,9 +13,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
 import com.itb.inf2dm.smartfishingd.security.JwtAuthenticationFilter;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -29,6 +29,17 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
@@ -37,21 +48,17 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/pesqueiro/pendentes").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/pesqueiro/*/aprovar").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/pesqueiro/*/negar").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/comentario").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/v1/comentario/*").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/comentario/*").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/v1/favorito").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/v1/favorito").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/favorito/pesqueiro/*").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/v1/historico").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/v1/historico").authenticated()
                 .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration);
-        return source;
     }
 }

@@ -31,6 +31,15 @@ const apiCep = axios.create( {
   }
 });
 
+const anexarToken = (config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+};
+
+mainInstance.interceptors.request.use(anexarToken);
+multipartInstance.interceptors.request.use(anexarToken);
+
 
 const httpCommom = {
   mainInstance,

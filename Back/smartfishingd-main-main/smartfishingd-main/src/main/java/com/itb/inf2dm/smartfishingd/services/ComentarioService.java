@@ -17,19 +17,18 @@ public class ComentarioService {
         return comentarioRepository.findAll();
     }
 
-    public List<Comentario> findByPesqueiro(Long pesqueiroId) {
-        return comentarioRepository.findByPesqueiroIdOrderByDataCadastroDesc(pesqueiroId);
-    }
-
-    public Comentario save(Comentario comentario) {
+    public Comentario save(Comentario comentario, Long usuarioIdAutenticado) {
+        comentario.setUsuarioId(usuarioIdAutenticado);
         return comentarioRepository.save(comentario);
     }
 
-    public Comentario update(Long id, Comentario comentario) {
+    public Comentario update(Long id, Comentario comentario, Long usuarioIdAutenticado) {
         Comentario comentarioExistente = findById(id);
+        if (!comentarioExistente.getUsuarioId().equals(usuarioIdAutenticado)) {
+            throw new SecurityException("Você só pode editar o seu próprio comentário");
+        }
         comentarioExistente.setDescricao(comentario.getDescricao());
         comentarioExistente.setPesqueiroId(comentario.getPesqueiroId());
-        comentarioExistente.setUsuarioId(comentario.getUsuarioId());
         comentarioExistente.setDataCadastro(comentario.getDataCadastro());
         comentarioExistente.setNota(comentario.getNota());
         comentarioExistente.setId(id);
@@ -41,8 +40,11 @@ public class ComentarioService {
                 .orElseThrow(() -> new RuntimeException("Comentario nao encontrado com o id " + id));
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, Long usuarioIdAutenticado, boolean isAdmin) {
         Comentario comentarioExistente = findById(id);
+        if (!isAdmin && !comentarioExistente.getUsuarioId().equals(usuarioIdAutenticado)) {
+            throw new SecurityException("Você só pode apagar o seu próprio comentário");
+        }
         comentarioRepository.delete(comentarioExistente);
     }
 }
