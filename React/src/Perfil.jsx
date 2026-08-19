@@ -124,6 +124,10 @@ function Perfil() {
       localStorage.setItem('user', JSON.stringify(novosDados));
       setUsuario(novosDados);
     } catch (err) {
+      console.error('Erro ao atualizar foto:', err);
+      console.error('Status:', err.response?.status);
+      console.error('Resposta do servidor:', err.response?.data);
+      console.error('Tamanho do body enviado (bytes):', JSON.stringify({ ...usuario, foto: 'x' }).length);
       alert('Não foi possível atualizar a foto. Tente uma imagem menor.');
       setFotoPreview(null);
     } finally {
