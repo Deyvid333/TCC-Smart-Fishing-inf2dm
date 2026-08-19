@@ -40,6 +40,8 @@ public class Pesqueiro {
     private Boolean statusPesqueiro;
     @Column(name = "aprovado")
     private Boolean aprovado;
+    @Column(name = "cnpj")
+    private String cnpj;
 
     public Long getId() {
         return id;
@@ -124,6 +126,14 @@ public class Pesqueiro {
 
     public void setAprovado(Boolean aprovado) {
         this.aprovado = aprovado;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 
     public String getTelefone() {
