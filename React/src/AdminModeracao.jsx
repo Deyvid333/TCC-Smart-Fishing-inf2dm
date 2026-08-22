@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from './Componentes/Navbar/Navbar';
 import PesqueiroService from './services/PesqueiroService';
 import UsuarioService from './services/UsuarioService';
 import { parseInformacao, parseDescricao } from './utils/pesqueiroFormato';
-import './App.css';
+import './Perfil.css';
+import './Painel.css';
 
 function AdminModeracao() {
   const navigate = useNavigate();
@@ -56,77 +58,101 @@ function AdminModeracao() {
     }
   };
 
-  const handleLogout = () => {
-    UsuarioService.logout();
-    navigate('/login');
-  };
-
   return (
-    <div className="admin-layout">
-      <div className="admin-header">
-        <div className="container-fluid">
-          <div className="d-flex justify-content-between align-items-center py-3">
-            <div>
-              <h2 className="mb-1">Moderação de Pesqueiros</h2>
-              <p className="text-muted mb-0">{pendentes.length} solicitação(ões) aguardando análise</p>
-            </div>
-            <button className="btn btn-outline-danger" onClick={handleLogout}>Sair</button>
-          </div>
-        </div>
+    <div className="perfil-page">
+      <Navbar />
+
+      <div className="perfil-cover">
+        <svg className="perfil-waves" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="rgba(123,205,186,0.35)" d="M0 45c180-30 300 30 480 22s300-52 480-37 300 45 480 30v30H0z" />
+          <path fill="#f4f8fb" d="M0 65c200-22 340 18 520 11s320-40 480-26 260 33 440 22v20H0z" />
+        </svg>
       </div>
 
-      <div className="container-fluid mt-4">
-        <div className="row justify-content-center">
-          <div className="col-md-10">
-            {loading ? (
-              <p className="text-center py-5">Carregando...</p>
-            ) : pendentes.length === 0 ? (
-              <div className="card admin-main-card">
-                <div className="card-body text-center py-5">
-                  <h4>Nenhuma solicitação pendente no momento.</h4>
-                </div>
-              </div>
-            ) : (
-              pendentes.map((p) => {
-                const { regrasPermitido, regrasProibido } = parseInformacao(p.informacao);
-                const { descricaoTexto, informacoesRapidas, catalogoPeixes } = parseDescricao(p.descricao);
-                return (
-                  <div key={p.id} className="card admin-main-card mb-3">
-                    <div className="card-body p-4">
-                      <div className="d-flex justify-content-between align-items-start mb-3">
-                        <h4>{p.nome}</h4>
-                        <div className="d-flex gap-2">
-                          <button className="btn btn-success" disabled={processandoId === p.id} onClick={() => handleAprovar(p.id)}>
-                            ✓ Aprovar
-                          </button>
-                          <button className="btn btn-danger" disabled={processandoId === p.id} onClick={() => handleNegar(p.id)}>
-                            ✗ Negar
-                          </button>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-md-6">
-                          <p><strong>Telefone:</strong> {p.telefone || '—'}</p>
-                          <p><strong>CEP:</strong> {p.cep || '—'}</p>
-                          <p><strong>Número:</strong> {p.numero || '—'}</p>
-                          <p><strong>Complemento:</strong> {p.complemento || '—'}</p>
-                          <p><strong>Cadastrado em:</strong> {p.dataCadastro || '—'}</p>
-                        </div>
-                        <div className="col-md-6">
-                          {descricaoTexto && <p><strong>Descrição:</strong> {descricaoTexto}</p>}
-                          {informacoesRapidas && <p><strong>Informações:</strong> <span style={{ whiteSpace: 'pre-wrap' }}>{informacoesRapidas}</span></p>}
-                          {catalogoPeixes && <p><strong>Peixes:</strong> {catalogoPeixes}</p>}
-                          {regrasPermitido && <p><strong>Permitido:</strong> <span style={{ whiteSpace: 'pre-wrap' }}>{regrasPermitido}</span></p>}
-                          {regrasProibido && <p><strong>Proibido:</strong> <span style={{ whiteSpace: 'pre-wrap' }}>{regrasProibido}</span></p>}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
+      <div className="perfil-header">
+        <h2 className="perfil-name">Moderação de pesqueiros</h2>
+        <span className="perfil-badge">{pendentes.length} solicitação(ões) aguardando análise</span>
+      </div>
+
+      <div className="perfil-card" style={{ maxWidth: '760px' }}>
+        {loading ? (
+          <p className="text-center">Carregando...</p>
+        ) : pendentes.length === 0 ? (
+          <div className="perfil-card-inner text-center">
+            <p className="mb-0">Nenhuma solicitação pendente no momento.</p>
           </div>
-        </div>
+        ) : (
+          pendentes.map((p) => {
+            const { regrasPermitido, regrasProibido } = parseInformacao(p.informacao);
+            const { descricaoTexto, informacoesRapidas, catalogoPeixes } = parseDescricao(p.descricao);
+            return (
+              <div key={p.id} className="perfil-card-inner" style={{ marginBottom: '20px' }}>
+                {p.foto && <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: 'var(--radius-lg)', marginBottom: '16px' }} />}
+
+                <div className="d-flex justify-content-between align-items-start mb-3">
+                  <h4 style={{ color: 'var(--navy)', margin: 0 }}>{p.nome}</h4>
+                  <div className="d-flex gap-2">
+                    <button className="perfil-btn perfil-btn-primary" style={{ flex: 'none', padding: '0 20px' }} disabled={processandoId === p.id} onClick={() => handleAprovar(p.id)}>
+                      Aprovar
+                    </button>
+                    <button className="perfil-btn perfil-btn-danger" style={{ flex: 'none', padding: '0 20px' }} disabled={processandoId === p.id} onClick={() => handleNegar(p.id)}>
+                      Negar
+                    </button>
+                  </div>
+                </div>
+
+                <div className="perfil-field">
+                  <span className="perfil-field-label">Telefone</span>
+                  <span className="perfil-field-value">{p.telefone || '—'}</span>
+                </div>
+                <div className="perfil-field">
+                  <span className="perfil-field-label">CNPJ</span>
+                  <span className="perfil-field-value">{p.cnpj || '—'}</span>
+                </div>
+                <div className="perfil-field">
+                  <span className="perfil-field-label">Endereço</span>
+                  <span className="perfil-field-value">{p.cep || '—'} · {p.numero || '—'} · {p.complemento || '—'}</span>
+                </div>
+                {p.linkMapa && (
+                  <div className="perfil-field">
+                    <span className="perfil-field-label">Mapa</span>
+                    <a href={p.linkMapa} target="_blank" rel="noopener noreferrer" className="painel-map-link">Ver no Google Maps</a>
+                  </div>
+                )}
+                {descricaoTexto && (
+                  <div className="perfil-field">
+                    <span className="perfil-field-label">Descrição</span>
+                    <span className="perfil-field-value">{descricaoTexto}</span>
+                  </div>
+                )}
+                {informacoesRapidas && (
+                  <div className="perfil-field">
+                    <span className="perfil-field-label">Informações rápidas</span>
+                    <span className="perfil-field-value" style={{ whiteSpace: 'pre-wrap' }}>{informacoesRapidas}</span>
+                  </div>
+                )}
+                {catalogoPeixes && (
+                  <div className="perfil-field">
+                    <span className="perfil-field-label">Peixes</span>
+                    <span className="perfil-field-value">{catalogoPeixes}</span>
+                  </div>
+                )}
+                {regrasPermitido && (
+                  <div className="perfil-field">
+                    <span className="perfil-field-label">Permitido</span>
+                    <span className="perfil-field-value" style={{ whiteSpace: 'pre-wrap' }}>{regrasPermitido}</span>
+                  </div>
+                )}
+                {regrasProibido && (
+                  <div className="perfil-field">
+                    <span className="perfil-field-label">Proibido</span>
+                    <span className="perfil-field-value" style={{ whiteSpace: 'pre-wrap' }}>{regrasProibido}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

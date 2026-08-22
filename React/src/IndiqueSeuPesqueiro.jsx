@@ -3,15 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
 import PesqueiroService from './services/PesqueiroService';
 import UsuarioService from './services/UsuarioService';
+import { redimensionarImagem, soBase64 } from './utils/imagem';
 import {
   PEIXES_DISPONIVEIS, parseInformacao, parseDescricao, buildInformacao, buildDescricao, statusPesqueiro,
 } from './utils/pesqueiroFormato';
-import './App.css';
+import './Perfil.css';
+import './Painel.css';
 
 const FORM_VAZIO = {
   nomePesqueiro: '', descricaoPesqueiro: '', informacoesRapidas: '',
   regrasPermitido: '', regrasProibido: '', catalogoPeixes: '',
-  cep: '', numero: '', complemento: '', telefone: '',
+  cep: '', numero: '', complemento: '', telefone: '', cnpj: '', linkMapa: '',
 };
 
 function IndiqueSeuPesqueiro() {
@@ -22,7 +24,9 @@ function IndiqueSeuPesqueiro() {
   const [salvando, setSalvando] = useState(false);
   const [editandoId, setEditandoId] = useState(null);
   const [formData, setFormData] = useState(FORM_VAZIO);
+  const [foto, setFoto] = useState(null);
   const [mensagem, setMensagem] = useState('');
+  const [erros, setErros] = useState({});
 
   useEffect(() => {
     const usuarioAtual = UsuarioService.getCurrentUser();
@@ -60,6 +64,19 @@ function IndiqueSeuPesqueiro() {
     setFormData({ ...formData, catalogoPeixes: novos.join(', ') });
   };
 
+  const handleFotoSelecionada = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const dataUrl = await redimensionarImagem(file);
+      setFoto(dataUrl);
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível carregar essa imagem. Tente outra.');
+    }
+  };
+
   const iniciarEdicao = (pesqueiro) => {
     const { regrasPermitido, regrasProibido } = parseInformacao(pesqueiro.informacao);
     const { descricaoTexto, informacoesRapidas, catalogoPeixes } = parseDescricao(pesqueiro.descricao);
@@ -74,20 +91,38 @@ function IndiqueSeuPesqueiro() {
       numero: pesqueiro.numero || '',
       complemento: pesqueiro.complemento || '',
       telefone: pesqueiro.telefone || '',
+      cnpj: pesqueiro.cnpj || '',
+      linkMapa: pesqueiro.linkMapa || '',
     });
+    setFoto(pesqueiro.foto ? `data:image/jpeg;base64,${pesqueiro.foto}` : null);
     setEditandoId(pesqueiro.id);
     setMensagem('');
+    setErros({});
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   };
 
   const cancelarEdicao = () => {
     setEditandoId(null);
     setFormData(FORM_VAZIO);
+    setFoto(null);
+    setErros({});
+  };
+
+  const validar = () => {
+    const novosErros = {};
+    if (!formData.nomePesqueiro.trim()) novosErros.nomePesqueiro = 'Informe o nome do pesqueiro.';
+    if (!formData.telefone.trim()) novosErros.telefone = 'Informe o telefone comercial.';
+    if (!formData.cnpj.trim()) novosErros.cnpj = 'Informe o CNPJ do pesqueiro.';
+    if (!formData.descricaoPesqueiro.trim()) novosErros.descricaoPesqueiro = 'Descreva o pesqueiro.';
+    if (!formData.cep.trim()) novosErros.cep = 'Informe o CEP.';
+    if (!formData.numero.trim()) novosErros.numero = 'Informe o número.';
+    setErros(novosErros);
+    return Object.keys(novosErros).length === 0;
   };
 
   const handleSubmit = async () => {
-    if (!formData.nomePesqueiro.trim()) {
-      alert('Preencha o nome do pesqueiro.');
+    if (!validar()) {
+      alert('Preencha todos os campos obrigatórios (destacados em vermelho).');
       return;
     }
     setSalvando(true);
@@ -95,12 +130,15 @@ function IndiqueSeuPesqueiro() {
     try {
       const payload = {
         nome: formData.nomePesqueiro,
-        telefone: formData.telefone || '',
+        telefone: formData.telefone,
+        cnpj: formData.cnpj,
+        linkMapa: formData.linkMapa || null,
         descricao: buildDescricao(formData.descricaoPesqueiro, formData.informacoesRapidas, formData.catalogoPeixes),
         informacao: buildInformacao(formData.regrasPermitido, formData.regrasProibido),
-        cep: formData.cep ? formData.cep.replace(/\D/g, '').substring(0, 8) : null,
-        numero: formData.numero ? formData.numero.substring(0, 10) : null,
+        cep: formData.cep.replace(/\D/g, '').substring(0, 8),
+        numero: formData.numero.substring(0, 10),
         complemento: formData.complemento ? formData.complemento.substring(0, 50) : null,
+        foto: foto ? soBase64(foto) : null,
         statusPesqueiro: true,
         dataCadastro: new Date().toISOString().split('T')[0],
       };
@@ -114,6 +152,8 @@ function IndiqueSeuPesqueiro() {
       }
       setEditandoId(null);
       setFormData(FORM_VAZIO);
+      setFoto(null);
+      setErros({});
       carregarMeusPesqueiros();
     } catch (err) {
       console.error(err);
@@ -131,174 +171,174 @@ function IndiqueSeuPesqueiro() {
   if (!usuario) return null;
 
   return (
-    <div className="user-page-content">
+    <div className="perfil-page">
       <Navbar />
-      <div style={{ width: '90%', maxWidth: '900px', margin: '0 auto', paddingTop: '24px' }}>
-        <h1 className="text-center mb-2 text-white">Indique seu pesqueiro</h1>
-        <p className="text-center mb-5" style={{ color: 'rgba(255,255,255,0.8)' }}>
-          Envie as informações do seu pesqueiro para análise da nossa equipe.
-        </p>
 
+      <div className="perfil-cover">
+        <svg className="perfil-waves" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="rgba(123,205,186,0.35)" d="M0 45c180-30 300 30 480 22s300-52 480-37 300 45 480 30v30H0z" />
+          <path fill="#f4f8fb" d="M0 65c200-22 340 18 520 11s320-40 480-26 260 33 440 22v20H0z" />
+        </svg>
+      </div>
+
+      <div className="perfil-header">
+        <h2 className="perfil-name">Indique seu pesqueiro</h2>
+        <span className="perfil-badge">Envie as informações para análise da nossa equipe</span>
+      </div>
+
+      <div className="perfil-card">
         {loading ? (
-          <p className="text-center text-white">Carregando...</p>
+          <p className="text-center">Carregando...</p>
         ) : (
           <>
             {aprovados.length > 0 && (
-              <div className="card info-card mb-4">
-                <div className="card-body p-4">
-                  <h5 className="mb-3" style={{ color: '#112D4E' }}>Seus pesqueiros aprovados</h5>
-                  {aprovados.map((p) => (
-                    <div key={p.id} className="d-flex justify-content-between align-items-center p-3 mb-2" style={{ background: '#F9F7F7', borderRadius: '8px' }}>
-                      <div>
-                        <strong>{p.nome}</strong>
-                        <span className="badge bg-success ms-2">Aprovado</span>
-                      </div>
-                      <a href={`/painel-pesqueiro/${p.id}`} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">
-                        Administrar
-                      </a>
+              <div className="perfil-card-inner" style={{ marginBottom: '20px' }}>
+                <div className="painel-section-title">Seus pesqueiros aprovados</div>
+                {aprovados.map((p) => (
+                  <div key={p.id} className="painel-row">
+                    <div className="painel-row-info">
+                      {p.foto && <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} className="painel-row-photo" style={{ marginRight: '14px' }} />}
+                      <span className="painel-row-name">{p.nome}</span>
+                      <span className="painel-badge is-aprovado">Aprovado</span>
                     </div>
-                  ))}
-                </div>
+                    <a href={`/painel-pesqueiro/${p.id}`} target="_blank" rel="noopener noreferrer" className="perfil-btn perfil-btn-primary" style={{ flex: 'none', padding: '0 20px' }}>
+                      Administrar
+                    </a>
+                  </div>
+                ))}
               </div>
             )}
 
             {naoAprovados.length > 0 && (
-              <div className="card info-card mb-4">
-                <div className="card-body p-4">
-                  <h5 className="mb-3" style={{ color: '#112D4E' }}>Suas solicitações</h5>
-                  {naoAprovados.map((p) => {
-                    const status = statusPesqueiro(p.aprovado);
-                    return (
-                      <div key={p.id} className="d-flex justify-content-between align-items-center p-3 mb-2" style={{ background: '#F9F7F7', borderRadius: '8px' }}>
-                        <div>
-                          <strong>{p.nome}</strong>
-                          <span className={`badge ${status.classe} ms-2`}>{status.texto}</span>
-                        </div>
-                        <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => iniciarEdicao(p)}>
-                          Editar
-                        </button>
+              <div className="perfil-card-inner" style={{ marginBottom: '20px' }}>
+                <div className="painel-section-title">Suas solicitações</div>
+                {naoAprovados.map((p) => {
+                  const status = statusPesqueiro(p.aprovado);
+                  return (
+                    <div key={p.id} className="painel-row">
+                      <div className="painel-row-info">
+                        {p.foto && <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} className="painel-row-photo" style={{ marginRight: '14px' }} />}
+                        <span className="painel-row-name">{p.nome}</span>
+                        <span className={`painel-badge is-${status.chave}`}>{status.texto}</span>
                       </div>
-                    );
-                  })}
-                </div>
+                      <button type="button" className="perfil-btn perfil-btn-ghost" style={{ flex: 'none', padding: '0 20px' }} onClick={() => iniciarEdicao(p)}>
+                        Editar
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
-            {mensagem && (
-              <div className="alert alert-success text-center">{mensagem}</div>
-            )}
+            {mensagem && <div className="painel-alert is-success">{mensagem}</div>}
 
             {atingiuLimite ? (
-              <div className="card info-card mb-4">
-                <div className="card-body p-4 text-center">
-                  <h5 style={{ color: '#112D4E' }}>Você atingiu o limite de solicitações pendentes</h5>
-                  <p className="mb-0">Edite uma das solicitações acima ou aguarde a análise antes de enviar outra.</p>
-                </div>
+              <div className="perfil-card-inner text-center">
+                <h5 style={{ color: 'var(--navy)' }}>Você atingiu o limite de solicitações pendentes</h5>
+                <p className="perfil-field-value" style={{ marginTop: '8px' }}>
+                  Edite uma das solicitações acima ou aguarde a análise antes de enviar outra.
+                </p>
               </div>
             ) : (
-              <>
-                <div className="card info-card mb-4">
-                  <div className="card-body p-4">
-                    <h5 className="mb-4" style={{ color: '#112D4E', borderBottom: '2px solid #DBE2EF', paddingBottom: '10px' }}>
-                      {editandoId ? '✏️ Editando solicitação' : '📋 Informações Básicas'}
-                    </h5>
-                    <div className="row g-3">
-                      <div className="col-md-8">
-                        <label className="form-label fw-bold">Nome do Pesqueiro *</label>
-                        <input className="form-control" name="nomePesqueiro" placeholder="Ex: Pesqueiro Águas Claras" value={formData.nomePesqueiro} onChange={handleInputChange} />
-                      </div>
-                      <div className="col-md-4">
-                        <label className="form-label fw-bold">Telefone</label>
-                        <input className="form-control" name="telefone" placeholder="(11) 99999-9999" value={formData.telefone} onChange={handleInputChange} />
-                      </div>
-                      <div className="col-12">
-                        <label className="form-label fw-bold">Descrição</label>
-                        <textarea className="form-control" name="descricaoPesqueiro" placeholder="Descreva seu pesqueiro, diferenciais, ambiente..." value={formData.descricaoPesqueiro} onChange={handleInputChange} rows={3} />
-                      </div>
-                      <div className="col-12">
-                        <label className="form-label fw-bold">Informações Rápidas</label>
-                        <textarea className="form-control" name="informacoesRapidas" placeholder="Ex: Aberto de seg a dom, das 6h às 18h. Valor: R$30/dia. Área: 5.000m²" value={formData.informacoesRapidas} onChange={handleInputChange} rows={2} />
-                      </div>
-                    </div>
-                  </div>
+              <div className="perfil-card-inner">
+                <div className="painel-section-title">
+                  {editandoId ? 'Editando solicitação' : 'Informações do pesqueiro'}
                 </div>
 
-                <div className="card info-card mb-4">
-                  <div className="card-body p-4">
-                    <h5 className="mb-4" style={{ color: '#112D4E', borderBottom: '2px solid #DBE2EF', paddingBottom: '10px' }}>📍 Endereço</h5>
-                    <div className="row g-3">
-                      <div className="col-md-5">
-                        <label className="form-label fw-bold">CEP</label>
-                        <input className="form-control" name="cep" placeholder="00000-000" value={formData.cep} onChange={handleInputChange} />
-                      </div>
-                      <div className="col-md-3">
-                        <label className="form-label fw-bold">Número</label>
-                        <input className="form-control" name="numero" placeholder="123" value={formData.numero} onChange={handleInputChange} />
-                      </div>
-                      <div className="col-md-4">
-                        <label className="form-label fw-bold">Complemento</label>
-                        <input className="form-control" name="complemento" placeholder="Referência, bairro..." value={formData.complemento} onChange={handleInputChange} />
-                      </div>
-                    </div>
-                  </div>
+                <div className="painel-photo-upload" style={{ marginBottom: '20px' }}>
+                  {foto ? (
+                    <img src={foto} alt="Prévia" className="painel-photo-preview" />
+                  ) : (
+                    <div className="painel-photo-preview" />
+                  )}
+                  <label className="perfil-btn perfil-btn-ghost" style={{ flex: 'none', padding: '0 20px', display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
+                    Escolher foto
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFotoSelecionada} />
+                  </label>
                 </div>
 
-                <div className="card info-card mb-4">
-                  <div className="card-body p-4">
-                    <h5 className="mb-4" style={{ color: '#112D4E', borderBottom: '2px solid #DBE2EF', paddingBottom: '10px' }}>📜 Regras do Pesqueiro</h5>
-                    <div className="row g-3">
-                      <div className="col-md-6">
-                        <label className="form-label fw-bold" style={{ color: '#27ae60' }}>✓ O que é Permitido</label>
-                        <textarea className="form-control" name="regrasPermitido" placeholder={'Uma regra por linha'} value={formData.regrasPermitido} onChange={handleInputChange} rows={5} style={{ borderLeft: '3px solid #27ae60' }} />
-                      </div>
-                      <div className="col-md-6">
-                        <label className="form-label fw-bold" style={{ color: '#e74c3c' }}>✗ O que é Proibido</label>
-                        <textarea className="form-control" name="regrasProibido" placeholder={'Uma regra por linha'} value={formData.regrasProibido} onChange={handleInputChange} rows={5} style={{ borderLeft: '3px solid #e74c3c' }} />
-                      </div>
-                    </div>
-                  </div>
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Nome do Pesqueiro *</label>
+                  <input className="perfil-input" name="nomePesqueiro" placeholder="Ex: Pesqueiro Águas Claras" value={formData.nomePesqueiro} onChange={handleInputChange} />
+                  {erros.nomePesqueiro && <small style={{ color: '#a12626' }}>{erros.nomePesqueiro}</small>}
                 </div>
 
-                <div className="card info-card mb-5">
-                  <div className="card-body p-4">
-                    <h5 className="mb-3" style={{ color: '#112D4E', borderBottom: '2px solid #DBE2EF', paddingBottom: '10px' }}>🐟 Catálogo de Peixes</h5>
-                    <div className="row g-2">
-                      {PEIXES_DISPONIVEIS.map((peixe) => {
-                        const marcado = peixesSelecionados.includes(peixe);
-                        return (
-                          <div key={peixe} className="col-6 col-md-3">
-                            <div
-                              onClick={() => togglePeixe(peixe)}
-                              style={{
-                                padding: '8px 12px', borderRadius: '8px', cursor: 'pointer',
-                                border: marcado ? '2px solid #3F72AF' : '2px solid #DBE2EF',
-                                background: marcado ? '#DBE2EF' : '#F9F7F7',
-                                fontWeight: marcado ? '600' : '400',
-                                color: marcado ? '#112D4E' : '#666',
-                                textTransform: 'capitalize',
-                                userSelect: 'none',
-                              }}
-                            >
-                              {marcado ? '✓ ' : ''}{peixe}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Telefone comercial do pesqueiro *</label>
+                  <input className="perfil-input" name="telefone" placeholder="(11) 99999-9999" value={formData.telefone} onChange={handleInputChange} />
+                  {erros.telefone && <small style={{ color: '#a12626' }}>{erros.telefone}</small>}
                 </div>
 
-                <div className="text-center mb-5 d-flex justify-content-center gap-2">
-                  <button type="button" onClick={handleSubmit} disabled={salvando} className="btn btn-primary btn-lg px-5">
-                    {salvando ? 'Enviando...' : editandoId ? '💾 Salvar edição' : '🎣 Enviar para análise'}
+                <div className="perfil-field">
+                  <label className="perfil-field-label">CNPJ *</label>
+                  <input className="perfil-input" name="cnpj" placeholder="00.000.000/0001-00" value={formData.cnpj} onChange={handleInputChange} />
+                  {erros.cnpj && <small style={{ color: '#a12626' }}>{erros.cnpj}</small>}
+                </div>
+
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Descrição *</label>
+                  <textarea className="painel-textarea" name="descricaoPesqueiro" placeholder="Descreva seu pesqueiro, diferenciais, ambiente..." value={formData.descricaoPesqueiro} onChange={handleInputChange} rows={3} />
+                  {erros.descricaoPesqueiro && <small style={{ color: '#a12626' }}>{erros.descricaoPesqueiro}</small>}
+                </div>
+
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Informações rápidas</label>
+                  <textarea className="painel-textarea" name="informacoesRapidas" placeholder="Ex: Aberto de seg a dom, das 6h às 18h. Valor: R$30/dia." value={formData.informacoesRapidas} onChange={handleInputChange} rows={2} />
+                </div>
+
+                <div className="painel-section-title">Localização</div>
+
+                <div className="perfil-field">
+                  <label className="perfil-field-label">CEP *</label>
+                  <input className="perfil-input" name="cep" placeholder="00000-000" value={formData.cep} onChange={handleInputChange} />
+                  {erros.cep && <small style={{ color: '#a12626' }}>{erros.cep}</small>}
+                </div>
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Número *</label>
+                  <input className="perfil-input" name="numero" placeholder="123" value={formData.numero} onChange={handleInputChange} />
+                  {erros.numero && <small style={{ color: '#a12626' }}>{erros.numero}</small>}
+                </div>
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Complemento</label>
+                  <input className="perfil-input" name="complemento" placeholder="Referência, bairro..." value={formData.complemento} onChange={handleInputChange} />
+                </div>
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Link do Google Maps</label>
+                  <input className="perfil-input" name="linkMapa" placeholder="Cole aqui o link de compartilhamento do Google Maps" value={formData.linkMapa} onChange={handleInputChange} />
+                  <small style={{ color: 'var(--text-soft)' }}>No Google Maps, toque em "Compartilhar" e cole o link aqui.</small>
+                </div>
+
+                <div className="painel-section-title">Regras do pesqueiro</div>
+
+                <div className="perfil-field">
+                  <label className="perfil-field-label" style={{ color: '#27ae60' }}>✓ O que é permitido</label>
+                  <textarea className="painel-textarea" name="regrasPermitido" placeholder={'Uma regra por linha'} value={formData.regrasPermitido} onChange={handleInputChange} rows={4} />
+                </div>
+                <div className="perfil-field">
+                  <label className="perfil-field-label" style={{ color: '#a12626' }}>✗ O que é proibido</label>
+                  <textarea className="painel-textarea" name="regrasProibido" placeholder={'Uma regra por linha'} value={formData.regrasProibido} onChange={handleInputChange} rows={4} />
+                </div>
+
+                <div className="painel-section-title">Catálogo de peixes</div>
+                <div className="painel-grid">
+                  {PEIXES_DISPONIVEIS.map((peixe) => (
+                    <div key={peixe} className={`painel-chip ${peixesSelecionados.includes(peixe) ? 'is-active' : ''}`} onClick={() => togglePeixe(peixe)}>
+                      {peixesSelecionados.includes(peixe) ? '✓ ' : ''}{peixe}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="perfil-actions">
+                  <button type="button" onClick={handleSubmit} disabled={salvando} className="perfil-btn perfil-btn-primary">
+                    {salvando ? 'Enviando...' : editandoId ? 'Salvar edição' : 'Enviar para análise'}
                   </button>
                   {editandoId && (
-                    <button type="button" onClick={cancelarEdicao} className="btn btn-outline-secondary btn-lg px-4">
+                    <button type="button" onClick={cancelarEdicao} className="perfil-btn perfil-btn-ghost">
                       Cancelar
                     </button>
                   )}
                 </div>
-              </>
+              </div>
             )}
           </>
         )}

@@ -256,6 +256,16 @@ function PesqueiroDinamico() {
       </section>
 
       <div className="detalhe-content">
+        {pesqueiro.foto && (
+          <div className="detalhe-card" style={{ padding: 0, overflow: 'hidden' }}>
+            <img
+              src={`data:image/jpeg;base64,${pesqueiro.foto}`}
+              alt={pesqueiro.nome}
+              style={{ width: '100%', maxHeight: '360px', objectFit: 'cover', display: 'block' }}
+            />
+          </div>
+        )}
+
         <div className="detalhe-card">
           <div className="detalhe-info-grid">
             <div>
@@ -279,6 +289,17 @@ function PesqueiroDinamico() {
               )}
               {pesqueiro.dataCadastro && (
                 <div className="detalhe-quickinfo-row"><IconeCalendario /><span><strong>Cadastrado em:</strong> {pesqueiro.dataCadastro}</span></div>
+              )}
+              {pesqueiro.linkMapa && (
+                <a
+                  href={pesqueiro.linkMapa}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="detalhe-comment-submit"
+                  style={{ display: 'inline-block', marginTop: '12px', textDecoration: 'none', textAlign: 'center' }}
+                >
+                  Como chegar
+                </a>
               )}
             </div>
           </div>

@@ -89,6 +89,7 @@ private UsuarioPesqueiroRepository usuarioPesqueiroRepository;
     pesqueiroExistente.setInformacao(pesqueiro.getInformacao() != null ? pesqueiro.getInformacao() : "");
     pesqueiroExistente.setMapa(pesqueiro.getMapa());
     pesqueiroExistente.setCnpj(pesqueiro.getCnpj());
+    pesqueiroExistente.setLinkMapa(pesqueiro.getLinkMapa());
 
     // Edicao pelo dono de um pedido negado/pendente volta para analise
     if (!isAdmin && !Boolean.TRUE.equals(pesqueiroExistente.getAprovado())) {

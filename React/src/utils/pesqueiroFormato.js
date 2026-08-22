@@ -41,7 +41,7 @@ export const buildDescricao = (descricaoTexto, informacoesRapidas, catalogoPeixe
 };
 
 export const statusPesqueiro = (aprovado) => {
-  if (aprovado === true) return { texto: 'Aprovado', classe: 'bg-success' };
-  if (aprovado === false) return { texto: 'Negado', classe: 'bg-danger' };
-  return { texto: 'Em análise', classe: 'bg-warning text-dark' };
+  if (aprovado === true) return { texto: 'Aprovado', chave: 'aprovado' };
+  if (aprovado === false) return { texto: 'Negado', chave: 'negado' };
+  return { texto: 'Em análise', chave: 'pendente' };
 };
