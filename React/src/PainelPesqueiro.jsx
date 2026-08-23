@@ -5,7 +5,8 @@ import PesqueiroService from './services/PesqueiroService';
 import UsuarioService from './services/UsuarioService';
 import { redimensionarImagem, soBase64 } from './utils/imagem';
 import {
-  PEIXES_DISPONIVEIS, parseInformacao, parseDescricao, buildInformacao, buildDescricao,
+  PEIXES_DISPONIVEIS, DIAS_SEMANA, parseInformacao, parseDescricao, parseInfoRapida,
+  buildInformacao, buildDescricao, buildInfoRapida, formatarInfoRapidaTexto,
 } from './utils/pesqueiroFormato';
 import './Perfil.css';
 import './Painel.css';
@@ -21,7 +22,8 @@ function PainelPesqueiro() {
   const [foto, setFoto] = useState(null);
   const [erros, setErros] = useState({});
   const [editData, setEditData] = useState({
-    nome: '', telefone: '', cnpj: '', linkMapa: '', descricaoTexto: '', informacoesRapidas: '',
+    nome: '', telefone: '', cnpj: '', linkMapa: '', descricaoTexto: '',
+    diasAbertos: [], precoSemana: '', precoFimSemana: '',
     regrasPermitido: '', regrasProibido: '', catalogoPeixes: '',
     cep: '', numero: '', complemento: '',
   });
@@ -52,9 +54,10 @@ function PainelPesqueiro() {
   const popularEditData = (p) => {
     const { regrasPermitido, regrasProibido } = parseInformacao(p.informacao);
     const { descricaoTexto, informacoesRapidas, catalogoPeixes } = parseDescricao(p.descricao);
+    const { diasAbertos, precoSemana, precoFimSemana } = parseInfoRapida(informacoesRapidas);
     setEditData({
       nome: p.nome || '', telefone: p.telefone || '', cnpj: p.cnpj || '', linkMapa: p.linkMapa || '',
-      descricaoTexto, informacoesRapidas, regrasPermitido, regrasProibido, catalogoPeixes,
+      descricaoTexto, diasAbertos, precoSemana, precoFimSemana, regrasPermitido, regrasProibido, catalogoPeixes,
       cep: p.cep || '', numero: p.numero || '', complemento: p.complemento || '',
     });
     setFoto(p.foto ? `data:image/jpeg;base64,${p.foto}` : null);
@@ -68,6 +71,13 @@ function PainelPesqueiro() {
       ? selecionados.filter((p) => p !== peixe)
       : [...selecionados, peixe];
     setEditData({ ...editData, catalogoPeixes: novos.join(', ') });
+  };
+
+  const toggleDia = (dia) => {
+    const novos = editData.diasAbertos.includes(dia)
+      ? editData.diasAbertos.filter((d) => d !== dia)
+      : [...editData.diasAbertos, dia];
+    setEditData({ ...editData, diasAbertos: novos });
   };
 
   const handleFotoSelecionada = async (e) => {
@@ -108,7 +118,7 @@ function PainelPesqueiro() {
         telefone: editData.telefone,
         cnpj: editData.cnpj,
         linkMapa: editData.linkMapa || null,
-        descricao: buildDescricao(editData.descricaoTexto, editData.informacoesRapidas, editData.catalogoPeixes),
+        descricao: buildDescricao(editData.descricaoTexto, buildInfoRapida(editData.diasAbertos, editData.precoSemana, editData.precoFimSemana), editData.catalogoPeixes),
         informacao: buildInformacao(editData.regrasPermitido, editData.regrasProibido),
         cep: editData.cep.replace(/\D/g, '').substring(0, 8),
         numero: editData.numero.substring(0, 10),
@@ -231,8 +241,22 @@ function PainelPesqueiro() {
                 {erros.descricaoTexto && <small style={{ color: '#a12626' }}>{erros.descricaoTexto}</small>}
               </div>
               <div className="perfil-field">
-                <label className="perfil-field-label">Informações rápidas</label>
-                <textarea className="painel-textarea" rows={4} value={editData.informacoesRapidas} onChange={(e) => setEditData({ ...editData, informacoesRapidas: e.target.value })} />
+                <label className="perfil-field-label">Dias de funcionamento</label>
+                <div className="painel-grid">
+                  {DIAS_SEMANA.map((dia) => (
+                    <div key={dia} className={`painel-chip ${editData.diasAbertos.includes(dia) ? 'is-active' : ''}`} onClick={() => toggleDia(dia)}>
+                      {editData.diasAbertos.includes(dia) ? '✓ ' : ''}{dia}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="perfil-field">
+                <label className="perfil-field-label">Preço dia de semana (R$)</label>
+                <input className="perfil-input" type="number" min="0" value={editData.precoSemana} onChange={(e) => setEditData({ ...editData, precoSemana: e.target.value })} />
+              </div>
+              <div className="perfil-field">
+                <label className="perfil-field-label">Preço fim de semana (R$)</label>
+                <input className="perfil-input" type="number" min="0" value={editData.precoFimSemana} onChange={(e) => setEditData({ ...editData, precoFimSemana: e.target.value })} />
               </div>
 
               <div className="painel-section-title">Localização</div>
@@ -308,10 +332,12 @@ function PainelPesqueiro() {
                   <span className="perfil-field-value">{editData.descricaoTexto}</span>
                 </div>
               )}
-              {editData.informacoesRapidas && (
+              {(editData.diasAbertos.length > 0 || editData.precoSemana || editData.precoFimSemana) && (
                 <div className="perfil-field">
-                  <span className="perfil-field-label">Informações rápidas</span>
-                  <span className="perfil-field-value" style={{ whiteSpace: 'pre-wrap' }}>{editData.informacoesRapidas}</span>
+                  <span className="perfil-field-label">Funcionamento</span>
+                  <span className="perfil-field-value" style={{ whiteSpace: 'pre-wrap' }}>
+                    {formatarInfoRapidaTexto(buildInfoRapida(editData.diasAbertos, editData.precoSemana, editData.precoFimSemana))}
+                  </span>
                 </div>
               )}
               {editData.catalogoPeixes && (

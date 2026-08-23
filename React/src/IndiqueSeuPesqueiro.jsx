@@ -5,13 +5,14 @@ import PesqueiroService from './services/PesqueiroService';
 import UsuarioService from './services/UsuarioService';
 import { redimensionarImagem, soBase64 } from './utils/imagem';
 import {
-  PEIXES_DISPONIVEIS, parseInformacao, parseDescricao, buildInformacao, buildDescricao, statusPesqueiro,
+  PEIXES_DISPONIVEIS, DIAS_SEMANA, parseInformacao, parseDescricao, parseInfoRapida,
+  buildInformacao, buildDescricao, buildInfoRapida, statusPesqueiro,
 } from './utils/pesqueiroFormato';
 import './Perfil.css';
 import './Painel.css';
 
 const FORM_VAZIO = {
-  nomePesqueiro: '', descricaoPesqueiro: '', informacoesRapidas: '',
+  nomePesqueiro: '', descricaoPesqueiro: '', diasAbertos: [], precoSemana: '', precoFimSemana: '',
   regrasPermitido: '', regrasProibido: '', catalogoPeixes: '',
   cep: '', numero: '', complemento: '', telefone: '', cnpj: '', linkMapa: '',
 };
@@ -64,6 +65,13 @@ function IndiqueSeuPesqueiro() {
     setFormData({ ...formData, catalogoPeixes: novos.join(', ') });
   };
 
+  const toggleDia = (dia) => {
+    const novos = formData.diasAbertos.includes(dia)
+      ? formData.diasAbertos.filter((d) => d !== dia)
+      : [...formData.diasAbertos, dia];
+    setFormData({ ...formData, diasAbertos: novos });
+  };
+
   const handleFotoSelecionada = async (e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -80,10 +88,13 @@ function IndiqueSeuPesqueiro() {
   const iniciarEdicao = (pesqueiro) => {
     const { regrasPermitido, regrasProibido } = parseInformacao(pesqueiro.informacao);
     const { descricaoTexto, informacoesRapidas, catalogoPeixes } = parseDescricao(pesqueiro.descricao);
+    const { diasAbertos, precoSemana, precoFimSemana } = parseInfoRapida(informacoesRapidas);
     setFormData({
       nomePesqueiro: pesqueiro.nome || '',
       descricaoPesqueiro: descricaoTexto,
-      informacoesRapidas,
+      diasAbertos,
+      precoSemana,
+      precoFimSemana,
       regrasPermitido,
       regrasProibido,
       catalogoPeixes,
@@ -133,7 +144,7 @@ function IndiqueSeuPesqueiro() {
         telefone: formData.telefone,
         cnpj: formData.cnpj,
         linkMapa: formData.linkMapa || null,
-        descricao: buildDescricao(formData.descricaoPesqueiro, formData.informacoesRapidas, formData.catalogoPeixes),
+        descricao: buildDescricao(formData.descricaoPesqueiro, buildInfoRapida(formData.diasAbertos, formData.precoSemana, formData.precoFimSemana), formData.catalogoPeixes),
         informacao: buildInformacao(formData.regrasPermitido, formData.regrasProibido),
         cep: formData.cep.replace(/\D/g, '').substring(0, 8),
         numero: formData.numero.substring(0, 10),
@@ -282,8 +293,23 @@ function IndiqueSeuPesqueiro() {
                 </div>
 
                 <div className="perfil-field">
-                  <label className="perfil-field-label">Informações rápidas</label>
-                  <textarea className="painel-textarea" name="informacoesRapidas" placeholder="Ex: Aberto de seg a dom, das 6h às 18h. Valor: R$30/dia." value={formData.informacoesRapidas} onChange={handleInputChange} rows={2} />
+                  <label className="perfil-field-label">Dias de funcionamento</label>
+                  <div className="painel-grid">
+                    {DIAS_SEMANA.map((dia) => (
+                      <div key={dia} className={`painel-chip ${formData.diasAbertos.includes(dia) ? 'is-active' : ''}`} onClick={() => toggleDia(dia)}>
+                        {formData.diasAbertos.includes(dia) ? '✓ ' : ''}{dia}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Preço dia de semana (R$)</label>
+                  <input className="perfil-input" type="number" min="0" name="precoSemana" placeholder="30" value={formData.precoSemana} onChange={handleInputChange} />
+                </div>
+                <div className="perfil-field">
+                  <label className="perfil-field-label">Preço fim de semana (R$)</label>
+                  <input className="perfil-input" type="number" min="0" name="precoFimSemana" placeholder="50" value={formData.precoFimSemana} onChange={handleInputChange} />
                 </div>
 
                 <div className="painel-section-title">Localização</div>

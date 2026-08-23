@@ -50,7 +50,10 @@ function Login() {
         navigate('/inicial');
       }
     } catch (err) {
-      setErro('E-mail ou senha inválidos.');
+      const mensagemServidor = err.response?.data?.message;
+      setErro(mensagemServidor === 'Senha incorreta' || mensagemServidor === 'Email não encontrado'
+        ? 'E-mail ou senha inválidos.'
+        : mensagemServidor || 'E-mail ou senha inválidos.');
     } finally {
       setLoading(false);
     }

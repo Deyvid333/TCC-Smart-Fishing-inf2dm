@@ -40,6 +40,38 @@ export const buildDescricao = (descricaoTexto, informacoesRapidas, catalogoPeixe
   return partes.join(' | ').substring(0, 600);
 };
 
+export const DIAS_SEMANA = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+// Codifica os dias abertos + precos num formato compacto e facil de reler,
+// em vez do dono escrever um texto livre tipo "aberto seg a sex, 30 reais".
+export const buildInfoRapida = (diasAbertos, precoSemana, precoFimSemana) => {
+  const partes = [];
+  if (diasAbertos?.length) partes.push('D:' + diasAbertos.join(','));
+  if (precoSemana) partes.push('S:' + precoSemana);
+  if (precoFimSemana) partes.push('F:' + precoFimSemana);
+  return partes.join(';');
+};
+
+export const parseInfoRapida = (informacoesRapidas) => {
+  const vazio = { diasAbertos: [], precoSemana: '', precoFimSemana: '' };
+  if (!informacoesRapidas) return vazio;
+  const partes = informacoesRapidas.split(';');
+  const dias = partes.find((p) => p.startsWith('D:'))?.replace('D:', '').split(',').filter(Boolean) || [];
+  const precoSemana = partes.find((p) => p.startsWith('S:'))?.replace('S:', '') || '';
+  const precoFimSemana = partes.find((p) => p.startsWith('F:'))?.replace('F:', '') || '';
+  return { diasAbertos: dias, precoSemana, precoFimSemana };
+};
+
+// Transforma o formato compacto num texto legivel pra exibir na pagina publica do pesqueiro.
+export const formatarInfoRapidaTexto = (informacoesRapidas) => {
+  const { diasAbertos, precoSemana, precoFimSemana } = parseInfoRapida(informacoesRapidas);
+  const linhas = [];
+  if (diasAbertos.length) linhas.push('Aberto: ' + diasAbertos.join(', '));
+  if (precoSemana) linhas.push('Dia de semana: R$' + precoSemana);
+  if (precoFimSemana) linhas.push('Fim de semana: R$' + precoFimSemana);
+  return linhas.join('\n');
+};
+
 export const statusPesqueiro = (aprovado) => {
   if (aprovado === true) return { texto: 'Aprovado', chave: 'aprovado' };
   if (aprovado === false) return { texto: 'Negado', chave: 'negado' };

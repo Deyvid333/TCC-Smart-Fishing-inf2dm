@@ -166,3 +166,127 @@
 .painel-map-link:hover {
   text-decoration: underline;
 }
+
+/* ==========================================================================
+   Layout com sidebar (painel do admin)
+   ========================================================================== */
+
+.painel-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+.painel-sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(0, 18, 66, 0.06);
+  padding: 14px;
+  position: sticky;
+  top: 20px;
+}
+
+.painel-sidebar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-bottom: 4px;
+  font-family: inherit;
+}
+
+.painel-sidebar-btn:hover {
+  background: var(--surface);
+}
+
+.painel-sidebar-btn.is-active {
+  background: rgba(54, 133, 181, 0.1);
+  color: var(--navy);
+}
+
+.painel-sidebar-count {
+  background: var(--line);
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.painel-sidebar-btn.is-active .painel-sidebar-count {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.painel-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.painel-expand-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(0, 18, 66, 0.06);
+  padding: 20px 24px;
+  margin-bottom: 14px;
+}
+
+.painel-expand-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.painel-expand-head-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.painel-expand-title {
+  font-weight: 700;
+  color: var(--navy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-expand-sub {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.painel-expand-arrow {
+  transition: transform 0.15s ease;
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.painel-expand-arrow.is-open {
+  transform: rotate(90deg);
+}
+
+.painel-expand-body {
+  padding-top: 16px;
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}

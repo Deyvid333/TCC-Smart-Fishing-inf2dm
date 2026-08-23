@@ -5,6 +5,8 @@ import ComentarioService from './services/ComentarioService';
 import UsuarioService from './services/UsuarioService';
 import FavoritoService from './services/FavoritoService';
 import HistoricoService from './services/HistoricoService';
+import DenunciaService from './services/DenunciaService';
+import { formatarInfoRapidaTexto } from './utils/pesqueiroFormato';
 import './Detalhe.css';
 
 const IconeCoracao = ({ preenchido }) => (
@@ -144,12 +146,13 @@ function PesqueiroDinamico() {
       ComentarioService.findByPesqueiro(pesqueiro.id),
       UsuarioService.findAll(),
     ]).then(([comentariosRes, usuariosRes]) => {
-      const nomesPorId = {};
-      usuariosRes.data.forEach((u) => { nomesPorId[u.id] = u.nome; });
+      const usuariosPorId = {};
+      usuariosRes.data.forEach((u) => { usuariosPorId[u.id] = u; });
       const mapeados = comentariosRes.data.map((c) => ({
         id: c.id,
         usuarioId: c.usuarioId,
-        nome: nomesPorId[c.usuarioId] || 'Usuário',
+        nome: usuariosPorId[c.usuarioId]?.nome || 'Usuário',
+        foto: usuariosPorId[c.usuarioId]?.foto || null,
         rating: c.nota,
         texto: c.descricao,
         data: c.dataCadastro,
@@ -203,6 +206,19 @@ function PesqueiroDinamico() {
   };
   const isCommentOwner = (comment) => currentUser && comment.usuarioId === currentUser.id;
 
+  const handleDenunciar = (id) => {
+    if (!currentUser) {
+      alert('Você precisa estar logado para denunciar um comentário.');
+      return;
+    }
+    DenunciaService.denunciar(id).then(() => {
+      alert('Comentário denunciado. Nossa equipe vai analisar.');
+    }).catch((err) => {
+      const msg = err.response?.data?.message || 'Não foi possível denunciar esse comentário.';
+      alert(msg);
+    });
+  };
+
   if (!pesqueiro) {
     return (
       <div className="detalhe-page">
@@ -214,7 +230,7 @@ function PesqueiroDinamico() {
 
   const partes = pesqueiro.informacao ? pesqueiro.informacao.split('|') : [];
   const catalogoPart = pesqueiro.descricao?.split(' | ').find(p => p.startsWith('F:'))?.replace('F:', '') || '';
-  const infoRapida = pesqueiro.descricao?.split(' | ').find(p => p.startsWith('Info:'))?.replace('Info:', '') || '';
+  const infoRapida = formatarInfoRapidaTexto(pesqueiro.descricao?.split(' | ').find(p => p.startsWith('Info:'))?.replace('Info:', '') || '');
   const descricaoTexto = pesqueiro.descricao?.split(' | ')[0] || '';
   const regrasPermitido = partes.find(p => p.startsWith('P:'))?.replace('P:', '') || '';
   const regrasProibido = partes.find(p => p.startsWith('X:'))?.replace('X:', '') || '';
@@ -271,7 +287,7 @@ function PesqueiroDinamico() {
             <div>
               <h2>{pesqueiro.nome}</h2>
               {descricaoTexto && <p className="detalhe-description">{descricaoTexto}</p>}
-              {infoRapida && <p className="detalhe-highlight">{infoRapida}</p>}
+              {infoRapida && <p className="detalhe-highlight" style={{ whiteSpace: 'pre-wrap' }}>{infoRapida}</p>}
             </div>
             <div className="detalhe-quickinfo">
               <h5>Informações Rápidas</h5>
@@ -377,14 +393,27 @@ function PesqueiroDinamico() {
             {comments.map((comment) => (
               <div key={comment.id} className="detalhe-comment-item">
                 <div className="detalhe-comment-head">
-                  <div>
-                    <span className="detalhe-comment-name">{comment.nome}</span>
-                    <div>{renderStars(comment.rating)}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {comment.foto ? (
+                      <img
+                        src={`data:image/jpeg;base64,${comment.foto}`}
+                        alt={comment.nome}
+                        style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#dfe8f0' }} />
+                    )}
+                    <div>
+                      <span className="detalhe-comment-name">{comment.nome}</span>
+                      <div>{renderStars(comment.rating)}</div>
+                    </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <span className="detalhe-comment-date">{comment.data}</span>
-                    {isCommentOwner(comment) && (
+                    {isCommentOwner(comment) ? (
                       <button type="button" className="detalhe-comment-delete" onClick={() => handleDeleteComment(comment.id)}>Excluir</button>
+                    ) : (
+                      <button type="button" className="detalhe-comment-delete" onClick={() => handleDenunciar(comment.id)}>Denunciar</button>
                     )}
                   </div>
                 </div>

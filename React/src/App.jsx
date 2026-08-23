@@ -7,7 +7,7 @@ import Cadastro from './Cadastro';
 import Inicial from './Inicial';
 import Home from './Home';
 import Perfil from './Perfil';
-import AdminModeracao from './AdminModeracao';
+import AdminPainel from './AdminPainel';
 import IndiqueSeuPesqueiro from './IndiqueSeuPesqueiro';
 import PainelPesqueiro from './PainelPesqueiro';
 import PesqueiroDinamico from './PesqueiroDinamico';
@@ -41,7 +41,7 @@ function App() {
         <Route path="/perfil" element={<Perfil />} />
         
         {/* Painel de moderação, restrito a contas com nivelAcesso ADMIN */}
-        <Route path="/admin" element={<AdminModeracao />} />
+        <Route path="/admin" element={<AdminPainel />} />
         {/* Tela onde qualquer usuário logado indica/edita um pesqueiro pendente de análise */}
         <Route path="/indique-pesqueiro" element={<IndiqueSeuPesqueiro />} />
         {/* Painel de um pesqueiro específico, só acessível pelo dono */}
