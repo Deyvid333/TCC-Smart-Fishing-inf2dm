@@ -22,6 +22,7 @@ function AdminPainel() {
   const [pendentes, setPendentes] = useState([]);
   const [pesqueiros, setPesqueiros] = useState([]);
   const [denuncias, setDenuncias] = useState([]);
+  const [banidos, setBanidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processandoId, setProcessandoId] = useState(null);
   const [expandido, setExpandido] = useState(null);
@@ -42,10 +43,12 @@ function AdminPainel() {
       PesqueiroService.findPendentes(),
       PesqueiroService.findAll(),
       DenunciaService.listar(),
-    ]).then(([resPendentes, resPesqueiros, resDenuncias]) => {
+      UsuarioService.findAll(),
+    ]).then(([resPendentes, resPesqueiros, resDenuncias, resUsuarios]) => {
       setPendentes(resPendentes.data);
       setPesqueiros(resPesqueiros.data);
       setDenuncias(resDenuncias.data);
+      setBanidos(resUsuarios.data.filter((u) => u.statusUsuario === false));
     }).catch((err) => console.error('Erro ao carregar dados do admin', err))
       .finally(() => setLoading(false));
   };
@@ -113,6 +116,7 @@ function AdminPainel() {
     setProcessandoId(comentarioId);
     try {
       await UsuarioService.banir(usuarioId);
+      carregarTudo();
       alert('Usuário banido com sucesso.');
     } catch (err) {
       console.error(err);
@@ -135,10 +139,24 @@ function AdminPainel() {
     }
   };
 
+  const handleDesbanirUsuario = async (usuarioId) => {
+    setProcessandoId(usuarioId);
+    try {
+      await UsuarioService.desbanir(usuarioId);
+      setBanidos((prev) => prev.filter((u) => u.id !== usuarioId));
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao desbanir usuário. Tente novamente.');
+    } finally {
+      setProcessandoId(null);
+    }
+  };
+
   const abas = [
     { chave: 'solicitacoes', label: 'Solicitações pendentes', total: pendentes.length },
     { chave: 'pesqueiros', label: 'Pesqueiros existentes', total: pesqueiros.length },
     { chave: 'denuncias', label: 'Comentários denunciados', total: denuncias.length },
+    { chave: 'banidos', label: 'Usuários banidos', total: banidos.length },
   ];
 
   return (
@@ -152,7 +170,7 @@ function AdminPainel() {
         </svg>
       </div>
 
-      <div className="perfil-header">
+      <div className="painel-header">
         <h2 className="perfil-name">Painel de moderação</h2>
         <span className="perfil-badge">Gerencie pesqueiros, solicitações e comentários denunciados</span>
       </div>
@@ -309,6 +327,38 @@ function AdminPainel() {
                               </button>
                             </div>
                           )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+
+              {aba === 'banidos' && (
+                banidos.length === 0 ? (
+                  <div className="perfil-card-inner text-center"><p className="mb-0">Nenhum usuário banido no momento.</p></div>
+                ) : banidos.map((u) => {
+                  const chave = `ban-${u.id}`;
+                  const aberto = expandido === chave;
+                  return (
+                    <div key={u.id} className="painel-expand-card">
+                      <div className="painel-expand-head" onClick={() => toggleExpandir(chave)}>
+                        <div className="painel-expand-head-info">
+                          <div>
+                            <div className="painel-expand-title">{u.nome}</div>
+                            <div className="painel-expand-sub">{u.email}</div>
+                          </div>
+                        </div>
+                        <span className={`painel-expand-arrow ${aberto ? 'is-open' : ''}`}><IconeSeta /></span>
+                      </div>
+                      {aberto && (
+                        <div className="painel-expand-body">
+                          <div className="perfil-field"><span className="perfil-field-label">Cadastrado em</span><span className="perfil-field-value">{u.dataCadastro || '—'}</span></div>
+                          <div className="perfil-actions">
+                            <button className="perfil-btn perfil-btn-primary" disabled={processandoId === u.id} onClick={() => handleDesbanirUsuario(u.id)}>
+                              Desbanir usuário
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>

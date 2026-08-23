@@ -192,7 +192,7 @@ function PainelPesqueiro() {
         </svg>
       </div>
 
-      <div className="perfil-header">
+      <div className="painel-header">
         <h2 className="perfil-name">{pesqueiro?.nome}</h2>
         <span className="perfil-badge">Painel do pesqueiro</span>
       </div>

@@ -167,6 +167,15 @@
   text-decoration: underline;
 }
 
+.painel-header {
+  max-width: 900px;
+  margin: 24px auto 0;
+  padding: 0 20px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
 /* ==========================================================================
    Layout com sidebar (painel do admin)
    ========================================================================== */

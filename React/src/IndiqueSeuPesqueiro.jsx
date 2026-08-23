@@ -192,7 +192,7 @@ function IndiqueSeuPesqueiro() {
         </svg>
       </div>
 
-      <div className="perfil-header">
+      <div className="painel-header">
         <h2 className="perfil-name">Indique seu pesqueiro</h2>
         <span className="perfil-badge">Envie as informações para análise da nossa equipe</span>
       </div>
