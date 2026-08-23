@@ -1,0 +1,51 @@
+package com.itb.inf2dm.smartfishingd.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import com.itb.inf2dm.smartfishingd.model.entity.Denuncia;
+import com.itb.inf2dm.smartfishingd.services.DenunciaService;
+
+@RestController
+@RequestMapping("/api/v1/denuncia")
+public class ControllerDenuncia {
+
+    @Autowired
+    private DenunciaService denunciaService;
+
+    @PostMapping
+    public ResponseEntity<Object> denunciar(@RequestBody Denuncia denuncia, Authentication authentication) {
+        try {
+            Long usuarioId = (Long) authentication.getPrincipal();
+            denunciaService.denunciar(denuncia.getComentarioId(), usuarioId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    Map.of("status", 201, "message", "Comentário denunciado. Nossa equipe vai analisar.")
+            );
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(
+                    Map.of("status", 409, "error", "Conflict", "message", e.getMessage())
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(
+                    Map.of("status", 404, "error", "Not Found", "message", e.getMessage())
+            );
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DenunciaService.ComentarioDenunciado>> listar() {
+        return ResponseEntity.ok(denunciaService.listarComentariosDenunciados());
+    }
+
+    @DeleteMapping("/comentario/{comentarioId}")
+    public ResponseEntity<Object> dispensar(@PathVariable Long comentarioId) {
+        denunciaService.dispensarDenuncias(comentarioId);
+        return ResponseEntity.ok(Map.of("status", 200, "message", "Denúncia(s) dispensada(s)."));
+    }
+}

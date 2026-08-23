@@ -32,6 +32,9 @@ const update = (id, data) => http.mainInstance.put(`${API_URL}/${id}`, data);
 
 const remove = (id) => http.mainInstance.delete(`${API_URL}/${id}`);
 
-const UsuarioService = { findAll, findById, cadastrar, login, logout, getCurrentUser, update, remove };
+const banir = (id) => http.mainInstance.put(`${API_URL}/${id}/banir`);
+const desbanir = (id) => http.mainInstance.put(`${API_URL}/${id}/desbanir`);
+
+const UsuarioService = { findAll, findById, cadastrar, login, logout, getCurrentUser, update, remove, banir, desbanir };
 
 export default UsuarioService;

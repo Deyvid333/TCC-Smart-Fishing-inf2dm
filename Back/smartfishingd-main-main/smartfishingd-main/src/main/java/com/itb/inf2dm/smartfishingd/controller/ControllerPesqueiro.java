@@ -5,6 +5,7 @@ import com.itb.inf2dm.smartfishingd.services.PesqueiroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,10 +28,27 @@ public class ControllerPesqueiro {
         return ResponseEntity.ok(pesqueiroService.findPendentes());
     }
 
+    @GetMapping("/meus")
+    public ResponseEntity<List<Pesqueiro>> listarMeusPesqueiros(Authentication authentication) {
+        Long usuarioId = (Long) authentication.getPrincipal();
+        return ResponseEntity.ok(pesqueiroService.listarMeusPesqueiros(usuarioId));
+    }
+
     @PostMapping
-    public ResponseEntity<Pesqueiro> salvarCatalogo(@RequestBody Pesqueiro pesqueiro) {
-        Pesqueiro novoPesqueiro = pesqueiroService.save(pesqueiro);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoPesqueiro);
+    public ResponseEntity<Object> salvarCatalogo(@RequestBody Pesqueiro pesqueiro, Authentication authentication) {
+        try {
+            Long usuarioId = (Long) authentication.getPrincipal();
+            Pesqueiro novoPesqueiro = pesqueiroService.save(pesqueiro, usuarioId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoPesqueiro);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(
+                    Map.of(
+                            "status", 409,
+                            "error", "Conflict",
+                            "message", e.getMessage()
+                    )
+            );
+        }
     }
 
     @GetMapping("/{id}")
@@ -57,9 +75,12 @@ public class ControllerPesqueiro {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> atualizarCatalogo(@PathVariable String id, @RequestBody Pesqueiro pesqueiro) {
+    public ResponseEntity<Object> atualizarCatalogo(@PathVariable String id, @RequestBody Pesqueiro pesqueiro, Authentication authentication) {
         try {
-            return ResponseEntity.ok(pesqueiroService.update(Long.parseLong(id), pesqueiro));
+            Long usuarioId = (Long) authentication.getPrincipal();
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            return ResponseEntity.ok(pesqueiroService.update(Long.parseLong(id), pesqueiro, usuarioId, isAdmin));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(
                     Map.of(
@@ -68,7 +89,14 @@ public class ControllerPesqueiro {
                             "message", "O id informado não é válido: " + id
                     )
             );
-
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(
+                    Map.of(
+                            "status", 403,
+                            "error", "Forbidden",
+                            "message", e.getMessage()
+                    )
+            );
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(
                     Map.of(
@@ -126,9 +154,12 @@ public class ControllerPesqueiro {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deletarProdutoPorId(@PathVariable String id) {
+    public ResponseEntity<Object> deletarProdutoPorId(@PathVariable String id, Authentication authentication) {
         try {
-            pesqueiroService.delete(Long.parseLong(id));
+            Long usuarioId = (Long) authentication.getPrincipal();
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            pesqueiroService.delete(Long.parseLong(id), usuarioId, isAdmin);
             return ResponseEntity.ok().body(
                     Map.of(
                             "status", 200,
@@ -141,6 +172,15 @@ public class ControllerPesqueiro {
                             "status", 400,
                             "error", "Bad Request",
                             "message", "O id informado não é válido: " + id
+                    )
+            );
+        }
+        catch (SecurityException e) {
+            return ResponseEntity.status(403).body(
+                    Map.of(
+                            "status", 403,
+                            "error", "Forbidden",
+                            "message", e.getMessage()
                     )
             );
         }

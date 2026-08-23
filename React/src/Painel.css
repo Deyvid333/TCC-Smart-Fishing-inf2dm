@@ -1,0 +1,301 @@
+/* ==========================================================================
+   SMART FISHING — Telas de Indique seu pesqueiro / Painel / Moderação
+   Reaproveita as variáveis e a base visual definidas em .perfil-page
+   (Perfil.css), só adiciona os elementos que faltam.
+   ========================================================================== */
+
+.painel-textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  outline: none;
+  resize: vertical;
+}
+
+.painel-textarea:hover {
+  border-color: #c3d3e2;
+}
+
+.painel-textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(54, 133, 181, 0.18);
+}
+
+.painel-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 28px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.painel-section-title:first-child {
+  margin-top: 0;
+}
+
+.painel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.painel-chip {
+  padding: 9px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  text-transform: capitalize;
+  border: 1.5px solid var(--line);
+  background: var(--white);
+  color: var(--text-soft);
+  transition: all 0.15s ease;
+}
+
+.painel-chip.is-active {
+  border-color: var(--blue);
+  background: rgba(54, 133, 181, 0.1);
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.painel-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-left: 10px;
+}
+
+.painel-badge.is-pendente { background: rgba(240, 180, 41, 0.16); color: #9a6b00; }
+.painel-badge.is-aprovado { background: rgba(123, 205, 186, 0.2); color: var(--green); }
+.painel-badge.is-negado { background: rgba(220, 70, 70, 0.12); color: #a12626; }
+
+.painel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  margin-bottom: 10px;
+}
+
+.painel-row-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--line);
+}
+
+.painel-row-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.painel-row-name {
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-photo-upload {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.painel-photo-preview {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+}
+
+.painel-alert {
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.painel-alert.is-success {
+  background: rgba(123, 205, 186, 0.16);
+  color: var(--green);
+}
+
+.painel-alert.is-info {
+  background: rgba(54, 133, 181, 0.1);
+  color: var(--navy);
+}
+
+.painel-map-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.painel-map-link:hover {
+  text-decoration: underline;
+}
+
+.painel-header {
+  max-width: 900px;
+  margin: 24px auto 0;
+  padding: 0 20px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   Layout com sidebar (painel do admin)
+   ========================================================================== */
+
+.painel-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+.painel-sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(0, 18, 66, 0.06);
+  padding: 14px;
+  position: sticky;
+  top: 20px;
+}
+
+.painel-sidebar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-bottom: 4px;
+  font-family: inherit;
+}
+
+.painel-sidebar-btn:hover {
+  background: var(--surface);
+}
+
+.painel-sidebar-btn.is-active {
+  background: rgba(54, 133, 181, 0.1);
+  color: var(--navy);
+}
+
+.painel-sidebar-count {
+  background: var(--line);
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.painel-sidebar-btn.is-active .painel-sidebar-count {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.painel-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.painel-expand-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(0, 18, 66, 0.06);
+  padding: 20px 24px;
+  margin-bottom: 14px;
+}
+
+.painel-expand-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.painel-expand-head-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.painel-expand-title {
+  font-weight: 700;
+  color: var(--navy);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-expand-sub {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.painel-expand-arrow {
+  transition: transform 0.15s ease;
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.painel-expand-arrow.is-open {
+  transform: rotate(90deg);
+}
+
+.painel-expand-body {
+  padding-top: 16px;
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}

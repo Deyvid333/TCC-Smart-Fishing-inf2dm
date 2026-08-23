@@ -2,6 +2,7 @@ package com.itb.inf2dm.smartfishingd.services;
 
 import com.itb.inf2dm.smartfishingd.model.entity.Comentario;
 import com.itb.inf2dm.smartfishingd.repository.ComentarioRepository;
+import com.itb.inf2dm.smartfishingd.repository.DenunciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,9 @@ public class ComentarioService {
 
     @Autowired
     private ComentarioRepository comentarioRepository;
+
+    @Autowired
+    private DenunciaRepository denunciaRepository;
 
     public List<Comentario> findAll() {
         return comentarioRepository.findAll();
@@ -49,6 +53,7 @@ public class ComentarioService {
         if (!isAdmin && !comentarioExistente.getUsuarioId().equals(usuarioIdAutenticado)) {
             throw new SecurityException("Você só pode apagar o seu próprio comentário");
         }
+        denunciaRepository.deleteByComentarioId(id);
         comentarioRepository.delete(comentarioExistente);
     }
 }

@@ -42,6 +42,8 @@ public class Pesqueiro {
     private Boolean aprovado;
     @Column(name = "cnpj")
     private String cnpj;
+    @Column(name = "linkMapa")
+    private String linkMapa;
 
     public Long getId() {
         return id;
@@ -134,6 +136,14 @@ public class Pesqueiro {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
+    }
+
+    public String getLinkMapa() {
+        return linkMapa;
+    }
+
+    public void setLinkMapa(String linkMapa) {
+        this.linkMapa = linkMapa;
     }
 
     public String getTelefone() {

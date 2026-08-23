@@ -37,11 +37,15 @@ private BCryptPasswordEncoder passwordEncoder;
     public Usuario login(String email, String senha) {
     Usuario usuario = usuarioRepository.findByEmail(email)
         .orElseThrow(() -> new RuntimeException("Email não encontrado"));
-    
+
     if (!passwordEncoder.matches(senha, usuario.getSenha())) {
         throw new RuntimeException("Senha incorreta");
     }
-    
+
+    if (Boolean.FALSE.equals(usuario.getStatusUsuario())) {
+        throw new RuntimeException("Sua conta foi banida. Entre em contato com o suporte.");
+    }
+
     return usuario;
 }
 
@@ -54,7 +58,6 @@ private BCryptPasswordEncoder passwordEncoder;
         }
         usuarioExistente.setId(id);
         usuarioExistente.setFoto(usuario.getFoto());
-        usuarioExistente.setStatusUsuario(usuario.getStatusUsuario());
         usuarioExistente.setDataCadastro(usuario.getDataCadastro());
         return usuarioRepository.save(usuarioExistente);
     }
@@ -67,5 +70,17 @@ private BCryptPasswordEncoder passwordEncoder;
         usuarioPesqueiroRepository.deleteByUsuarioId(id);
         comentarioRepository.deleteByUsuarioId(id);
         usuarioRepository.delete(usuarioExistente);
+    }
+
+    public Usuario banir(Long id) {
+        Usuario usuarioExistente = findById(id);
+        usuarioExistente.setStatusUsuario(false);
+        return usuarioRepository.save(usuarioExistente);
+    }
+
+    public Usuario desbanir(Long id) {
+        Usuario usuarioExistente = findById(id);
+        usuarioExistente.setStatusUsuario(true);
+        return usuarioRepository.save(usuarioExistente);
     }
 }

@@ -96,7 +96,7 @@ function Home() {
           return {
             id: item.id ?? `backend-${index}`,
             nome: item.nome || `Pesqueiro ${index + 1}`,
-            imagem: [pesqueiro, pesqueiro2, pesqueiro3][index % 3],
+            imagem: item.foto ? `data:image/jpeg;base64,${item.foto}` : [pesqueiro, pesqueiro2, pesqueiro3][index % 3],
             avaliacao: '4.5',
             horario: item.informacao || 'Consulte o pesqueiro',
             preco: 'Consulte o pesqueiro',

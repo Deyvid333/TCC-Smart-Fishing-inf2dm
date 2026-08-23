@@ -7,8 +7,9 @@ import Cadastro from './Cadastro';
 import Inicial from './Inicial';
 import Home from './Home';
 import Perfil from './Perfil';
-import AdminDashboard from './AdminDashboard';
-import CadastroPesqueiro from './CadastroPesqueiro';
+import AdminPainel from './AdminPainel';
+import IndiqueSeuPesqueiro from './IndiqueSeuPesqueiro';
+import PainelPesqueiro from './PainelPesqueiro';
 import PesqueiroDinamico from './PesqueiroDinamico';
 // Importa estilos globais da aplicação
 import './App.css';
@@ -39,10 +40,12 @@ function App() {
         {/* Página do perfil do usuário */}
         <Route path="/perfil" element={<Perfil />} />
         
-        {/* Painel administrativo */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        {/* Página separada para cadastro de pesqueiro após usuário proprietario se cadastrar */}
-        <Route path="/cadastro-pesqueiro" element={<CadastroPesqueiro />} />
+        {/* Painel de moderação, restrito a contas com nivelAcesso ADMIN */}
+        <Route path="/admin" element={<AdminPainel />} />
+        {/* Tela onde qualquer usuário logado indica/edita um pesqueiro pendente de análise */}
+        <Route path="/indique-pesqueiro" element={<IndiqueSeuPesqueiro />} />
+        {/* Painel de um pesqueiro específico, só acessível pelo dono */}
+        <Route path="/painel-pesqueiro/:id" element={<PainelPesqueiro />} />
         <Route path="/pesqueiro-dinamico" element={<PesqueiroDinamico />} />
       </Routes>
     </Router>

@@ -3,8 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import UsuarioService from './services/UsuarioService';
 import AuthLayout, {
-  IconeUsuario,
-  IconeLoja,
   IconeEmail,
   IconeCadeado,
   IconeOlhoAberto,
@@ -16,7 +14,6 @@ import { validarEmail, validarSenha, SENHA_DICA, EMAIL_DICA } from './Componente
 // ========== COMPONENTE DE LOGIN ==========
 function Login() {
   const navigate = useNavigate();
-  const [tipoUsuario, setTipoUsuario] = useState('usuario');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,25 +41,19 @@ function Login() {
     try {
       const usuario = await UsuarioService.login(email, senha);
 
-      if (tipoUsuario === 'dono' && usuario.nivelAcesso !== 'admin') {
-        setErro('Essa conta não é de dono de pesqueiro.');
-        return;
-      }
-      if (tipoUsuario === 'usuario' && usuario.nivelAcesso === 'admin') {
-        setErro('Essa conta é de dono de pesqueiro. Selecione a opção correta acima.');
-        return;
-      }
-
       // Dispara evento customizado para notificar mudança no localStorage
       window.dispatchEvent(new Event('storage'));
 
-      if (usuario.nivelAcesso === 'admin') {
+      if (usuario.nivelAcesso?.toUpperCase() === 'ADMIN') {
         navigate('/admin');
       } else {
         navigate('/inicial');
       }
     } catch (err) {
-      setErro('E-mail ou senha inválidos.');
+      const mensagemServidor = err.response?.data?.message;
+      setErro(mensagemServidor === 'Senha incorreta' || mensagemServidor === 'Email não encontrado'
+        ? 'E-mail ou senha inválidos.'
+        : mensagemServidor || 'E-mail ou senha inválidos.');
     } finally {
       setLoading(false);
     }
@@ -92,42 +83,6 @@ function Login() {
       </div>
 
       <form className="auth-form" onSubmit={handleSubmit}>
-        {/* ===== Tipo de acesso ===== */}
-        <div>
-          <span className="auth-segment-label">Entrar como</span>
-          <div className="auth-segment">
-            <label className="auth-segment-option">
-              <input
-                type="radio"
-                name="tipoUsuario"
-                value="usuario"
-                checked={tipoUsuario === 'usuario'}
-                onChange={(e) => setTipoUsuario(e.target.value)}
-              />
-              <span className="auth-segment-face">
-                <IconeUsuario />
-                <span className="auth-segment-title">Pescador</span>
-                <span className="auth-segment-desc">Quero encontrar pesqueiros</span>
-              </span>
-            </label>
-
-            <label className="auth-segment-option">
-              <input
-                type="radio"
-                name="tipoUsuario"
-                value="dono"
-                checked={tipoUsuario === 'dono'}
-                onChange={(e) => setTipoUsuario(e.target.value)}
-              />
-              <span className="auth-segment-face">
-                <IconeLoja />
-                <span className="auth-segment-title">Proprietário</span>
-                <span className="auth-segment-desc">Administro um pesqueiro</span>
-              </span>
-            </label>
-          </div>
-        </div>
-
         {/* ===== E-mail ===== */}
         <div className="auth-field">
           <label htmlFor="email">E-mail</label>

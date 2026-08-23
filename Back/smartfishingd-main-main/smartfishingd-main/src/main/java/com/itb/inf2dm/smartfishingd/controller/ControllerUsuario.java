@@ -116,6 +116,36 @@ public ResponseEntity<Object> login(@RequestBody Usuario usuario) {
     }
 }
 
+    @PutMapping("/{id}/banir")
+    public ResponseEntity<Object> banirUsuario(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(usuarioService.banir(Long.parseLong(id)));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("status", 400, "error", "Bad Request", "message", "O id informado não é válido: " + id)
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(
+                    Map.of("status", 404, "error", "Not Found", "message", "Usuario não encontrado com o id: " + id)
+            );
+        }
+    }
+
+    @PutMapping("/{id}/desbanir")
+    public ResponseEntity<Object> desbanirUsuario(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(usuarioService.desbanir(Long.parseLong(id)));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("status", 400, "error", "Bad Request", "message", "O id informado não é válido: " + id)
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(
+                    Map.of("status", 404, "error", "Not Found", "message", "Usuario não encontrado com o id: " + id)
+            );
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletarUsuarioPorId(@PathVariable String id) {
         try {

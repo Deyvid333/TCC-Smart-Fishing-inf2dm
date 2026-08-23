@@ -4,7 +4,6 @@ import { useState } from 'react';
 import UsuarioService from './services/UsuarioService';
 import AuthLayout, {
   IconeUsuario,
-  IconeLoja,
   IconeEmail,
   IconeCadeado,
   IconeOlhoAberto,
@@ -25,7 +24,6 @@ function Cadastro() {
     email: '',
     senha: '',
     confirmarSenha: '',
-    tipoUsuario: 'usuario',
   });
   const [loading, setLoading] = useState(false);
   // Mensagens exibidas dentro do formulário (no lugar do alert)
@@ -66,17 +64,11 @@ function Cadastro() {
         nome: formData.nome,
         email: formData.email,
         senha: formData.senha,
-        nivelAcesso: formData.tipoUsuario === 'dono' ? 'admin' : 'usuario',
+        nivelAcesso: 'usuario',
         statusUsuario: true,
       });
 
       await UsuarioService.login(formData.email, formData.senha);
-
-      if (formData.tipoUsuario === 'dono') {
-        // após cadastro, levar o dono para página separada de cadastro do pesqueiro
-        navigate('/cadastro-pesqueiro');
-        return;
-      }
 
       setSucesso('Cadastro realizado com sucesso! Redirecionando...');
       navigate('/inicial');
@@ -115,42 +107,6 @@ function Cadastro() {
       </div>
 
       <form className="auth-form" onSubmit={handleSubmit}>
-        {/* ===== Tipo de cadastro ===== */}
-        <div>
-          <span className="auth-segment-label">Tipo de cadastro</span>
-          <div className="auth-segment">
-            <label className="auth-segment-option">
-              <input
-                type="radio"
-                name="tipoUsuario"
-                value="usuario"
-                checked={formData.tipoUsuario === 'usuario'}
-                onChange={handleInputChange}
-              />
-              <span className="auth-segment-face">
-                <IconeUsuario />
-                <span className="auth-segment-title">Pescador</span>
-                <span className="auth-segment-desc">Quero encontrar pesqueiros</span>
-              </span>
-            </label>
-
-            <label className="auth-segment-option">
-              <input
-                type="radio"
-                name="tipoUsuario"
-                value="dono"
-                checked={formData.tipoUsuario === 'dono'}
-                onChange={handleInputChange}
-              />
-              <span className="auth-segment-face">
-                <IconeLoja />
-                <span className="auth-segment-title">Proprietário</span>
-                <span className="auth-segment-desc">Quero cadastrar meu pesqueiro</span>
-              </span>
-            </label>
-          </div>
-        </div>
-
         {/* ===== Nome ===== */}
         <div className="auth-field">
           <label htmlFor="nome">Nome completo</label>
@@ -254,12 +210,6 @@ function Cadastro() {
         <button type="submit" className="auth-submit" disabled={loading}>
           {loading ? 'Cadastrando...' : 'Criar conta'}
         </button>
-
-        {formData.tipoUsuario === 'dono' && (
-          <p className="auth-terms">
-            Na próxima etapa você cadastra as informações do seu pesqueiro.
-          </p>
-        )}
       </form>
 
       <p className="auth-footer">
