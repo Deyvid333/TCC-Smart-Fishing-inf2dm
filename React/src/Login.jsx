@@ -59,11 +59,6 @@ function Login() {
     }
   };
 
-  const handleForgotPassword = () => {
-    setErro('');
-    alert('Link de recuperação enviado para seu e-mail!');
-  };
-
   // Permite entrar apertando Enter em qualquer campo
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -130,9 +125,9 @@ function Login() {
           <p className="auth-hint">{SENHA_DICA}</p>
         </div>
 
-        <button type="button" className="auth-forgot" onClick={handleForgotPassword}>
+        <Link to="/esqueci-senha" className="auth-forgot">
           Esqueci minha senha
-        </button>
+        </Link>
 
         {/* ===== Mensagem de erro ===== */}
         {erro && (
