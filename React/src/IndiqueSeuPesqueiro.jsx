@@ -265,7 +265,16 @@ function IndiqueSeuPesqueiro() {
                       <span className="painel-row-name">{p.nome}</span>
                       <span className="painel-badge is-aprovado">Aprovado</span>
                     </div>
-                    <a href={`/painel-pesqueiro/${p.id}`} target="_blank" rel="noopener noreferrer" className="perfil-btn perfil-btn-primary" style={{ flex: 'none', padding: '0 20px' }}>
+                    <a
+                      href={`/painel-pesqueiro/${p.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="perfil-btn perfil-btn-primary"
+                      style={{
+                        flex: 'none', padding: '0 20px', display: 'inline-flex',
+                        alignItems: 'center', justifyContent: 'center', textDecoration: 'none', lineHeight: 'normal',
+                      }}
+                    >
                       Administrar
                     </a>
                   </div>

@@ -368,7 +368,10 @@ function PesqueiroDinamico() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="detalhe-comment-submit"
-                  style={{ display: 'inline-block', marginTop: '12px', textDecoration: 'none', textAlign: 'center' }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    marginTop: '12px', textDecoration: 'none', lineHeight: 'normal',
+                  }}
                 >
                   Como chegar
                 </a>

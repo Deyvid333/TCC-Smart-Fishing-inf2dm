@@ -54,7 +54,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [favoritoIds, setFavoritoIds] = useState(new Set());
   const usuarioLogado = UsuarioService.getCurrentUser();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const termoBusca = searchParams.get('q') || '';
 
   useEffect(() => {
@@ -130,19 +130,6 @@ function Home() {
       <section className="explorar-hero">
         <h1>Explore os Pesqueiros</h1>
         <p>Descubra os melhores locais para sua pescaria</p>
-
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          style={{ maxWidth: '420px', margin: '20px auto 0', position: 'relative', zIndex: 2 }}
-        >
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Buscar pesqueiro pelo nome..."
-            value={termoBusca}
-            onChange={(e) => setSearchParams(e.target.value ? { q: e.target.value } : {})}
-          />
-        </form>
 
         <svg className="explorar-waves" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true">
           <path fill="rgba(123,205,186,0.35)" d="M0 55c180-35 300 35 480 26s300-60 480-43 300 52 480 34v43H0z" />
