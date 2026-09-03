@@ -45,6 +45,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.PUT, "/api/v1/usuario/*/banir").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/usuario/*/desbanir").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/pesqueiro/pendentes").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/pesqueiro/*/aprovar").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/pesqueiro/*/negar").hasRole("ADMIN")
@@ -63,8 +65,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/denuncia").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/denuncia").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/denuncia/comentario/*").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/usuario/*/banir").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/usuario/*/desbanir").hasRole("ADMIN")
                 .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
