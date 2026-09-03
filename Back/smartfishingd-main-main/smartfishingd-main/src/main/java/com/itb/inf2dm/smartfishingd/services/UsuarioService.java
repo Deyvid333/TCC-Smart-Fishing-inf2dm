@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +18,8 @@ import com.itb.inf2dm.smartfishingd.repository.UsuarioRepository;
 @Service
 
 public class UsuarioService {
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
+
     @Autowired
 private BCryptPasswordEncoder passwordEncoder;
 
@@ -91,7 +95,13 @@ private BCryptPasswordEncoder passwordEncoder;
         usuario.setTokenRedefinicaoSenha(token);
         usuario.setTokenRedefinicaoExpiracao(LocalDateTime.now().plusMinutes(tokenRedefinicaoExpiracaoMinutos));
         usuarioRepository.save(usuario);
-        emailService.enviarEmailRedefinicaoSenha(usuario.getEmail(), token);
+        try {
+            emailService.enviarEmailRedefinicaoSenha(usuario.getEmail(), token);
+        } catch (Exception e) {
+            // Nao deixa a falha de envio de e-mail derrubar a requisicao - o token ja
+            // foi salvo, e a resposta pro cliente e sempre generica por seguranca.
+            logger.error("Falha ao enviar e-mail de redefinicao de senha para {}", usuario.getEmail(), e);
+        }
     }
 
     public void redefinirSenha(String token, String novaSenha) {
