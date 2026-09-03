@@ -39,25 +39,24 @@ public class DenunciaService {
             long quantidadeDenuncias
     ) {}
 
-    public void denunciar(Long comentarioId, Long usuarioReportanteId) {
+    public Denuncia denunciar(Long comentarioId, Long usuarioReportanteId) {
         comentarioRepository.findById(comentarioId)
-                .orElseThrow(() -> new RuntimeException("Comentario nao encontrado com o id " + comentarioId));
+                .orElseThrow(() -> new RuntimeException("Comentario não encontrado com o id " + comentarioId));
 
-        Optional<Denuncia> existente = denunciaRepository
-                .findFirstByComentarioIdAndUsuarioReportanteId(comentarioId, usuarioReportanteId);
-        if (existente.isPresent()) {
-            throw new IllegalStateException("Você já denunciou esse comentário");
-        }
+        denunciaRepository.findByComentarioIdAndUsuarioReportanteId(comentarioId, usuarioReportanteId)
+                .ifPresent(d -> {
+                    throw new IllegalStateException("Você já denunciou esse comentário");
+                });
 
         Denuncia denuncia = new Denuncia();
         denuncia.setComentarioId(comentarioId);
         denuncia.setUsuarioReportanteId(usuarioReportanteId);
         denuncia.setDataCriacao(LocalDateTime.now());
-        denunciaRepository.save(denuncia);
+        return denunciaRepository.save(denuncia);
     }
 
     public List<ComentarioDenunciado> listarComentariosDenunciados() {
-        List<Denuncia> todas = denunciaRepository.findAllByOrderByDataCriacaoDesc();
+        List<Denuncia> todas = denunciaRepository.findAll();
 
         Map<Long, Long> contagemPorComentario = new LinkedHashMap<>();
         for (Denuncia d : todas) {
@@ -82,7 +81,11 @@ public class DenunciaService {
                 .toList();
     }
 
-    public void dispensarDenuncias(Long comentarioId) {
+    public void dispensarDenuncia(Long comentarioId) {
+        List<Denuncia> existentes = denunciaRepository.findByComentarioId(comentarioId);
+        if (existentes.isEmpty()) {
+            throw new RuntimeException("Nenhuma denúncia encontrada para o comentário com id " + comentarioId);
+        }
         denunciaRepository.deleteByComentarioId(comentarioId);
     }
 }

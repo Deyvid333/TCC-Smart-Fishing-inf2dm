@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 
 public interface UsuarioPesqueiroRepository extends JpaRepository<UsuarioPesqueiro, Long> {
-    List<UsuarioPesqueiro> findByUsuarioId(Long usuarioId);
+    Optional<UsuarioPesqueiro> findByPesqueiroId(Long pesqueiroId);
 
-    Optional<UsuarioPesqueiro> findFirstByPesqueiroId(Long pesqueiroId);
+    List<UsuarioPesqueiro> findByUsuarioId(Long usuarioId);
 
     @Modifying
     @Transactional

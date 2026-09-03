@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import UsuarioService from '../../services/UsuarioService';
 
@@ -6,11 +6,17 @@ const Navbar = () => {
   const navigate = useNavigate();
   const usuario = UsuarioService.getCurrentUser();
   const isAdmin = usuario?.nivelAcesso?.toUpperCase() === 'ADMIN';
+  const [busca, setBusca] = useState('');
 
   const handleLogout = () => {
     UsuarioService.logout();
     window.dispatchEvent(new Event('storage'));
     navigate('/login');
+  };
+
+  const handleBuscar = (e) => {
+    e.preventDefault();
+    navigate(`/pesqueiros?q=${encodeURIComponent(busca.trim())}`);
   };
 
   return (
@@ -22,11 +28,15 @@ const Navbar = () => {
 
           </div>
           <div className="d-flex align-items-center gap-2">
-            <input
-              className="form-control me-3"
-              placeholder="Buscar pesqueiros"
-              style={{width: '250px'}}
-            />
+            <form onSubmit={handleBuscar} className="me-3">
+              <input
+                className="form-control"
+                placeholder="Buscar pesqueiros"
+                style={{width: '250px'}}
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+              />
+            </form>
             <div className="admin-nav">
               <Link to="/inicial" className="btn btn-outline-primary me-2" title="Página inicial">
                 Inicial

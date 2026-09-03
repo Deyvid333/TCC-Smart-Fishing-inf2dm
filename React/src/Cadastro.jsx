@@ -11,7 +11,7 @@ import AuthLayout, {
   IconeAlerta,
   IconeCheck,
 } from './Componentes/Auth/AuthLayout';
-import { validarEmail, validarSenha, SENHA_DICA, EMAIL_DICA } from './Componentes/Auth/validacao';
+import { validarEmail, validarSenha, SENHA_DICA, SENHA_MAX, EMAIL_DICA } from './Componentes/Auth/validacao';
 
 // ========== COMPONENTE DE CADASTRO ==========
 function Cadastro() {
@@ -158,6 +158,7 @@ function Cadastro() {
                 autoComplete="new-password"
                 value={formData.senha}
                 onChange={handleInputChange}
+                maxLength={SENHA_MAX}
                 required
               />
               <button
@@ -184,6 +185,7 @@ function Cadastro() {
                 autoComplete="new-password"
                 value={formData.confirmarSenha}
                 onChange={handleInputChange}
+                maxLength={SENHA_MAX}
                 required
               />
             </div>

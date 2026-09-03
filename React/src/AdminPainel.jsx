@@ -18,6 +18,7 @@ const IconeSeta = () => (
 
 function AdminPainel() {
   const navigate = useNavigate();
+  const adminLogado = UsuarioService.getCurrentUser();
   const [aba, setAba] = useState('solicitacoes');
   const [pendentes, setPendentes] = useState([]);
   const [pesqueiros, setPesqueiros] = useState([]);
@@ -319,12 +320,17 @@ function AdminPainel() {
                               Apagar comentário
                             </button>
                           </div>
-                          {d.autorId && (
+                          {d.autorId && d.autorId !== adminLogado?.id && (
                             <div className="perfil-danger-zone">
                               <p>Banir impede o usuário de fazer login novamente.</p>
                               <button className="perfil-btn perfil-btn-danger" style={{ flex: '0 0 auto', padding: '0 28px' }} disabled={processandoId === d.comentarioId} onClick={() => handleBanirUsuario(d.autorId, d.comentarioId)}>
                                 Banir usuário
                               </button>
+                            </div>
+                          )}
+                          {d.autorId && d.autorId === adminLogado?.id && (
+                            <div className="perfil-danger-zone">
+                              <p>Esse comentário é seu — você não pode banir a si mesmo.</p>
                             </div>
                           )}
                         </div>

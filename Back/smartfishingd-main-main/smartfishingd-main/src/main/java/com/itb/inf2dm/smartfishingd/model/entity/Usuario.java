@@ -1,6 +1,7 @@
 package com.itb.inf2dm.smartfishingd.model.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +30,10 @@ public class Usuario {
     private LocalDate dataCadastro;
     @Column(name = "statusUsuario")
     private Boolean statusUsuario;
+    @Column(name = "tokenRedefinicaoSenha")
+    private String tokenRedefinicaoSenha;
+    @Column(name = "tokenRedefinicaoExpiracao")
+    private LocalDateTime tokenRedefinicaoExpiracao;
 
 
     public Long getId() {
@@ -93,6 +98,22 @@ public class Usuario {
 
     public void setStatusUsuario(Boolean statusUsuario) {
         this.statusUsuario = statusUsuario;
+    }
+
+    public String getTokenRedefinicaoSenha() {
+        return tokenRedefinicaoSenha;
+    }
+
+    public void setTokenRedefinicaoSenha(String tokenRedefinicaoSenha) {
+        this.tokenRedefinicaoSenha = tokenRedefinicaoSenha;
+    }
+
+    public LocalDateTime getTokenRedefinicaoExpiracao() {
+        return tokenRedefinicaoExpiracao;
+    }
+
+    public void setTokenRedefinicaoExpiracao(LocalDateTime tokenRedefinicaoExpiracao) {
+        this.tokenRedefinicaoExpiracao = tokenRedefinicaoExpiracao;
     }
 }
 

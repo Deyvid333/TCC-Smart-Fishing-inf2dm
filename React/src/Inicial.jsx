@@ -56,9 +56,6 @@ function Inicial() {
             <Link to="/pesqueiros" className="landing-btn landing-btn-primary">
               Explorar Pesqueiros
             </Link>
-            <Link to="/cadastro" className="landing-btn landing-btn-ghost">
-              Criar conta grátis
-            </Link>
           </div>
         </div>
 

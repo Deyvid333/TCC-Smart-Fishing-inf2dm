@@ -14,7 +14,8 @@ export const EMAIL_REGEX = new RegExp(`^[^\\s@]+@(${dominiosEscapados})$`, 'i');
 // Pelo menos 1 dígito, 1 caractere especial e 8 caracteres no total
 export const SENHA_REGEX = /^(?=.*\d)(?=.*[^A-Za-z0-9\s]).{8,}$/;
 
-export const SENHA_DICA = 'Mín. 8 caracteres, com 1 número e 1 caractere especial.';
+export const SENHA_MAX = 72; // limite do algoritmo de hash (bcrypt) usado no backend
+export const SENHA_DICA = `De 8 a ${SENHA_MAX} caracteres, com 1 número e 1 caractere especial.`;
 export const EMAIL_DICA = `Use um e-mail ${DOMINIOS_PERMITIDOS.map((d) => `@${d}`).join(', ')}.`;
 
 export function validarEmail(email) {
@@ -27,6 +28,7 @@ export function validarEmail(email) {
 export function validarSenha(senha) {
   if (!senha) return 'Preencha sua senha.';
   if (senha.length < 8) return 'A senha precisa ter pelo menos 8 caracteres.';
+  if (senha.length > SENHA_MAX) return `A senha pode ter no máximo ${SENHA_MAX} caracteres.`;
   if (!/\d/.test(senha)) return 'A senha precisa ter pelo menos 1 número.';
   if (!/[^A-Za-z0-9\s]/.test(senha)) return 'A senha precisa ter pelo menos 1 caractere especial (ex: ! @ # $ %).';
   return '';

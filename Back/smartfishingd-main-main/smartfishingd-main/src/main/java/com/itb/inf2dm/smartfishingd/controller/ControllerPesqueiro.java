@@ -40,6 +40,14 @@ public class ControllerPesqueiro {
             Long usuarioId = (Long) authentication.getPrincipal();
             Pesqueiro novoPesqueiro = pesqueiroService.save(pesqueiro, usuarioId);
             return ResponseEntity.status(HttpStatus.CREATED).body(novoPesqueiro);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of(
+                            "status", 400,
+                            "error", "Bad Request",
+                            "message", e.getMessage()
+                    )
+            );
         } catch (IllegalStateException e) {
             return ResponseEntity.status(409).body(
                     Map.of(
@@ -87,6 +95,14 @@ public class ControllerPesqueiro {
                             "status", 400,
                             "error", "Bad Request",
                             "message", "O id informado não é válido: " + id
+                    )
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of(
+                            "status", 400,
+                            "error", "Bad Request",
+                            "message", e.getMessage()
                     )
             );
         } catch (SecurityException e) {

@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Importa todos os componentes/páginas da aplicação
 import Login from './Login';
 import Cadastro from './Cadastro';
+import EsqueciSenha from './EsqueciSenha';
+import RedefinirSenha from './RedefinirSenha';
 import Inicial from './Inicial';
 import Home from './Home';
 import Perfil from './Perfil';
@@ -31,6 +33,8 @@ function App() {
         {/* Rotas de autenticação */}
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
         
         {/* ========== ROTAS DO USUÁRIO ========== */}
         {/* Página principal com lista de pesqueiros */}

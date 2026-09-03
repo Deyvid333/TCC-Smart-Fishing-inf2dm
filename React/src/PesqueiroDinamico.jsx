@@ -6,6 +6,7 @@ import UsuarioService from './services/UsuarioService';
 import FavoritoService from './services/FavoritoService';
 import HistoricoService from './services/HistoricoService';
 import DenunciaService from './services/DenunciaService';
+import PesqueiroFotoService from './services/PesqueiroFotoService';
 import { formatarInfoRapidaTexto } from './utils/pesqueiroFormato';
 import './Detalhe.css';
 
@@ -101,11 +102,21 @@ function PesqueiroDinamico() {
   const [peixeIndex, setPeixeIndex] = useState(0);
   const [isFavorito, setIsFavorito] = useState(false);
   const [favoritoCarregando, setFavoritoCarregando] = useState(false);
+  const [galeria, setGaleria] = useState([]);
+  const [fotoIndex, setFotoIndex] = useState(0);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
     if (stored) setCurrentUser(JSON.parse(stored));
   }, []);
+
+  useEffect(() => {
+    if (!pesqueiro?.id) return;
+    PesqueiroFotoService.listar(pesqueiro.id)
+      .then((res) => setGaleria(res.data))
+      .catch((err) => console.error('Erro ao carregar fotos do pesqueiro', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pesqueiro?.id]);
 
   useEffect(() => {
     if (!currentUser || !pesqueiro?.id) return;
@@ -245,12 +256,21 @@ function PesqueiroDinamico() {
 
   const peixeAtual = peixes[peixeIndex];
 
+  const mediaNota = comments.length
+    ? (comments.reduce((soma, c) => soma + (c.rating || 0), 0) / comments.length).toFixed(1)
+    : null;
+
   return (
     <div className="detalhe-page">
       <Navbar />
 
       <section className="detalhe-hero">
         <h1>{pesqueiro.nome}</h1>
+        {mediaNota && (
+          <p style={{ color: 'var(--white)', opacity: 0.9, marginTop: '-6px' }}>
+            ★ {mediaNota} · {comments.length} avalia{comments.length > 1 ? 'ções' : 'ção'}
+          </p>
+        )}
         <button
           type="button"
           onClick={handleToggleFavorito}
@@ -272,15 +292,60 @@ function PesqueiroDinamico() {
       </section>
 
       <div className="detalhe-content">
-        {pesqueiro.foto && (
-          <div className="detalhe-card" style={{ padding: 0, overflow: 'hidden' }}>
-            <img
-              src={`data:image/jpeg;base64,${pesqueiro.foto}`}
-              alt={pesqueiro.nome}
-              style={{ width: '100%', maxHeight: '360px', objectFit: 'cover', display: 'block' }}
-            />
-          </div>
-        )}
+        {(() => {
+          const fotos = [
+            ...(pesqueiro.foto ? [{ id: 'capa', foto: pesqueiro.foto }] : []),
+            ...galeria,
+          ];
+          if (fotos.length === 0) return null;
+          const atual = fotos[Math.min(fotoIndex, fotos.length - 1)];
+          return (
+            <div className="detalhe-card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+              <img
+                src={`data:image/jpeg;base64,${atual.foto}`}
+                alt={pesqueiro.nome}
+                style={{ width: '100%', maxHeight: '360px', objectFit: 'cover', display: 'block' }}
+              />
+              {fotos.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setFotoIndex((fotoIndex - 1 + fotos.length) % fotos.length)}
+                    style={{
+                      position: 'absolute', top: '50%', left: '12px', transform: 'translateY(-50%)',
+                      background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: '50%',
+                      width: '36px', height: '36px', cursor: 'pointer', fontSize: '1.1rem',
+                    }}
+                    aria-label="Foto anterior"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFotoIndex((fotoIndex + 1) % fotos.length)}
+                    style={{
+                      position: 'absolute', top: '50%', right: '12px', transform: 'translateY(-50%)',
+                      background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', borderRadius: '50%',
+                      width: '36px', height: '36px', cursor: 'pointer', fontSize: '1.1rem',
+                    }}
+                    aria-label="Próxima foto"
+                  >
+                    ›
+                  </button>
+                  <span
+                    style={{
+                      position: 'absolute', bottom: '10px', right: '14px',
+                      background: 'rgba(0,0,0,0.55)', color: '#fff', padding: '2px 10px',
+                      borderRadius: '999px', fontSize: '0.78rem',
+                    }}
+                  >
+                    {Math.min(fotoIndex, fotos.length - 1) + 1}/{fotos.length}
+                  </span>
+                </>
+              )}
+            </div>
+          );
+        })()}
 
         <div className="detalhe-card">
           <div className="detalhe-info-grid">
@@ -312,7 +377,10 @@ function PesqueiroDinamico() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="detalhe-comment-submit"
-                  style={{ display: 'inline-block', marginTop: '12px', textDecoration: 'none', textAlign: 'center' }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    marginTop: '12px', textDecoration: 'none', lineHeight: 'normal',
+                  }}
                 >
                   Como chegar
                 </a>
@@ -383,8 +451,12 @@ function PesqueiroDinamico() {
               className="detalhe-textarea"
               style={{ marginTop: '12px' }}
               placeholder="Sua experiência..."
+              maxLength={500}
               required
             />
+            <small style={{ display: 'block', textAlign: 'right', color: 'var(--text-soft)' }}>
+              {commentText.length}/500
+            </small>
             <button type="submit" className="detalhe-comment-submit">Enviar</button>
           </form>
 

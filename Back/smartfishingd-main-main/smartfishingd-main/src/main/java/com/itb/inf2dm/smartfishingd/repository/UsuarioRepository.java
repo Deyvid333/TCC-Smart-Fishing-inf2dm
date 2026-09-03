@@ -10,4 +10,5 @@ import com.itb.inf2dm.smartfishingd.model.entity.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByTokenRedefinicaoSenha(String token);
 }

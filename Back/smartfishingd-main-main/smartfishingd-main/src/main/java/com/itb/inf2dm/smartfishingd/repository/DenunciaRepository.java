@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface DenunciaRepository extends JpaRepository<Denuncia, Long> {
 
-    List<Denuncia> findAllByOrderByDataCriacaoDesc();
+    Optional<Denuncia> findByComentarioIdAndUsuarioReportanteId(Long comentarioId, Long usuarioReportanteId);
 
-    Optional<Denuncia> findFirstByComentarioIdAndUsuarioReportanteId(Long comentarioId, Long usuarioReportanteId);
+    List<Denuncia> findByComentarioId(Long comentarioId);
 
     @Modifying
     @Transactional

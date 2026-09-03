@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
 import PesqueiroService from './services/PesqueiroService';
+import PesqueiroFotoService from './services/PesqueiroFotoService';
 import UsuarioService from './services/UsuarioService';
 import { redimensionarImagem, soBase64 } from './utils/imagem';
+import { mascararCnpj, mascararCep, mascararTelefone, somenteDigitos } from './utils/mascaras';
 import {
   PEIXES_DISPONIVEIS, DIAS_SEMANA, parseInformacao, parseDescricao, parseInfoRapida,
   buildInformacao, buildDescricao, buildInfoRapida, formatarInfoRapidaTexto,
@@ -21,6 +23,8 @@ function PainelPesqueiro() {
   const [saving, setSaving] = useState(false);
   const [foto, setFoto] = useState(null);
   const [erros, setErros] = useState({});
+  const [galeria, setGaleria] = useState([]);
+  const [enviandoFotoGaleria, setEnviandoFotoGaleria] = useState(false);
   const [editData, setEditData] = useState({
     nome: '', telefone: '', cnpj: '', linkMapa: '', descricaoTexto: '',
     diasAbertos: [], precoSemana: '', precoFimSemana: '',
@@ -41,6 +45,7 @@ function PainelPesqueiro() {
         if (souDono) {
           setPesqueiro(respPesqueiro.data);
           popularEditData(respPesqueiro.data);
+          carregarGaleria();
         }
       })
       .catch((err) => {
@@ -50,6 +55,44 @@ function PainelPesqueiro() {
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const carregarGaleria = () => {
+    PesqueiroFotoService.listar(id)
+      .then((res) => setGaleria(res.data))
+      .catch((err) => console.error('Erro ao carregar galeria', err));
+  };
+
+  const handleAdicionarFotoGaleria = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (galeria.length >= 5) {
+      alert('Você atingiu o limite de 5 fotos no carrossel.');
+      return;
+    }
+    setEnviandoFotoGaleria(true);
+    try {
+      const dataUrl = await redimensionarImagem(file, 800, 0.75);
+      await PesqueiroFotoService.adicionar(id, soBase64(dataUrl));
+      carregarGaleria();
+    } catch (err) {
+      console.error('Erro ao adicionar foto na galeria', err);
+      alert('Não foi possível adicionar essa foto. Tente novamente.');
+    } finally {
+      setEnviandoFotoGaleria(false);
+    }
+  };
+
+  const handleRemoverFotoGaleria = async (fotoId) => {
+    if (!confirm('Remover essa foto do carrossel?')) return;
+    try {
+      await PesqueiroFotoService.remover(fotoId);
+      setGaleria((prev) => prev.filter((f) => f.id !== fotoId));
+    } catch (err) {
+      console.error('Erro ao remover foto da galeria', err);
+      alert('Não foi possível remover essa foto.');
+    }
+  };
 
   const popularEditData = (p) => {
     const { regrasPermitido, regrasProibido } = parseInformacao(p.informacao);
@@ -215,10 +258,36 @@ function PainelPesqueiro() {
               <div className="painel-photo-upload" style={{ marginBottom: '20px' }}>
                 {foto ? <img src={foto} alt="Prévia" className="painel-photo-preview" /> : <div className="painel-photo-preview" />}
                 <label className="perfil-btn perfil-btn-ghost" style={{ flex: 'none', padding: '0 20px', display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
-                  Trocar foto
+                  Trocar foto de capa
                   <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFotoSelecionada} />
                 </label>
               </div>
+
+              <div className="painel-section-title">Carrossel de fotos ({galeria.length}/5)</div>
+              <div className="painel-grid" style={{ marginBottom: '16px' }}>
+                {galeria.map((f) => (
+                  <div key={f.id} style={{ position: 'relative' }}>
+                    <img src={`data:image/jpeg;base64,${f.foto}`} alt="Foto do pesqueiro" style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: 'var(--radius)' }} />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoverFotoGaleria(f.id)}
+                      title="Remover"
+                      style={{
+                        position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.6)', color: '#fff',
+                        border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', lineHeight: 1,
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {galeria.length < 5 && (
+                <label className="perfil-btn perfil-btn-ghost" style={{ flex: 'none', padding: '0 20px', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', marginBottom: '20px' }}>
+                  {enviandoFotoGaleria ? 'Enviando...' : 'Adicionar foto ao carrossel'}
+                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAdicionarFotoGaleria} disabled={enviandoFotoGaleria} />
+                </label>
+              )}
 
               <div className="perfil-field">
                 <label className="perfil-field-label">Nome *</label>
@@ -227,12 +296,12 @@ function PainelPesqueiro() {
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label">Telefone comercial *</label>
-                <input className="perfil-input" value={editData.telefone} onChange={(e) => setEditData({ ...editData, telefone: e.target.value })} />
+                <input className="perfil-input" value={editData.telefone} onChange={(e) => setEditData({ ...editData, telefone: mascararTelefone(e.target.value) })} />
                 {erros.telefone && <small style={{ color: '#a12626' }}>{erros.telefone}</small>}
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label">CNPJ *</label>
-                <input className="perfil-input" value={editData.cnpj} onChange={(e) => setEditData({ ...editData, cnpj: e.target.value })} />
+                <input className="perfil-input" value={editData.cnpj} onChange={(e) => setEditData({ ...editData, cnpj: mascararCnpj(e.target.value) })} />
                 {erros.cnpj && <small style={{ color: '#a12626' }}>{erros.cnpj}</small>}
               </div>
               <div className="perfil-field">
@@ -262,12 +331,12 @@ function PainelPesqueiro() {
               <div className="painel-section-title">Localização</div>
               <div className="perfil-field">
                 <label className="perfil-field-label">CEP *</label>
-                <input className="perfil-input" value={editData.cep} onChange={(e) => setEditData({ ...editData, cep: e.target.value })} />
+                <input className="perfil-input" value={editData.cep} onChange={(e) => setEditData({ ...editData, cep: mascararCep(e.target.value) })} />
                 {erros.cep && <small style={{ color: '#a12626' }}>{erros.cep}</small>}
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label">Número *</label>
-                <input className="perfil-input" value={editData.numero} onChange={(e) => setEditData({ ...editData, numero: e.target.value })} />
+                <input className="perfil-input" value={editData.numero} onChange={(e) => setEditData({ ...editData, numero: somenteDigitos(e.target.value) })} />
                 {erros.numero && <small style={{ color: '#a12626' }}>{erros.numero}</small>}
               </div>
               <div className="perfil-field">

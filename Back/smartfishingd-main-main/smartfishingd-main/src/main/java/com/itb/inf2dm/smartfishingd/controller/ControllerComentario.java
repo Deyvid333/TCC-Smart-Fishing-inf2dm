@@ -39,6 +39,11 @@ public class ControllerComentario {
         return ResponseEntity.ok(comentarioService.findByPesqueiro(pesqueiroId));
     }
 
+    @GetMapping("/medias")
+    public ResponseEntity<List<com.itb.inf2dm.smartfishingd.repository.ComentarioRepository.MediaPorPesqueiro>> mediasPorPesqueiro() {
+        return ResponseEntity.ok(comentarioService.mediasPorPesqueiro());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> listarComentarioPorId(@PathVariable String id) {
         try {

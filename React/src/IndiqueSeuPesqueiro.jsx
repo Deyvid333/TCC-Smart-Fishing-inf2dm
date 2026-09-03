@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
 import PesqueiroService from './services/PesqueiroService';
+import PesqueiroFotoService from './services/PesqueiroFotoService';
 import UsuarioService from './services/UsuarioService';
 import { redimensionarImagem, soBase64 } from './utils/imagem';
+import { mascararCnpj, mascararCep, mascararTelefone, somenteDigitos } from './utils/mascaras';
 import {
   PEIXES_DISPONIVEIS, DIAS_SEMANA, parseInformacao, parseDescricao, parseInfoRapida,
   buildInformacao, buildDescricao, buildInfoRapida, statusPesqueiro,
@@ -28,6 +30,8 @@ function IndiqueSeuPesqueiro() {
   const [foto, setFoto] = useState(null);
   const [mensagem, setMensagem] = useState('');
   const [erros, setErros] = useState({});
+  const [galeria, setGaleria] = useState([]);
+  const [enviandoFotoGaleria, setEnviandoFotoGaleria] = useState(false);
 
   useEffect(() => {
     const usuarioAtual = UsuarioService.getCurrentUser();
@@ -53,7 +57,15 @@ function IndiqueSeuPesqueiro() {
   const limite = aprovados.length > 0 ? 5 : 1;
   const atingiuLimite = naoAprovados.length >= limite && editandoId === null;
 
-  const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    let valorFormatado = value;
+    if (name === 'telefone') valorFormatado = mascararTelefone(value);
+    else if (name === 'cnpj') valorFormatado = mascararCnpj(value);
+    else if (name === 'cep') valorFormatado = mascararCep(value);
+    else if (name === 'numero') valorFormatado = somenteDigitos(value);
+    setFormData({ ...formData, [name]: valorFormatado });
+  };
 
   const togglePeixe = (peixe) => {
     const selecionados = formData.catalogoPeixes
@@ -109,6 +121,7 @@ function IndiqueSeuPesqueiro() {
     setEditandoId(pesqueiro.id);
     setMensagem('');
     setErros({});
+    carregarGaleria(pesqueiro.id);
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   };
 
@@ -117,6 +130,45 @@ function IndiqueSeuPesqueiro() {
     setFormData(FORM_VAZIO);
     setFoto(null);
     setErros({});
+    setGaleria([]);
+  };
+
+  const carregarGaleria = (pesqueiroId) => {
+    PesqueiroFotoService.listar(pesqueiroId)
+      .then((res) => setGaleria(res.data))
+      .catch((err) => console.error('Erro ao carregar galeria', err));
+  };
+
+  const handleAdicionarFotoGaleria = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !editandoId) return;
+    if (galeria.length >= 5) {
+      alert('Você atingiu o limite de 5 fotos no carrossel.');
+      return;
+    }
+    setEnviandoFotoGaleria(true);
+    try {
+      const dataUrl = await redimensionarImagem(file, 800, 0.75);
+      await PesqueiroFotoService.adicionar(editandoId, soBase64(dataUrl));
+      carregarGaleria(editandoId);
+    } catch (err) {
+      console.error('Erro ao adicionar foto na galeria', err);
+      alert('Não foi possível adicionar essa foto. Tente novamente.');
+    } finally {
+      setEnviandoFotoGaleria(false);
+    }
+  };
+
+  const handleRemoverFotoGaleria = async (fotoId) => {
+    if (!confirm('Remover essa foto do carrossel?')) return;
+    try {
+      await PesqueiroFotoService.remover(fotoId);
+      setGaleria((prev) => prev.filter((f) => f.id !== fotoId));
+    } catch (err) {
+      console.error('Erro ao remover foto da galeria', err);
+      alert('Não foi possível remover essa foto.');
+    }
   };
 
   const validar = () => {
@@ -165,6 +217,7 @@ function IndiqueSeuPesqueiro() {
       setFormData(FORM_VAZIO);
       setFoto(null);
       setErros({});
+      setGaleria([]);
       carregarMeusPesqueiros();
     } catch (err) {
       console.error(err);
@@ -212,7 +265,16 @@ function IndiqueSeuPesqueiro() {
                       <span className="painel-row-name">{p.nome}</span>
                       <span className="painel-badge is-aprovado">Aprovado</span>
                     </div>
-                    <a href={`/painel-pesqueiro/${p.id}`} target="_blank" rel="noopener noreferrer" className="perfil-btn perfil-btn-primary" style={{ flex: 'none', padding: '0 20px' }}>
+                    <a
+                      href={`/painel-pesqueiro/${p.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="perfil-btn perfil-btn-primary"
+                      style={{
+                        flex: 'none', padding: '0 20px', display: 'inline-flex',
+                        alignItems: 'center', justifyContent: 'center', textDecoration: 'none', lineHeight: 'normal',
+                      }}
+                    >
                       Administrar
                     </a>
                   </div>
@@ -263,10 +325,44 @@ function IndiqueSeuPesqueiro() {
                     <div className="painel-photo-preview" />
                   )}
                   <label className="perfil-btn perfil-btn-ghost" style={{ flex: 'none', padding: '0 20px', display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
-                    Escolher foto
+                    Escolher foto de capa
                     <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFotoSelecionada} />
                   </label>
                 </div>
+
+                {editandoId ? (
+                  <>
+                    <div className="painel-section-title">Carrossel de fotos ({galeria.length}/5)</div>
+                    <div className="painel-grid" style={{ marginBottom: '16px' }}>
+                      {galeria.map((f) => (
+                        <div key={f.id} style={{ position: 'relative' }}>
+                          <img src={`data:image/jpeg;base64,${f.foto}`} alt="Foto do pesqueiro" style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: 'var(--radius)' }} />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoverFotoGaleria(f.id)}
+                            title="Remover"
+                            style={{
+                              position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.6)', color: '#fff',
+                              border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', lineHeight: 1,
+                            }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {galeria.length < 5 && (
+                      <label className="perfil-btn perfil-btn-ghost" style={{ flex: 'none', padding: '0 20px', display: 'inline-flex', alignItems: 'center', cursor: 'pointer', marginBottom: '20px' }}>
+                        {enviandoFotoGaleria ? 'Enviando...' : 'Adicionar foto ao carrossel'}
+                        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAdicionarFotoGaleria} disabled={enviandoFotoGaleria} />
+                      </label>
+                    )}
+                  </>
+                ) : (
+                  <p style={{ color: 'var(--text-soft)', fontSize: '0.85rem', marginBottom: '16px' }}>
+                    Depois de enviar essa solicitação, você poderá voltar aqui pra adicionar mais fotos ao carrossel.
+                  </p>
+                )}
 
                 <div className="perfil-field">
                   <label className="perfil-field-label">Nome do Pesqueiro *</label>
