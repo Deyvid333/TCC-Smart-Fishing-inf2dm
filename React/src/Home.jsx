@@ -5,6 +5,7 @@ import pesqueiro2 from './assets/imagensPeixes/pesqueiro2home.jpg';
 import pesqueiro3 from './assets/imagensPeixes/pesqueiro3home.jpg';
 import { Link, useSearchParams } from 'react-router-dom';
 import PesqueiroService from './services/PesqueiroService';
+import ComentarioService from './services/ComentarioService';
 import FavoritoService from './services/FavoritoService';
 import UsuarioService from './services/UsuarioService';
 import { formatarInfoRapidaTexto } from './utils/pesqueiroFormato';
@@ -92,15 +93,26 @@ function Home() {
   useEffect(() => {
     const fetchPesqueiros = async () => {
       try {
-        const response = await PesqueiroService.findAll();
-        const data = Array.isArray(response.data) ? response.data : [];
+        const [respPesqueiros, respMedias] = await Promise.all([
+          PesqueiroService.findAll(),
+          ComentarioService.medias().catch((err) => {
+            console.error('Erro ao carregar médias de avaliação:', err);
+            return { data: [] };
+          }),
+        ]);
+        const data = Array.isArray(respPesqueiros.data) ? respPesqueiros.data : [];
+
+        const mediasPorId = {};
+        (respMedias.data || []).forEach((m) => { mediasPorId[m.pesqueiroId] = m; });
 
         const normalized = data.map((item, index) => {
+          const mediaInfo = mediasPorId[item.id];
           return {
             id: item.id ?? `backend-${index}`,
             nome: item.nome || `Pesqueiro ${index + 1}`,
             imagem: item.foto ? `data:image/jpeg;base64,${item.foto}` : [pesqueiro, pesqueiro2, pesqueiro3][index % 3],
-            avaliacao: '4.5',
+            avaliacao: mediaInfo ? mediaInfo.media.toFixed(1) : null,
+            quantidadeAvaliacoes: mediaInfo ? mediaInfo.quantidade : 0,
             horario: formatarInfoRapidaTexto(item.informacao) || 'Consulte o pesqueiro',
             preco: 'Consulte o pesqueiro',
             servicos: item.descricao || 'Serviços não informados',
@@ -154,7 +166,9 @@ function Home() {
               <div key={pesqueiroItem.id} className="explorar-card">
                 <div className="explorar-card-image">
                   <img src={pesqueiroItem.imagem} alt={pesqueiroItem.nome} />
-                  <span className="explorar-card-rating"><IconeEstrela /> {pesqueiroItem.avaliacao}</span>
+                  <span className="explorar-card-rating">
+                    <IconeEstrela /> {pesqueiroItem.avaliacao ? pesqueiroItem.avaliacao : 'Novo'}
+                  </span>
                   <button
                     type="button"
                     onClick={() => handleToggleFavorito(pesqueiroItem.id)}

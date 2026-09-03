@@ -16,6 +16,16 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
 
     List<Comentario> findByPesqueiroIdOrderByDataCadastroDesc(Long pesqueiroId);
 
+    interface MediaPorPesqueiro {
+        Long getPesqueiroId();
+        Double getMedia();
+        Long getQuantidade();
+    }
+
+    @Query("SELECT c.pesqueiroId AS pesqueiroId, AVG(c.nota) AS media, COUNT(c) AS quantidade " +
+           "FROM Comentario c WHERE c.nota IS NOT NULL GROUP BY c.pesqueiroId")
+    List<MediaPorPesqueiro> mediasPorPesqueiro();
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Comentario c WHERE c.pesqueiroId = :pesqueiroId")

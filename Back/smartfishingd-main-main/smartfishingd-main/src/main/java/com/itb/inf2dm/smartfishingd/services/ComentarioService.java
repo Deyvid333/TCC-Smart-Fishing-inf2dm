@@ -25,6 +25,10 @@ public class ComentarioService {
         return comentarioRepository.findByPesqueiroIdOrderByDataCadastroDesc(pesqueiroId);
     }
 
+    public List<ComentarioRepository.MediaPorPesqueiro> mediasPorPesqueiro() {
+        return comentarioRepository.mediasPorPesqueiro();
+    }
+
     public Comentario save(Comentario comentario, Long usuarioIdAutenticado) {
         comentario.setUsuarioId(usuarioIdAutenticado);
         return comentarioRepository.save(comentario);

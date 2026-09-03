@@ -256,12 +256,21 @@ function PesqueiroDinamico() {
 
   const peixeAtual = peixes[peixeIndex];
 
+  const mediaNota = comments.length
+    ? (comments.reduce((soma, c) => soma + (c.rating || 0), 0) / comments.length).toFixed(1)
+    : null;
+
   return (
     <div className="detalhe-page">
       <Navbar />
 
       <section className="detalhe-hero">
         <h1>{pesqueiro.nome}</h1>
+        {mediaNota && (
+          <p style={{ color: 'var(--white)', opacity: 0.9, marginTop: '-6px' }}>
+            ★ {mediaNota} · {comments.length} avalia{comments.length > 1 ? 'ções' : 'ção'}
+          </p>
+        )}
         <button
           type="button"
           onClick={handleToggleFavorito}
