@@ -3,10 +3,11 @@ import Navbar from './Componentes/Navbar/Navbar';
 import pesqueiro from './assets/imagensPeixes/pesqueiro1home.jpg';
 import pesqueiro2 from './assets/imagensPeixes/pesqueiro2home.jpg';
 import pesqueiro3 from './assets/imagensPeixes/pesqueiro3home.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import PesqueiroService from './services/PesqueiroService';
 import FavoritoService from './services/FavoritoService';
 import UsuarioService from './services/UsuarioService';
+import { formatarInfoRapidaTexto } from './utils/pesqueiroFormato';
 import './Explorar.css';
 
 const IconeCoracao = ({ preenchido }) => (
@@ -53,6 +54,8 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [favoritoIds, setFavoritoIds] = useState(new Set());
   const usuarioLogado = UsuarioService.getCurrentUser();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const termoBusca = searchParams.get('q') || '';
 
   useEffect(() => {
     if (!usuarioLogado) return;
@@ -98,7 +101,7 @@ function Home() {
             nome: item.nome || `Pesqueiro ${index + 1}`,
             imagem: item.foto ? `data:image/jpeg;base64,${item.foto}` : [pesqueiro, pesqueiro2, pesqueiro3][index % 3],
             avaliacao: '4.5',
-            horario: item.informacao || 'Consulte o pesqueiro',
+            horario: formatarInfoRapidaTexto(item.informacao) || 'Consulte o pesqueiro',
             preco: 'Consulte o pesqueiro',
             servicos: item.descricao || 'Serviços não informados',
             pesqueiroData: item,
@@ -116,6 +119,10 @@ function Home() {
     fetchPesqueiros();
   }, []);
 
+  const pesqueirosFiltrados = termoBusca
+    ? backendPesqueiros.filter((p) => p.nome.toLowerCase().includes(termoBusca.toLowerCase()))
+    : backendPesqueiros;
+
   return (
     <div className="explorar-page">
       <Navbar />
@@ -123,6 +130,19 @@ function Home() {
       <section className="explorar-hero">
         <h1>Explore os Pesqueiros</h1>
         <p>Descubra os melhores locais para sua pescaria</p>
+
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          style={{ maxWidth: '420px', margin: '20px auto 0', position: 'relative', zIndex: 2 }}
+        >
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Buscar pesqueiro pelo nome..."
+            value={termoBusca}
+            onChange={(e) => setSearchParams(e.target.value ? { q: e.target.value } : {})}
+          />
+        </form>
 
         <svg className="explorar-waves" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true">
           <path fill="rgba(123,205,186,0.35)" d="M0 55c180-35 300 35 480 26s300-60 480-43 300 52 480 34v43H0z" />
@@ -135,13 +155,15 @@ function Home() {
           <div className="explorar-status">Carregando pesqueiros...</div>
         )}
 
-        {!loading && backendPesqueiros.length === 0 && (
-          <div className="explorar-status">Nenhum pesqueiro cadastrado ainda.</div>
+        {!loading && pesqueirosFiltrados.length === 0 && (
+          <div className="explorar-status">
+            {termoBusca ? `Nenhum pesqueiro encontrado para "${termoBusca}".` : 'Nenhum pesqueiro cadastrado ainda.'}
+          </div>
         )}
 
-        {!loading && backendPesqueiros.length > 0 && (
+        {!loading && pesqueirosFiltrados.length > 0 && (
           <div className="explorar-grid">
-            {backendPesqueiros.map((pesqueiroItem) => (
+            {pesqueirosFiltrados.map((pesqueiroItem) => (
               <div key={pesqueiroItem.id} className="explorar-card">
                 <div className="explorar-card-image">
                   <img src={pesqueiroItem.imagem} alt={pesqueiroItem.nome} />

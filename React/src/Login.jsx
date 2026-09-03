@@ -9,7 +9,7 @@ import AuthLayout, {
   IconeOlhoFechado,
   IconeAlerta,
 } from './Componentes/Auth/AuthLayout';
-import { validarEmail, validarSenha, SENHA_DICA, EMAIL_DICA } from './Componentes/Auth/validacao';
+import { validarEmail, validarSenha, SENHA_DICA, SENHA_MAX, EMAIL_DICA } from './Componentes/Auth/validacao';
 
 // ========== COMPONENTE DE LOGIN ==========
 function Login() {
@@ -115,6 +115,7 @@ function Login() {
               autoComplete="current-password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
+              maxLength={SENHA_MAX}
               required
             />
             <button

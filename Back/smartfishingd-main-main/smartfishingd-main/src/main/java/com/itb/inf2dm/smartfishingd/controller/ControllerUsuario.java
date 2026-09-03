@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -87,8 +88,18 @@ public class ControllerUsuario {
     }
 
     @PutMapping("/{id}/banir")
-    public ResponseEntity<Object> banirUsuario(@PathVariable String id) {
+    public ResponseEntity<Object> banirUsuario(@PathVariable String id, Authentication authentication) {
         try {
+            Long usuarioIdAutenticado = (Long) authentication.getPrincipal();
+            if (usuarioIdAutenticado.equals(Long.parseLong(id))) {
+                return ResponseEntity.status(400).body(
+                        Map.of(
+                                "status", 400,
+                                "error", "Bad Request",
+                                "message", "Você não pode banir a si mesmo."
+                        )
+                );
+            }
             return ResponseEntity.ok(usuarioService.banir(Long.parseLong(id)));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(
