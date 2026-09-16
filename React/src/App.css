@@ -3,6 +3,13 @@ body {
   background: linear-gradient(135deg, #F9F7F7 0%, #DBE2EF 100%);
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Corrige globalmente texto sem espaços (nomes/comentários muito longos) que
+     estourava a caixa do elemento — herda pra todo texto do site de uma vez. */
+  overflow-wrap: anywhere;
+}
+
+img {
+  max-width: 100%;
 }
 
 .container {

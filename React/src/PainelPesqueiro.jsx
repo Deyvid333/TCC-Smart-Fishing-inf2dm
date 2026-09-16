@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
+import ContadorCaracteres from './Componentes/ContadorCaracteres';
 import PesqueiroService from './services/PesqueiroService';
 import PesqueiroFotoService from './services/PesqueiroFotoService';
+import PeixeCustomizadoService from './services/PeixeCustomizadoService';
 import UsuarioService from './services/UsuarioService';
 import { redimensionarImagem, soBase64 } from './utils/imagem';
 import { mascararCnpj, mascararCep, mascararTelefone, somenteDigitos } from './utils/mascaras';
@@ -25,6 +27,15 @@ function PainelPesqueiro() {
   const [erros, setErros] = useState({});
   const [galeria, setGaleria] = useState([]);
   const [enviandoFotoGaleria, setEnviandoFotoGaleria] = useState(false);
+  const [peixesCustom, setPeixesCustom] = useState([]);
+  const [confirmandoRemocaoId, setConfirmandoRemocaoId] = useState(null);
+  const [editandoPeixeId, setEditandoPeixeId] = useState(null);
+  const novoPeixeNomeRef = useRef(null);
+  const novoPeixeDescricaoRef = useRef(null);
+  const [novoPeixeNomeLen, setNovoPeixeNomeLen] = useState(0);
+  const [novoPeixeDescricaoLen, setNovoPeixeDescricaoLen] = useState(0);
+  const [novoPeixeFoto, setNovoPeixeFoto] = useState(null);
+  const [enviandoPeixeCustom, setEnviandoPeixeCustom] = useState(false);
   const [editData, setEditData] = useState({
     nome: '', telefone: '', cnpj: '', linkMapa: '', descricaoTexto: '',
     diasAbertos: [], precoSemana: '', precoFimSemana: '',
@@ -46,6 +57,7 @@ function PainelPesqueiro() {
           setPesqueiro(respPesqueiro.data);
           popularEditData(respPesqueiro.data);
           carregarGaleria();
+          carregarPeixesCustom();
         }
       })
       .catch((err) => {
@@ -94,6 +106,91 @@ function PainelPesqueiro() {
     }
   };
 
+  const carregarPeixesCustom = () => {
+    PeixeCustomizadoService.listar(id)
+      .then((res) => setPeixesCustom(res.data))
+      .catch((err) => console.error('Erro ao carregar peixes personalizados', err));
+  };
+
+  const handleFotoPeixeCustomSelecionada = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const dataUrl = await redimensionarImagem(file, 400, 0.75);
+      setNovoPeixeFoto(dataUrl);
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível carregar essa imagem. Tente outra.');
+    }
+  };
+
+  const handleIniciarEdicaoPeixe = (peixe) => {
+    setEditandoPeixeId(peixe.id);
+    setNovoPeixeFoto(null);
+    if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = peixe.nome || '';
+    if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = peixe.descricao || '';
+    setNovoPeixeNomeLen((peixe.nome || '').length);
+    setNovoPeixeDescricaoLen((peixe.descricao || '').length);
+  };
+
+  const handleCancelarEdicaoPeixe = () => {
+    setEditandoPeixeId(null);
+    setNovoPeixeFoto(null);
+    if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = '';
+    if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = '';
+    setNovoPeixeNomeLen(0);
+    setNovoPeixeDescricaoLen(0);
+  };
+
+  const handleAdicionarPeixeCustom = async () => {
+    const nome = novoPeixeNomeRef.current?.value.trim() || '';
+    if (!nome) {
+      alert('Informe o nome do peixe.');
+      return;
+    }
+    setEnviandoPeixeCustom(true);
+    try {
+      const descricao = novoPeixeDescricaoRef.current?.value.trim() || null;
+      const foto = novoPeixeFoto ? soBase64(novoPeixeFoto) : null;
+      if (editandoPeixeId) {
+        await PeixeCustomizadoService.atualizar(editandoPeixeId, nome, foto, descricao);
+      } else {
+        await PeixeCustomizadoService.adicionar(id, nome, foto, descricao);
+      }
+      if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = '';
+      if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = '';
+      setNovoPeixeFoto(null);
+      setEditandoPeixeId(null);
+      setNovoPeixeNomeLen(0);
+      setNovoPeixeDescricaoLen(0);
+      carregarPeixesCustom();
+    } catch (err) {
+      console.error('Erro ao salvar peixe personalizado', err);
+      const msg = err.response?.data?.message || 'Não foi possível salvar esse peixe. Tente novamente.';
+      alert(msg);
+    } finally {
+      setEnviandoPeixeCustom(false);
+    }
+  };
+
+  const handleRemoverPeixeCustom = async (peixeId) => {
+    if (confirmandoRemocaoId !== peixeId) {
+      setConfirmandoRemocaoId(peixeId);
+      setTimeout(() => setConfirmandoRemocaoId((atual) => (atual === peixeId ? null : atual)), 3000);
+      return;
+    }
+    setConfirmandoRemocaoId(null);
+    try {
+      await PeixeCustomizadoService.remover(peixeId);
+      setPeixesCustom((prev) => prev.filter((p) => p.id !== peixeId));
+      if (editandoPeixeId === peixeId) handleCancelarEdicaoPeixe();
+    } catch (err) {
+      console.error('Erro ao remover peixe personalizado', err);
+      alert('Não foi possível remover esse peixe.');
+    }
+  };
+
   const popularEditData = (p) => {
     const { regrasPermitido, regrasProibido } = parseInformacao(p.informacao);
     const { descricaoTexto, informacoesRapidas, catalogoPeixes } = parseDescricao(p.descricao);
@@ -110,10 +207,20 @@ function PainelPesqueiro() {
     const selecionados = editData.catalogoPeixes
       ? editData.catalogoPeixes.split(',').map((p) => p.trim().toLowerCase()).filter(Boolean)
       : [];
-    const novos = selecionados.includes(peixe)
+    const removendo = selecionados.includes(peixe);
+    const novos = removendo
       ? selecionados.filter((p) => p !== peixe)
       : [...selecionados, peixe];
     setEditData({ ...editData, catalogoPeixes: novos.join(', ') });
+
+    if (removendo) {
+      const overrideExistente = peixesCustom.find((p) => p.nome.trim().toLowerCase() === peixe);
+      if (overrideExistente) {
+        PeixeCustomizadoService.remover(overrideExistente.id)
+          .then(() => setPeixesCustom((prev) => prev.filter((p) => p.id !== overrideExistente.id)))
+          .catch((err) => console.error('Erro ao remover foto personalizada do peixe desmarcado', err));
+      }
+    }
   };
 
   const toggleDia = (dia) => {
@@ -291,7 +398,8 @@ function PainelPesqueiro() {
 
               <div className="perfil-field">
                 <label className="perfil-field-label">Nome *</label>
-                <input className="perfil-input" value={editData.nome} onChange={(e) => setEditData({ ...editData, nome: e.target.value })} />
+                <input className="perfil-input" value={editData.nome} onChange={(e) => setEditData({ ...editData, nome: e.target.value })} maxLength={255} />
+                <ContadorCaracteres atual={editData.nome.length} max={255} />
                 {erros.nome && <small style={{ color: '#a12626' }}>{erros.nome}</small>}
               </div>
               <div className="perfil-field">
@@ -306,7 +414,8 @@ function PainelPesqueiro() {
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label">Descrição *</label>
-                <textarea className="painel-textarea" rows={3} value={editData.descricaoTexto} onChange={(e) => setEditData({ ...editData, descricaoTexto: e.target.value })} />
+                <textarea className="painel-textarea" rows={3} value={editData.descricaoTexto} onChange={(e) => setEditData({ ...editData, descricaoTexto: e.target.value })} maxLength={400} />
+                <ContadorCaracteres atual={editData.descricaoTexto.length} max={400} />
                 {erros.descricaoTexto && <small style={{ color: '#a12626' }}>{erros.descricaoTexto}</small>}
               </div>
               <div className="perfil-field">
@@ -336,12 +445,14 @@ function PainelPesqueiro() {
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label">Número *</label>
-                <input className="perfil-input" value={editData.numero} onChange={(e) => setEditData({ ...editData, numero: somenteDigitos(e.target.value) })} />
+                <input className="perfil-input" value={editData.numero} onChange={(e) => setEditData({ ...editData, numero: somenteDigitos(e.target.value) })} maxLength={10} />
+                <ContadorCaracteres atual={editData.numero.length} max={10} />
                 {erros.numero && <small style={{ color: '#a12626' }}>{erros.numero}</small>}
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label">Complemento</label>
-                <input className="perfil-input" value={editData.complemento} onChange={(e) => setEditData({ ...editData, complemento: e.target.value })} />
+                <input className="perfil-input" value={editData.complemento} onChange={(e) => setEditData({ ...editData, complemento: e.target.value })} maxLength={50} />
+                <ContadorCaracteres atual={editData.complemento.length} max={50} />
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label">Link do Google Maps</label>
@@ -351,11 +462,13 @@ function PainelPesqueiro() {
               <div className="painel-section-title">Regras</div>
               <div className="perfil-field">
                 <label className="perfil-field-label" style={{ color: '#27ae60' }}>✓ Permitido</label>
-                <textarea className="painel-textarea" rows={4} value={editData.regrasPermitido} onChange={(e) => setEditData({ ...editData, regrasPermitido: e.target.value })} />
+                <textarea className="painel-textarea" rows={4} value={editData.regrasPermitido} onChange={(e) => setEditData({ ...editData, regrasPermitido: e.target.value })} maxLength={80} />
+                <ContadorCaracteres atual={editData.regrasPermitido.length} max={80} />
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label" style={{ color: '#a12626' }}>✗ Proibido</label>
-                <textarea className="painel-textarea" rows={4} value={editData.regrasProibido} onChange={(e) => setEditData({ ...editData, regrasProibido: e.target.value })} />
+                <textarea className="painel-textarea" rows={4} value={editData.regrasProibido} onChange={(e) => setEditData({ ...editData, regrasProibido: e.target.value })} maxLength={80} />
+                <ContadorCaracteres atual={editData.regrasProibido.length} max={80} />
               </div>
 
               <div className="painel-section-title">Catálogo de peixes</div>
@@ -365,6 +478,121 @@ function PainelPesqueiro() {
                     {peixesSelecionados.includes(peixe) ? '✓ ' : ''}{peixe}
                   </div>
                 ))}
+              </div>
+
+              <div className="painel-section-title">Fotos e peixes personalizados</div>
+              <p style={{ color: 'var(--text-soft)', fontSize: '0.85rem', marginBottom: '16px' }}>
+                Aqui embaixo é diferente do catálogo acima: cada peixe personalizado é um item à parte, com foto e descrição próprias.
+                Se o nome que você digitar for igual ao de um peixe já marcado no catálogo acima (ex: "carpa"), a foto e a descrição substituem as padrão dele só no seu pesqueiro — e se você desmarcar aquele peixe lá em cima, a substituição é removida automaticamente.
+              </p>
+
+              {peixesCustom.length > 0 && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '8px' }}>
+                    Já adicionados ({peixesCustom.length}/20)
+                  </div>
+                  <div className="painel-grid">
+                    {peixesCustom.map((peixe) => (
+                      <div key={peixe.id} style={{ position: 'relative', textAlign: 'center', minWidth: 0, overflow: 'hidden' }}>
+                        {peixe.foto ? (
+                          <img src={`data:image/jpeg;base64,${peixe.foto}`} alt={peixe.nome} style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: 'var(--radius)' }} />
+                        ) : (
+                          <div style={{ width: '100%', height: '90px', borderRadius: 'var(--radius)', background: 'var(--surface)', border: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>🐟</div>
+                        )}
+                        <span title={peixe.nome} style={{ display: 'block', fontSize: '0.8rem', marginTop: '4px', color: 'var(--text)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{peixe.nome}</span>
+                        {peixe.descricao && (
+                          <span title={peixe.descricao} style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.72rem', color: 'var(--text-soft)', overflowWrap: 'anywhere' }}>{peixe.descricao}</span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleIniciarEdicaoPeixe(peixe)}
+                          title="Editar"
+                          style={{
+                            position: 'absolute', top: '4px', right: '30px', background: 'rgba(0,0,0,0.6)', color: '#fff',
+                            border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', lineHeight: 1, fontSize: '0.75rem',
+                          }}
+                        >
+                          ✎
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoverPeixeCustom(peixe.id)}
+                          title={confirmandoRemocaoId === peixe.id ? 'Clique de novo para confirmar' : 'Remover'}
+                          style={{
+                            position: 'absolute', top: '4px', right: '4px',
+                            background: confirmandoRemocaoId === peixe.id ? '#a12626' : 'rgba(0,0,0,0.6)', color: '#fff',
+                            border: 'none', borderRadius: confirmandoRemocaoId === peixe.id ? '999px' : '50%',
+                            width: confirmandoRemocaoId === peixe.id ? 'auto' : '22px', height: '22px',
+                            padding: confirmandoRemocaoId === peixe.id ? '0 8px' : 0,
+                            fontSize: confirmandoRemocaoId === peixe.id ? '0.65rem' : '1rem',
+                            cursor: 'pointer', lineHeight: 1, whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {confirmandoRemocaoId === peixe.id ? 'Confirmar?' : '×'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div style={{ background: editandoPeixeId ? 'rgba(54, 133, 181, 0.08)' : 'var(--surface)', border: editandoPeixeId ? '1.5px solid var(--blue)' : '1px solid var(--line)', borderRadius: 'var(--radius)', padding: '16px', marginBottom: '20px' }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '10px' }}>
+                  {editandoPeixeId ? 'Editando peixe' : 'Adicionar peixe personalizado'}
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '10px' }}>
+                  <input
+                    className="perfil-input"
+                    type="text"
+                    placeholder="Nome do peixe"
+                    ref={novoPeixeNomeRef}
+                    defaultValue=""
+                    autoComplete="off"
+                    onChange={(e) => setNovoPeixeNomeLen(e.target.value.length)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdicionarPeixeCustom(); } }}
+                    style={{ flex: '1 1 180px' }}
+                    maxLength={60}
+                  />
+                  <label className="perfil-btn perfil-btn-ghost" style={{ flex: 'none', padding: '0 16px', display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
+                    {novoPeixeFoto ? 'Foto escolhida' : editandoPeixeId ? 'Trocar foto' : 'Escolher foto'}
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFotoPeixeCustomSelecionada} />
+                  </label>
+                </div>
+                <ContadorCaracteres atual={novoPeixeNomeLen} max={60} />
+                {editandoPeixeId && !novoPeixeFoto && (
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-soft)', marginTop: '-6px', marginBottom: '10px' }}>
+                    Deixe em branco pra manter a foto atual.
+                  </p>
+                )}
+                <input
+                  className="perfil-input"
+                  type="text"
+                  placeholder="Descrição do peixe (opcional)"
+                  ref={novoPeixeDescricaoRef}
+                  defaultValue=""
+                  autoComplete="off"
+                  onChange={(e) => setNovoPeixeDescricaoLen(e.target.value.length)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdicionarPeixeCustom(); } }}
+                  style={{ width: '100%', marginBottom: '2px' }}
+                  maxLength={200}
+                />
+                <ContadorCaracteres atual={novoPeixeDescricaoLen} max={200} />
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    type="button"
+                    className="perfil-btn perfil-btn-primary"
+                    style={{ padding: '0 20px' }}
+                    onClick={handleAdicionarPeixeCustom}
+                    disabled={enviandoPeixeCustom}
+                  >
+                    {enviandoPeixeCustom ? 'Salvando...' : editandoPeixeId ? 'Salvar alterações' : 'Adicionar peixe'}
+                  </button>
+                  {editandoPeixeId && (
+                    <button type="button" className="perfil-btn perfil-btn-ghost" style={{ padding: '0 20px' }} onClick={handleCancelarEdicaoPeixe}>
+                      Cancelar
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="perfil-danger-zone">

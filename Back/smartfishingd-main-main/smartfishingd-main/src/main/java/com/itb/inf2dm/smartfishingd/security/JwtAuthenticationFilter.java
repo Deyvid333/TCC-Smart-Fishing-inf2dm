@@ -37,7 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Long usuarioId = Long.valueOf(claims.getSubject());
                 String nivelAcesso = claims.get("nivelAcesso", String.class);
 
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + nivelAcesso);
+                // Normaliza pra maiúsculo: existem contas antigas no banco com "admin" em
+                // minúsculo, que sem isso nunca batem com hasRole("ADMIN") do Spring Security.
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + (nivelAcesso != null ? nivelAcesso.toUpperCase() : ""));
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(usuarioId, null, List.of(authority));
 

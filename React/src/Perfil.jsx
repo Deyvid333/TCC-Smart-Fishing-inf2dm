@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
+import ContadorCaracteres from './Componentes/ContadorCaracteres';
 import UsuarioService from './services/UsuarioService';
 import FavoritoService from './services/FavoritoService';
 import HistoricoService from './services/HistoricoService';
@@ -33,6 +34,8 @@ function Perfil() {
   const [enviandoFoto, setEnviandoFoto] = useState(false);
   const [favoritos, setFavoritos] = useState([]);
   const [historico, setHistorico] = useState([]);
+  const [confirmandoRemocaoHistId, setConfirmandoRemocaoHistId] = useState(null);
+  const [confirmandoLimparHist, setConfirmandoLimparHist] = useState(false);
 
   useEffect(() => {
     const loadUser = () => {
@@ -66,6 +69,36 @@ function Perfil() {
       });
   };
 
+  const handleRemoverDoHistorico = (pesqueiroId) => {
+    if (confirmandoRemocaoHistId !== pesqueiroId) {
+      setConfirmandoRemocaoHistId(pesqueiroId);
+      setTimeout(() => setConfirmandoRemocaoHistId((atual) => (atual === pesqueiroId ? null : atual)), 3000);
+      return;
+    }
+    setConfirmandoRemocaoHistId(null);
+    HistoricoService.remover(pesqueiroId)
+      .then(() => setHistorico((prev) => prev.filter((p) => p.id !== pesqueiroId)))
+      .catch((err) => {
+        console.error('Erro ao remover do histórico', err);
+        alert('Não foi possível remover esse pesqueiro do histórico.');
+      });
+  };
+
+  const handleLimparHistorico = () => {
+    if (!confirmandoLimparHist) {
+      setConfirmandoLimparHist(true);
+      setTimeout(() => setConfirmandoLimparHist(false), 3000);
+      return;
+    }
+    setConfirmandoLimparHist(false);
+    HistoricoService.limparTudo()
+      .then(() => setHistorico([]))
+      .catch((err) => {
+        console.error('Erro ao limpar histórico', err);
+        alert('Não foi possível limpar o histórico.');
+      });
+  };
+
   const handleSave = async () => {
     try {
       const atualizado = await UsuarioService.update(usuario.id, {
@@ -80,6 +113,7 @@ function Perfil() {
       setIsEditing(false);
       alert('Perfil atualizado com sucesso!');
     } catch (err) {
+      console.error('Erro ao atualizar perfil', err);
       alert('Erro ao atualizar perfil.');
     }
   };
@@ -124,6 +158,7 @@ function Perfil() {
       alert('Conta excluída com sucesso.');
       navigate('/login');
     } catch (err) {
+      console.error('Erro ao excluir conta', err);
       alert('Erro ao excluir conta. Tente novamente.');
     }
   };
@@ -179,7 +214,7 @@ function Perfil() {
 
         <h2 className="perfil-name">{profileData.nome}</h2>
         <span className="perfil-badge">
-          {usuario.nivelAcesso === 'admin' ? 'Dono de Pesqueiro' : 'Pescador'}
+          {usuario.nivelAcesso?.toUpperCase() === 'ADMIN' ? 'Administrador' : 'Pescador'}
         </span>
       </div>
 
@@ -194,7 +229,9 @@ function Perfil() {
                   className="perfil-input"
                   value={profileData.nome}
                   onChange={(e) => setProfileData({ ...profileData, nome: e.target.value })}
+                  maxLength={255}
                 />
+                <ContadorCaracteres atual={profileData.nome.length} max={255} />
               </div>
               <div className="perfil-field">
                 <label className="perfil-field-label">Email</label>
@@ -203,6 +240,7 @@ function Perfil() {
                   className="perfil-input"
                   value={profileData.email}
                   onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                  maxLength={255}
                 />
               </div>
               <div className="perfil-actions">
@@ -222,7 +260,7 @@ function Perfil() {
               </div>
               <div className="perfil-field">
                 <span className="perfil-field-label">Tipo de conta</span>
-                <span className="perfil-field-value">{usuario.nivelAcesso === 'admin' ? 'Dono de Pesqueiro' : 'Pescador'}</span>
+                <span className="perfil-field-value">{usuario.nivelAcesso?.toUpperCase() === 'ADMIN' ? 'Administrador' : 'Pescador'}</span>
               </div>
               <div className="perfil-field">
                 <span className="perfil-field-label">Membro desde</span>
@@ -261,11 +299,31 @@ function Perfil() {
 
       <div className="perfil-card">
         <div className="perfil-card-inner">
-          <h5 style={{ marginBottom: '16px' }}>Histórico de pesqueiros visitados ({historico.length})</h5>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', gap: '10px', flexWrap: 'wrap' }}>
+            <h5 style={{ margin: 0 }}>Histórico de pesqueiros visitados ({historico.length})</h5>
+            {historico.length > 0 && (
+              <button
+                type="button"
+                className="perfil-btn perfil-btn-ghost"
+                style={{ padding: '4px 14px', height: 'auto', flex: 'none', color: confirmandoLimparHist ? '#a12626' : undefined, borderColor: confirmandoLimparHist ? '#a12626' : undefined }}
+                onClick={handleLimparHistorico}
+              >
+                {confirmandoLimparHist ? 'Clique de novo para confirmar' : 'Limpar histórico'}
+              </button>
+            )}
+          </div>
           {historico.length === 0 && <p className="perfil-field-value">Você ainda não visitou nenhum pesqueiro.</p>}
           {historico.map((p) => (
-            <div key={p.id} className="perfil-field">
+            <div key={p.id} className="perfil-field" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Link to="/pesqueiro-dinamico" state={{ pesqueiro: p }} className="perfil-field-value">{p.nome}</Link>
+              <button
+                type="button"
+                className="perfil-btn perfil-btn-ghost"
+                style={{ padding: '4px 14px', height: 'auto', flex: 'none', color: confirmandoRemocaoHistId === p.id ? '#a12626' : undefined, borderColor: confirmandoRemocaoHistId === p.id ? '#a12626' : undefined }}
+                onClick={() => handleRemoverDoHistorico(p.id)}
+              >
+                {confirmandoRemocaoHistId === p.id ? 'Confirmar?' : 'Remover'}
+              </button>
             </div>
           ))}
         </div>

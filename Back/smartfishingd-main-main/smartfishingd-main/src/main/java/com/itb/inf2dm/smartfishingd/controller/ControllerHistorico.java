@@ -1,6 +1,7 @@
 package com.itb.inf2dm.smartfishingd.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,5 +32,19 @@ public class ControllerHistorico {
         Long usuarioId = (Long) authentication.getPrincipal();
         List<Pesqueiro> historico = historicoService.listarHistoricoPorUsuario(usuarioId);
         return ResponseEntity.ok(historico);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Object> limparHistorico(Authentication authentication) {
+        Long usuarioId = (Long) authentication.getPrincipal();
+        historicoService.limparHistorico(usuarioId);
+        return ResponseEntity.ok(Map.of("status", 200, "message", "Histórico apagado com sucesso!"));
+    }
+
+    @DeleteMapping("/{pesqueiroId}")
+    public ResponseEntity<Object> removerPesqueiroDoHistorico(@PathVariable Long pesqueiroId, Authentication authentication) {
+        Long usuarioId = (Long) authentication.getPrincipal();
+        historicoService.removerPesqueiroDoHistorico(usuarioId, pesqueiroId);
+        return ResponseEntity.ok(Map.of("status", 200, "message", "Pesqueiro removido do histórico!"));
     }
 }

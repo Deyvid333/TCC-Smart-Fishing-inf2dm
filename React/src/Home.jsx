@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Componentes/Navbar/Navbar';
+import Paginacao from './Componentes/Paginacao';
 import pesqueiro from './assets/imagensPeixes/pesqueiro1home.jpg';
 import pesqueiro2 from './assets/imagensPeixes/pesqueiro2home.jpg';
 import pesqueiro3 from './assets/imagensPeixes/pesqueiro3home.jpg';
@@ -57,6 +58,8 @@ function Home() {
   const usuarioLogado = UsuarioService.getCurrentUser();
   const [searchParams] = useSearchParams();
   const termoBusca = searchParams.get('q') || '';
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const ITENS_POR_PAGINA = 12;
 
   useEffect(() => {
     if (!usuarioLogado) return;
@@ -135,6 +138,16 @@ function Home() {
     ? backendPesqueiros.filter((p) => p.nome.toLowerCase().includes(termoBusca.toLowerCase()))
     : backendPesqueiros;
 
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [termoBusca]);
+
+  const totalPaginas = Math.max(1, Math.ceil(pesqueirosFiltrados.length / ITENS_POR_PAGINA));
+  const pesqueirosDaPagina = pesqueirosFiltrados.slice(
+    (paginaAtual - 1) * ITENS_POR_PAGINA,
+    paginaAtual * ITENS_POR_PAGINA
+  );
+
   return (
     <div className="explorar-page">
       <Navbar />
@@ -162,7 +175,7 @@ function Home() {
 
         {!loading && pesqueirosFiltrados.length > 0 && (
           <div className="explorar-grid">
-            {pesqueirosFiltrados.map((pesqueiroItem) => (
+            {pesqueirosDaPagina.map((pesqueiroItem) => (
               <div key={pesqueiroItem.id} className="explorar-card">
                 <div className="explorar-card-image">
                   <img src={pesqueiroItem.imagem} alt={pesqueiroItem.nome} />
@@ -203,6 +216,10 @@ function Home() {
               </div>
             ))}
           </div>
+        )}
+
+        {!loading && pesqueirosFiltrados.length > 0 && (
+          <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginas} onMudarPagina={setPaginaAtual} />
         )}
       </section>
     </div>

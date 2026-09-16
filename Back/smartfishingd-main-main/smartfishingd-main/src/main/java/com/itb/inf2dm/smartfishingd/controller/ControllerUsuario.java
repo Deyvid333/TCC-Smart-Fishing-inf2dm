@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.itb.inf2dm.smartfishingd.model.entity.Usuario;
 import com.itb.inf2dm.smartfishingd.security.JwtUtil;
+import com.itb.inf2dm.smartfishingd.security.RateLimiterService;
 import com.itb.inf2dm.smartfishingd.services.UsuarioService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/v1/usuario")
@@ -30,21 +33,51 @@ public class ControllerUsuario {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private RateLimiterService rateLimiterService;
+
+    private static boolean isAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    private static String ipDoCliente(HttpServletRequest request) {
+        return request.getRemoteAddr();
+    }
+
+    private static ResponseEntity<Object> respostaMuitasTentativas(String mensagem) {
+        return ResponseEntity.status(429).body(
+                Map.of("status", 429, "error", "Too Many Requests", "message", mensagem)
+        );
+    }
+
+    private static Usuario sanitizar(Usuario usuario) {
+        usuario.setSenha(null);
+        usuario.setTokenRedefinicaoSenha(null);
+        usuario.setTokenRedefinicaoExpiracao(null);
+        return usuario;
+    }
+
     @GetMapping
     public ResponseEntity<List<Usuario>> findAll() {
-        return ResponseEntity.ok(usuarioService.findAll());
+        List<Usuario> usuarios = usuarioService.findAll();
+        usuarios.forEach(ControllerUsuario::sanitizar);
+        return ResponseEntity.ok(usuarios);
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> salvarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<Object> salvarUsuario(@RequestBody Usuario usuario, HttpServletRequest request) {
+        if (!rateLimiterService.permitir("cadastro:" + ipDoCliente(request), 5, 60 * 60 * 1000)) {
+            return respostaMuitasTentativas("Muitos cadastros feitos a partir deste endereço. Tente novamente mais tarde.");
+        }
         Usuario novoUsuario = usuarioService.save(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(sanitizar(novoUsuario));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> listarUsuarioPorId(@PathVariable String id) {
         try {
-            return ResponseEntity.ok(usuarioService.findById(Long.parseLong(id)));
+            return ResponseEntity.ok(sanitizar(usuarioService.findById(Long.parseLong(id))));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(
                     Map.of(
@@ -65,9 +98,20 @@ public class ControllerUsuario {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> atualizarUsuario(@PathVariable String id, @RequestBody Usuario usuario) {
+    public ResponseEntity<Object> atualizarUsuario(@PathVariable String id, @RequestBody Usuario usuario, Authentication authentication) {
         try {
-            return ResponseEntity.ok(usuarioService.update(Long.parseLong(id), usuario));
+            Long usuarioIdAutenticado = (Long) authentication.getPrincipal();
+            Long idAlvo = Long.parseLong(id);
+            if (!usuarioIdAutenticado.equals(idAlvo) && !isAdmin(authentication)) {
+                return ResponseEntity.status(403).body(
+                        Map.of(
+                                "status", 403,
+                                "error", "Forbidden",
+                                "message", "Você só pode editar a sua própria conta."
+                        )
+                );
+            }
+            return ResponseEntity.ok(sanitizar(usuarioService.update(idAlvo, usuario)));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(
                     Map.of(
@@ -100,7 +144,7 @@ public class ControllerUsuario {
                         )
                 );
             }
-            return ResponseEntity.ok(usuarioService.banir(Long.parseLong(id)));
+            return ResponseEntity.ok(sanitizar(usuarioService.banir(Long.parseLong(id))));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(
                     Map.of(
@@ -123,7 +167,7 @@ public class ControllerUsuario {
     @PutMapping("/{id}/desbanir")
     public ResponseEntity<Object> desbanirUsuario(@PathVariable String id) {
         try {
-            return ResponseEntity.ok(usuarioService.desbanir(Long.parseLong(id)));
+            return ResponseEntity.ok(sanitizar(usuarioService.desbanir(Long.parseLong(id))));
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(
                     Map.of(
@@ -143,14 +187,40 @@ public class ControllerUsuario {
         }
     }
 
-        @PostMapping("/login")
-public ResponseEntity<Object> login(@RequestBody Usuario usuario) {
+        @PutMapping("/{id}/nivel-acesso")
+    public ResponseEntity<Object> alterarNivelAcesso(@PathVariable String id, @RequestBody Map<String, String> body, Authentication authentication) {
+        try {
+            Long usuarioIdAutenticado = (Long) authentication.getPrincipal();
+            Usuario usuario = usuarioService.alterarNivelAcesso(Long.parseLong(id), body.get("nivelAcesso"), usuarioIdAutenticado);
+            return ResponseEntity.ok(sanitizar(usuario));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("status", 400, "error", "Bad Request", "message", "O id informado não é válido: " + id)
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("status", 400, "error", "Bad Request", "message", e.getMessage())
+            );
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(
+                    Map.of("status", 404, "error", "Not Found", "message", "Usuario não encontrado com o id: " + id)
+            );
+        }
+    }
+
+    @PostMapping("/login")
+public ResponseEntity<Object> login(@RequestBody Usuario usuario, HttpServletRequest request) {
+    String chaveIp = "login:" + ipDoCliente(request);
+    String chaveEmail = "login-email:" + (usuario.getEmail() != null ? usuario.getEmail().toLowerCase() : "desconhecido");
+    if (!rateLimiterService.permitir(chaveIp, 10, 60 * 1000) || !rateLimiterService.permitir(chaveEmail, 5, 60 * 1000)) {
+        return respostaMuitasTentativas("Muitas tentativas de login. Aguarde um minuto e tente novamente.");
+    }
     try {
         Usuario usuarioLogado = usuarioService.login(
             usuario.getEmail(),
             usuario.getSenha()
         );
-        usuarioLogado.setSenha(null);
+        sanitizar(usuarioLogado);
         String token = jwtUtil.gerarToken(
             usuarioLogado.getId(),
             usuarioLogado.getEmail(),
@@ -174,7 +244,12 @@ public ResponseEntity<Object> login(@RequestBody Usuario usuario) {
 }
 
     @PostMapping("/esqueci-senha")
-    public ResponseEntity<Object> esqueciSenha(@RequestBody Map<String, String> body) {
+    public ResponseEntity<Object> esqueciSenha(@RequestBody Map<String, String> body, HttpServletRequest request) {
+        String email = body.get("email") != null ? body.get("email").toLowerCase() : "desconhecido";
+        if (!rateLimiterService.permitir("esqueci-senha:" + ipDoCliente(request), 5, 15 * 60 * 1000)
+                || !rateLimiterService.permitir("esqueci-senha-email:" + email, 3, 15 * 60 * 1000)) {
+            return respostaMuitasTentativas("Muitos pedidos de redefinição de senha. Aguarde alguns minutos e tente novamente.");
+        }
         usuarioService.esqueciSenha(body.get("email"));
         return ResponseEntity.ok(
                 Map.of(
@@ -185,7 +260,10 @@ public ResponseEntity<Object> login(@RequestBody Usuario usuario) {
     }
 
     @PostMapping("/redefinir-senha")
-    public ResponseEntity<Object> redefinirSenha(@RequestBody Map<String, String> body) {
+    public ResponseEntity<Object> redefinirSenha(@RequestBody Map<String, String> body, HttpServletRequest request) {
+        if (!rateLimiterService.permitir("redefinir-senha:" + ipDoCliente(request), 10, 15 * 60 * 1000)) {
+            return respostaMuitasTentativas("Muitas tentativas de redefinição de senha. Aguarde alguns minutos e tente novamente.");
+        }
         try {
             usuarioService.redefinirSenha(body.get("token"), body.get("novaSenha"));
             return ResponseEntity.ok(
@@ -206,9 +284,20 @@ public ResponseEntity<Object> login(@RequestBody Usuario usuario) {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deletarUsuarioPorId(@PathVariable String id) {
+    public ResponseEntity<Object> deletarUsuarioPorId(@PathVariable String id, Authentication authentication) {
         try {
-            usuarioService.delete(Long.parseLong(id));
+            Long usuarioIdAutenticado = (Long) authentication.getPrincipal();
+            Long idAlvo = Long.parseLong(id);
+            if (!usuarioIdAutenticado.equals(idAlvo) && !isAdmin(authentication)) {
+                return ResponseEntity.status(403).body(
+                        Map.of(
+                                "status", 403,
+                                "error", "Forbidden",
+                                "message", "Você só pode excluir a sua própria conta."
+                        )
+                );
+            }
+            usuarioService.delete(idAlvo);
             return ResponseEntity.ok().body(
                     Map.of(
                             "status", 200,

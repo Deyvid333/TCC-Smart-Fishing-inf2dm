@@ -7,6 +7,9 @@ import FavoritoService from './services/FavoritoService';
 import HistoricoService from './services/HistoricoService';
 import DenunciaService from './services/DenunciaService';
 import PesqueiroFotoService from './services/PesqueiroFotoService';
+import PeixeCustomizadoService from './services/PeixeCustomizadoService';
+import ContadorCaracteres from './Componentes/ContadorCaracteres';
+import Paginacao from './Componentes/Paginacao';
 import { formatarInfoRapidaTexto } from './utils/pesqueiroFormato';
 import './Detalhe.css';
 
@@ -64,6 +67,17 @@ import imgCarpaHungara from './assets/fotoCatalogo/Carpa-hungara.jpg';
 import imgTrairao from './assets/fotoCatalogo/Trairao.jpg';
 import imgCatfish from './assets/fotoCatalogo/Catfish.jpg';
 
+const imgPeixeGenerico = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#eef3f7"/>
+  <g fill="#9fb7c8">
+    <path d="M40 100c20-28 60-40 95-28 12 4 22 12 28 22-6 10-16 18-28 22-35 12-75 0-95-28z"/>
+    <polygon points="150,100 178,80 178,120"/>
+    <circle cx="65" cy="92" r="5" fill="#eef3f7"/>
+  </g>
+</svg>
+`);
+
 const catalogoCompleto = {
   'tilapia': { img: imgTilapia, descricao: 'Peixe muito popular em pesqueiros, resistente e saboroso.' },
   'dourado': { img: imgDourado, descricao: 'Conhecido pela briga intensa, é um dos favoritos dos pescadores.' },
@@ -95,6 +109,8 @@ function PesqueiroDinamico() {
   const pesqueiro = location.state?.pesqueiro;
 
   const [comments, setComments] = useState([]);
+  const [paginaComentario, setPaginaComentario] = useState(1);
+  const COMENTARIOS_POR_PAGINA = 5;
   const [commentText, setCommentText] = useState('');
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -104,6 +120,7 @@ function PesqueiroDinamico() {
   const [favoritoCarregando, setFavoritoCarregando] = useState(false);
   const [galeria, setGaleria] = useState([]);
   const [fotoIndex, setFotoIndex] = useState(0);
+  const [peixesCustom, setPeixesCustom] = useState([]);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -115,6 +132,9 @@ function PesqueiroDinamico() {
     PesqueiroFotoService.listar(pesqueiro.id)
       .then((res) => setGaleria(res.data))
       .catch((err) => console.error('Erro ao carregar fotos do pesqueiro', err));
+    PeixeCustomizadoService.listar(pesqueiro.id)
+      .then((res) => setPeixesCustom(res.data))
+      .catch((err) => console.error('Erro ao carregar peixes personalizados', err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pesqueiro?.id]);
 
@@ -199,7 +219,7 @@ function PesqueiroDinamico() {
       dataCadastro,
       nota: rating,
     }).then(() => {
-      setRating(0); setHoverRating(0); setCommentText('');
+      setRating(0); setHoverRating(0); setCommentText(''); setPaginaComentario(1);
       carregarComentarios();
     }).catch((err) => {
       console.error('Erro ao enviar comentário', err);
@@ -246,13 +266,35 @@ function PesqueiroDinamico() {
   const regrasPermitido = partes.find(p => p.startsWith('P:'))?.replace('P:', '') || '';
   const regrasProibido = partes.find(p => p.startsWith('X:'))?.replace('X:', '') || '';
 
-  const peixes = catalogoPart
+  const normalizarNomePeixe = (nome) => nome.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+  const customPorNome = {};
+  peixesCustom.forEach((p) => { customPorNome[normalizarNomePeixe(p.nome)] = p; });
+
+  const peixesNativos = catalogoPart
     ? catalogoPart.split(',').map(nome => {
-        const chave = nome.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const chave = normalizarNomePeixe(nome);
         const dados = catalogoCompleto[chave];
-        return { nome: nome.trim(), img: dados?.img || imgTilapia, descricao: dados?.descricao || 'Peixe disponível neste pesqueiro.' };
+        const override = customPorNome[chave];
+        return {
+          nome: nome.trim(),
+          img: override && override.foto ? `data:image/jpeg;base64,${override.foto}` : (dados?.img || imgPeixeGenerico),
+          descricao: (override && override.descricao) || dados?.descricao || 'Peixe disponível neste pesqueiro.',
+        };
       })
     : [];
+
+  const nomesNativosNormalizados = new Set(peixesNativos.map((p) => normalizarNomePeixe(p.nome)));
+
+  const peixesPersonalizados = peixesCustom
+    .filter((p) => !nomesNativosNormalizados.has(normalizarNomePeixe(p.nome)))
+    .map((p) => ({
+      nome: p.nome,
+      img: p.foto ? `data:image/jpeg;base64,${p.foto}` : imgPeixeGenerico,
+      descricao: p.descricao || '',
+    }));
+
+  const peixes = [...peixesNativos, ...peixesPersonalizados];
 
   const peixeAtual = peixes[peixeIndex];
 
@@ -420,7 +462,7 @@ function PesqueiroDinamico() {
               <img src={peixeAtual.img} alt={peixeAtual.nome} />
               <div className="detalhe-fish-info">
                 <h4>{peixeAtual.nome}</h4>
-                <p>{peixeAtual.descricao}</p>
+                {peixeAtual.descricao && <p>{peixeAtual.descricao}</p>}
               </div>
             </div>
             <div className="detalhe-fish-nav">
@@ -454,15 +496,13 @@ function PesqueiroDinamico() {
               maxLength={500}
               required
             />
-            <small style={{ display: 'block', textAlign: 'right', color: 'var(--text-soft)' }}>
-              {commentText.length}/500
-            </small>
+            <ContadorCaracteres atual={commentText.length} max={500} />
             <button type="submit" className="detalhe-comment-submit">Enviar</button>
           </form>
 
           <div className="detalhe-comment-list">
             <h5>Comentários ({comments.length})</h5>
-            {comments.map((comment) => (
+            {comments.slice((paginaComentario - 1) * COMENTARIOS_POR_PAGINA, paginaComentario * COMENTARIOS_POR_PAGINA).map((comment) => (
               <div key={comment.id} className="detalhe-comment-item">
                 <div className="detalhe-comment-head">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -493,6 +533,13 @@ function PesqueiroDinamico() {
               </div>
             ))}
             {comments.length === 0 && <p className="detalhe-empty">Nenhum comentário ainda.</p>}
+            {comments.length > 0 && (
+              <Paginacao
+                paginaAtual={paginaComentario}
+                totalPaginas={Math.max(1, Math.ceil(comments.length / COMENTARIOS_POR_PAGINA))}
+                onMudarPagina={setPaginaComentario}
+              />
+            )}
           </div>
         </div>
       </div>

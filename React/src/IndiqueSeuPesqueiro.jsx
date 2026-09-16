@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
+import ContadorCaracteres from './Componentes/ContadorCaracteres';
 import PesqueiroService from './services/PesqueiroService';
 import PesqueiroFotoService from './services/PesqueiroFotoService';
+import PeixeCustomizadoService from './services/PeixeCustomizadoService';
 import UsuarioService from './services/UsuarioService';
 import { redimensionarImagem, soBase64 } from './utils/imagem';
 import { mascararCnpj, mascararCep, mascararTelefone, somenteDigitos } from './utils/mascaras';
@@ -33,6 +35,16 @@ function IndiqueSeuPesqueiro() {
   const [galeria, setGaleria] = useState([]);
   const [enviandoFotoGaleria, setEnviandoFotoGaleria] = useState(false);
   const [aba, setAba] = useState(null);
+  const [peixesCustom, setPeixesCustom] = useState([]);
+  const [peixesCustomPendentes, setPeixesCustomPendentes] = useState([]);
+  const [confirmandoRemocaoId, setConfirmandoRemocaoId] = useState(null);
+  const [editandoPeixeId, setEditandoPeixeId] = useState(null);
+  const novoPeixeNomeRef = useRef(null);
+  const novoPeixeDescricaoRef = useRef(null);
+  const [novoPeixeNomeLen, setNovoPeixeNomeLen] = useState(0);
+  const [novoPeixeDescricaoLen, setNovoPeixeDescricaoLen] = useState(0);
+  const [novoPeixeFoto, setNovoPeixeFoto] = useState(null);
+  const [enviandoPeixeCustom, setEnviandoPeixeCustom] = useState(false);
 
   useEffect(() => {
     const usuarioAtual = UsuarioService.getCurrentUser();
@@ -75,10 +87,20 @@ function IndiqueSeuPesqueiro() {
     const selecionados = formData.catalogoPeixes
       ? formData.catalogoPeixes.split(',').map((p) => p.trim().toLowerCase()).filter(Boolean)
       : [];
-    const novos = selecionados.includes(peixe)
+    const removendo = selecionados.includes(peixe);
+    const novos = removendo
       ? selecionados.filter((p) => p !== peixe)
       : [...selecionados, peixe];
     setFormData({ ...formData, catalogoPeixes: novos.join(', ') });
+
+    if (removendo && editandoId) {
+      const overrideExistente = peixesCustom.find((p) => p.nome.trim().toLowerCase() === peixe);
+      if (overrideExistente) {
+        PeixeCustomizadoService.remover(overrideExistente.id)
+          .then(() => setPeixesCustom((prev) => prev.filter((p) => p.id !== overrideExistente.id)))
+          .catch((err) => console.error('Erro ao remover foto personalizada do peixe desmarcado', err));
+      }
+    }
   };
 
   const toggleDia = (dia) => {
@@ -126,6 +148,14 @@ function IndiqueSeuPesqueiro() {
     setMensagem('');
     setErros({});
     carregarGaleria(pesqueiro.id);
+    carregarPeixesCustom(pesqueiro.id);
+    setPeixesCustomPendentes([]);
+    if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = '';
+    if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = '';
+    setNovoPeixeFoto(null);
+    setEditandoPeixeId(null);
+    setNovoPeixeNomeLen(0);
+    setNovoPeixeDescricaoLen(0);
     setAba('nova');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -136,6 +166,14 @@ function IndiqueSeuPesqueiro() {
     setFoto(null);
     setErros({});
     setGaleria([]);
+    setPeixesCustom([]);
+    setPeixesCustomPendentes([]);
+    if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = '';
+    if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = '';
+    setNovoPeixeFoto(null);
+    setEditandoPeixeId(null);
+    setNovoPeixeNomeLen(0);
+    setNovoPeixeDescricaoLen(0);
     if (meusPesqueiros.length > 0) setAba('meus');
   };
 
@@ -163,6 +201,127 @@ function IndiqueSeuPesqueiro() {
       alert('Não foi possível adicionar essa foto. Tente novamente.');
     } finally {
       setEnviandoFotoGaleria(false);
+    }
+  };
+
+  const carregarPeixesCustom = (pesqueiroId) => {
+    PeixeCustomizadoService.listar(pesqueiroId)
+      .then((res) => setPeixesCustom(res.data))
+      .catch((err) => console.error('Erro ao carregar peixes personalizados', err));
+  };
+
+  const handleFotoPeixeCustomSelecionada = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const dataUrl = await redimensionarImagem(file, 400, 0.75);
+      setNovoPeixeFoto(dataUrl);
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível carregar essa imagem. Tente outra.');
+    }
+  };
+
+  const handleIniciarEdicaoPeixe = (peixe) => {
+    setEditandoPeixeId(peixe.id);
+    setNovoPeixeFoto(null);
+    if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = peixe.nome || '';
+    if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = peixe.descricao || '';
+    setNovoPeixeNomeLen((peixe.nome || '').length);
+    setNovoPeixeDescricaoLen((peixe.descricao || '').length);
+  };
+
+  const handleCancelarEdicaoPeixe = () => {
+    setEditandoPeixeId(null);
+    setNovoPeixeFoto(null);
+    if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = '';
+    if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = '';
+    setNovoPeixeNomeLen(0);
+    setNovoPeixeDescricaoLen(0);
+  };
+
+  const handleAdicionarPeixeCustom = async () => {
+    const nome = novoPeixeNomeRef.current?.value.trim() || '';
+    if (!nome) {
+      alert('Informe o nome do peixe.');
+      return;
+    }
+    const descricao = novoPeixeDescricaoRef.current?.value.trim() || null;
+    const foto = novoPeixeFoto ? soBase64(novoPeixeFoto) : null;
+
+    if (!editandoId) {
+      const jaExiste = peixesCustomPendentes.some(
+        (p) => p.nome.trim().toLowerCase() === nome.toLowerCase() && p.id !== editandoPeixeId
+      );
+      if (jaExiste) {
+        alert('Você já adicionou um peixe com esse nome.');
+        return;
+      }
+      if (peixesCustomPendentes.length >= 20 && !editandoPeixeId) {
+        alert('Você atingiu o limite de 20 peixes personalizados por pesqueiro.');
+        return;
+      }
+      if (editandoPeixeId) {
+        setPeixesCustomPendentes((prev) => prev.map((p) => (
+          p.id === editandoPeixeId ? { ...p, nome, descricao, foto: foto || p.foto } : p
+        )));
+      } else {
+        setPeixesCustomPendentes((prev) => [...prev, { id: `pendente-${Date.now()}-${Math.random()}`, nome, descricao, foto }]);
+      }
+      if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = '';
+      if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = '';
+      setNovoPeixeFoto(null);
+      setEditandoPeixeId(null);
+      setNovoPeixeNomeLen(0);
+      setNovoPeixeDescricaoLen(0);
+      return;
+    }
+
+    setEnviandoPeixeCustom(true);
+    try {
+      if (editandoPeixeId) {
+        await PeixeCustomizadoService.atualizar(editandoPeixeId, nome, foto, descricao);
+      } else {
+        await PeixeCustomizadoService.adicionar(editandoId, nome, foto, descricao);
+      }
+      if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = '';
+      if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = '';
+      setNovoPeixeFoto(null);
+      setEditandoPeixeId(null);
+      setNovoPeixeNomeLen(0);
+      setNovoPeixeDescricaoLen(0);
+      carregarPeixesCustom(editandoId);
+    } catch (err) {
+      console.error('Erro ao salvar peixe personalizado', err);
+      const msg = err.response?.data?.message || 'Não foi possível salvar esse peixe. Tente novamente.';
+      alert(msg);
+    } finally {
+      setEnviandoPeixeCustom(false);
+    }
+  };
+
+  const handleRemoverPeixeCustom = async (peixeId) => {
+    if (confirmandoRemocaoId !== peixeId) {
+      setConfirmandoRemocaoId(peixeId);
+      setTimeout(() => setConfirmandoRemocaoId((atual) => (atual === peixeId ? null : atual)), 3000);
+      return;
+    }
+    setConfirmandoRemocaoId(null);
+
+    if (!editandoId) {
+      setPeixesCustomPendentes((prev) => prev.filter((p) => p.id !== peixeId));
+      if (editandoPeixeId === peixeId) handleCancelarEdicaoPeixe();
+      return;
+    }
+
+    try {
+      await PeixeCustomizadoService.remover(peixeId);
+      setPeixesCustom((prev) => prev.filter((p) => p.id !== peixeId));
+      if (editandoPeixeId === peixeId) handleCancelarEdicaoPeixe();
+    } catch (err) {
+      console.error('Erro ao remover peixe personalizado', err);
+      alert('Não foi possível remover esse peixe.');
     }
   };
 
@@ -216,7 +375,15 @@ function IndiqueSeuPesqueiro() {
         await PesqueiroService.update(editandoId, payload);
         setMensagem('Solicitação atualizada! Está novamente em análise.');
       } else {
-        await PesqueiroService.criar(payload);
+        const resp = await PesqueiroService.criar(payload);
+        const novoId = resp.data.id;
+        for (const pendente of peixesCustomPendentes) {
+          try {
+            await PeixeCustomizadoService.adicionar(novoId, pendente.nome, pendente.foto, pendente.descricao);
+          } catch (erroPeixe) {
+            console.error('Erro ao salvar peixe personalizado pendente', erroPeixe);
+          }
+        }
         setMensagem('Solicitação enviada! Está em análise.');
       }
       setEditandoId(null);
@@ -224,6 +391,14 @@ function IndiqueSeuPesqueiro() {
       setFoto(null);
       setErros({});
       setGaleria([]);
+      setPeixesCustom([]);
+      setPeixesCustomPendentes([]);
+      if (novoPeixeNomeRef.current) novoPeixeNomeRef.current.value = '';
+      if (novoPeixeDescricaoRef.current) novoPeixeDescricaoRef.current.value = '';
+      setNovoPeixeFoto(null);
+      setEditandoPeixeId(null);
+      setNovoPeixeNomeLen(0);
+      setNovoPeixeDescricaoLen(0);
       setAba('meus');
       carregarMeusPesqueiros();
     } catch (err) {
@@ -238,6 +413,8 @@ function IndiqueSeuPesqueiro() {
   const peixesSelecionados = formData.catalogoPeixes
     ? formData.catalogoPeixes.split(',').map((p) => p.trim().toLowerCase()).filter(Boolean)
     : [];
+
+  const peixesCustomExibidos = editandoId ? peixesCustom : peixesCustomPendentes;
 
   if (!usuario) return null;
 
@@ -293,18 +470,14 @@ function IndiqueSeuPesqueiro() {
                       <span className="painel-row-name">{p.nome}</span>
                       <span className="painel-badge is-aprovado">Aprovado</span>
                     </div>
-                    <a
-                      href={`/painel-pesqueiro/${p.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/painel-pesqueiro/${p.id}`)}
                       className="perfil-btn perfil-btn-primary"
-                      style={{
-                        flex: 'none', padding: '0 20px', display: 'inline-flex',
-                        alignItems: 'center', justifyContent: 'center', textDecoration: 'none', lineHeight: 'normal',
-                      }}
+                      style={{ flex: 'none', padding: '0 20px' }}
                     >
                       Administrar
-                    </a>
+                    </button>
                   </div>
                 ))}
               </div>
@@ -394,7 +567,8 @@ function IndiqueSeuPesqueiro() {
 
                 <div className="perfil-field">
                   <label className="perfil-field-label">Nome do Pesqueiro *</label>
-                  <input className="perfil-input" name="nomePesqueiro" placeholder="Ex: Pesqueiro Águas Claras" value={formData.nomePesqueiro} onChange={handleInputChange} />
+                  <input className="perfil-input" name="nomePesqueiro" placeholder="Ex: Pesqueiro Águas Claras" value={formData.nomePesqueiro} onChange={handleInputChange} maxLength={255} />
+                  <ContadorCaracteres atual={formData.nomePesqueiro.length} max={255} />
                   {erros.nomePesqueiro && <small style={{ color: '#a12626' }}>{erros.nomePesqueiro}</small>}
                 </div>
 
@@ -412,7 +586,8 @@ function IndiqueSeuPesqueiro() {
 
                 <div className="perfil-field">
                   <label className="perfil-field-label">Descrição *</label>
-                  <textarea className="painel-textarea" name="descricaoPesqueiro" placeholder="Descreva seu pesqueiro, diferenciais, ambiente..." value={formData.descricaoPesqueiro} onChange={handleInputChange} rows={3} />
+                  <textarea className="painel-textarea" name="descricaoPesqueiro" placeholder="Descreva seu pesqueiro, diferenciais, ambiente..." value={formData.descricaoPesqueiro} onChange={handleInputChange} rows={3} maxLength={400} />
+                  <ContadorCaracteres atual={formData.descricaoPesqueiro.length} max={400} />
                   {erros.descricaoPesqueiro && <small style={{ color: '#a12626' }}>{erros.descricaoPesqueiro}</small>}
                 </div>
 
@@ -445,12 +620,14 @@ function IndiqueSeuPesqueiro() {
                 </div>
                 <div className="perfil-field">
                   <label className="perfil-field-label">Número *</label>
-                  <input className="perfil-input" name="numero" placeholder="123" value={formData.numero} onChange={handleInputChange} />
+                  <input className="perfil-input" name="numero" placeholder="123" value={formData.numero} onChange={handleInputChange} maxLength={10} />
+                  <ContadorCaracteres atual={formData.numero.length} max={10} />
                   {erros.numero && <small style={{ color: '#a12626' }}>{erros.numero}</small>}
                 </div>
                 <div className="perfil-field">
                   <label className="perfil-field-label">Complemento</label>
-                  <input className="perfil-input" name="complemento" placeholder="Referência, bairro..." value={formData.complemento} onChange={handleInputChange} />
+                  <input className="perfil-input" name="complemento" placeholder="Referência, bairro..." value={formData.complemento} onChange={handleInputChange} maxLength={50} />
+                  <ContadorCaracteres atual={formData.complemento.length} max={50} />
                 </div>
                 <div className="perfil-field">
                   <label className="perfil-field-label">Link do Google Maps</label>
@@ -462,11 +639,13 @@ function IndiqueSeuPesqueiro() {
 
                 <div className="perfil-field">
                   <label className="perfil-field-label" style={{ color: '#27ae60' }}>✓ O que é permitido</label>
-                  <textarea className="painel-textarea" name="regrasPermitido" placeholder={'Uma regra por linha'} value={formData.regrasPermitido} onChange={handleInputChange} rows={4} />
+                  <textarea className="painel-textarea" name="regrasPermitido" placeholder={'Uma regra por linha'} value={formData.regrasPermitido} onChange={handleInputChange} rows={4} maxLength={80} />
+                  <ContadorCaracteres atual={formData.regrasPermitido.length} max={80} />
                 </div>
                 <div className="perfil-field">
                   <label className="perfil-field-label" style={{ color: '#a12626' }}>✗ O que é proibido</label>
-                  <textarea className="painel-textarea" name="regrasProibido" placeholder={'Uma regra por linha'} value={formData.regrasProibido} onChange={handleInputChange} rows={4} />
+                  <textarea className="painel-textarea" name="regrasProibido" placeholder={'Uma regra por linha'} value={formData.regrasProibido} onChange={handleInputChange} rows={4} maxLength={80} />
+                  <ContadorCaracteres atual={formData.regrasProibido.length} max={80} />
                 </div>
 
                 <div className="painel-section-title">Catálogo de peixes</div>
@@ -477,6 +656,124 @@ function IndiqueSeuPesqueiro() {
                     </div>
                   ))}
                 </div>
+
+                <>
+                    <div className="painel-section-title">Fotos e peixes personalizados</div>
+                    <p style={{ color: 'var(--text-soft)', fontSize: '0.85rem', marginBottom: '16px' }}>
+                      Aqui embaixo é diferente do catálogo acima: cada peixe personalizado é um item à parte, com foto e descrição próprias.
+                      Se o nome que você digitar for igual ao de um peixe já marcado no catálogo acima (ex: "carpa"), a foto e a descrição substituem as padrão dele só no seu pesqueiro — e se você desmarcar aquele peixe lá em cima, a substituição é removida automaticamente.
+                      {!editandoId && ' Como o pesqueiro ainda não foi enviado, esses peixes só serão salvos de verdade quando você enviar o formulário.'}
+                    </p>
+
+                    {peixesCustomExibidos.length > 0 && (
+                      <div style={{ marginBottom: '20px' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '8px' }}>
+                          Já adicionados ({peixesCustomExibidos.length}/20)
+                        </div>
+                        <div className="painel-grid">
+                          {peixesCustomExibidos.map((peixe) => (
+                            <div key={peixe.id} style={{ position: 'relative', textAlign: 'center', minWidth: 0, overflow: 'hidden' }}>
+                              {peixe.foto ? (
+                                <img src={`data:image/jpeg;base64,${peixe.foto}`} alt={peixe.nome} style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: 'var(--radius)' }} />
+                              ) : (
+                                <div style={{ width: '100%', height: '90px', borderRadius: 'var(--radius)', background: 'var(--surface)', border: '1px solid var(--line)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>🐟</div>
+                              )}
+                              <span title={peixe.nome} style={{ display: 'block', fontSize: '0.8rem', marginTop: '4px', color: 'var(--text)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{peixe.nome}</span>
+                              {peixe.descricao && (
+                                <span title={peixe.descricao} style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.72rem', color: 'var(--text-soft)', overflowWrap: 'anywhere' }}>{peixe.descricao}</span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleIniciarEdicaoPeixe(peixe)}
+                                title="Editar"
+                                style={{
+                                  position: 'absolute', top: '4px', right: '30px', background: 'rgba(0,0,0,0.6)', color: '#fff',
+                                  border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', lineHeight: 1, fontSize: '0.75rem',
+                                }}
+                              >
+                                ✎
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoverPeixeCustom(peixe.id)}
+                                title={confirmandoRemocaoId === peixe.id ? 'Clique de novo para confirmar' : 'Remover'}
+                                style={{
+                                  position: 'absolute', top: '4px', right: '4px',
+                                  background: confirmandoRemocaoId === peixe.id ? '#a12626' : 'rgba(0,0,0,0.6)', color: '#fff',
+                                  border: 'none', borderRadius: confirmandoRemocaoId === peixe.id ? '999px' : '50%',
+                                  width: confirmandoRemocaoId === peixe.id ? 'auto' : '22px', height: '22px',
+                                  padding: confirmandoRemocaoId === peixe.id ? '0 8px' : 0,
+                                  fontSize: confirmandoRemocaoId === peixe.id ? '0.65rem' : '1rem',
+                                  cursor: 'pointer', lineHeight: 1, whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {confirmandoRemocaoId === peixe.id ? 'Confirmar?' : '×'}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{ background: editandoPeixeId ? 'rgba(54, 133, 181, 0.08)' : 'var(--surface)', border: editandoPeixeId ? '1.5px solid var(--blue)' : '1px solid var(--line)', borderRadius: 'var(--radius)', padding: '16px' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '10px' }}>
+                        {editandoPeixeId ? 'Editando peixe' : 'Adicionar peixe personalizado'}
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '10px' }}>
+                        <input
+                          className="perfil-input"
+                          type="text"
+                          placeholder="Nome do peixe"
+                          ref={novoPeixeNomeRef}
+                          defaultValue=""
+                          autoComplete="off"
+                          onChange={(e) => setNovoPeixeNomeLen(e.target.value.length)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdicionarPeixeCustom(); } }}
+                          style={{ flex: '1 1 180px' }}
+                          maxLength={60}
+                        />
+                        <label className="perfil-btn perfil-btn-ghost" style={{ flex: 'none', padding: '0 16px', display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
+                          {novoPeixeFoto ? 'Foto escolhida' : editandoPeixeId ? 'Trocar foto' : 'Escolher foto'}
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFotoPeixeCustomSelecionada} />
+                        </label>
+                      </div>
+                      <ContadorCaracteres atual={novoPeixeNomeLen} max={60} />
+                      {editandoPeixeId && !novoPeixeFoto && (
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-soft)', marginTop: '-6px', marginBottom: '10px' }}>
+                          Deixe em branco pra manter a foto atual.
+                        </p>
+                      )}
+                      <input
+                        className="perfil-input"
+                        type="text"
+                        placeholder="Descrição do peixe (opcional)"
+                        ref={novoPeixeDescricaoRef}
+                        defaultValue=""
+                        autoComplete="off"
+                        onChange={(e) => setNovoPeixeDescricaoLen(e.target.value.length)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdicionarPeixeCustom(); } }}
+                        style={{ width: '100%', marginBottom: '2px' }}
+                        maxLength={200}
+                      />
+                      <ContadorCaracteres atual={novoPeixeDescricaoLen} max={200} />
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                          type="button"
+                          className="perfil-btn perfil-btn-primary"
+                          style={{ padding: '0 20px' }}
+                          onClick={handleAdicionarPeixeCustom}
+                          disabled={enviandoPeixeCustom}
+                        >
+                          {enviandoPeixeCustom ? 'Salvando...' : editandoPeixeId ? 'Salvar alterações' : 'Adicionar peixe'}
+                        </button>
+                        {editandoPeixeId && (
+                          <button type="button" className="perfil-btn perfil-btn-ghost" style={{ padding: '0 20px' }} onClick={handleCancelarEdicaoPeixe}>
+                            Cancelar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                </>
 
                 <div className="perfil-actions">
                   <button type="button" onClick={handleSubmit} disabled={salvando} className="perfil-btn perfil-btn-primary">

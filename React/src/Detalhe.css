@@ -234,16 +234,24 @@
   flex-shrink: 0;
 }
 
+.detalhe-fish-info {
+  min-width: 0;
+}
+
 .detalhe-fish-info h4 {
   color: var(--navy);
   font-weight: 700;
   margin-bottom: 8px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .detalhe-fish-info p {
   color: var(--text-soft);
   margin: 0;
   line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .detalhe-fish-nav {

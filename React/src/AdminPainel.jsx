@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
+import Paginacao from './Componentes/Paginacao';
 import PesqueiroService from './services/PesqueiroService';
 import PesqueiroFotoService from './services/PesqueiroFotoService';
 import ComentarioService from './services/ComentarioService';
@@ -25,10 +26,17 @@ function AdminPainel() {
   const [pesqueiros, setPesqueiros] = useState([]);
   const [denuncias, setDenuncias] = useState([]);
   const [banidos, setBanidos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [buscaUsuario, setBuscaUsuario] = useState('');
+  const [filtroNivel, setFiltroNivel] = useState('todos');
+  const [confirmandoNivelId, setConfirmandoNivelId] = useState(null);
+  const [confirmandoBanimentoId, setConfirmandoBanimentoId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processandoId, setProcessandoId] = useState(null);
   const [expandido, setExpandido] = useState(null);
   const [galerias, setGalerias] = useState({});
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const ITENS_POR_PAGINA = 8;
 
   useEffect(() => {
     const usuario = UsuarioService.getCurrentUser();
@@ -52,6 +60,7 @@ function AdminPainel() {
       setPesqueiros(resPesqueiros.data);
       setDenuncias(resDenuncias.data);
       setBanidos(resUsuarios.data.filter((u) => u.statusUsuario === false));
+      setUsuarios(resUsuarios.data);
     }).catch((err) => console.error('Erro ao carregar dados do admin', err))
       .finally(() => setLoading(false));
   };
@@ -150,14 +159,56 @@ function AdminPainel() {
     }
   };
 
+  const handleAlterarNivelAcesso = async (usuario) => {
+    const novoNivel = usuario.nivelAcesso?.toUpperCase() === 'ADMIN' ? 'USUARIO' : 'ADMIN';
+    if (confirmandoNivelId !== usuario.id) {
+      setConfirmandoNivelId(usuario.id);
+      setTimeout(() => setConfirmandoNivelId((atual) => (atual === usuario.id ? null : atual)), 3000);
+      return;
+    }
+    setConfirmandoNivelId(null);
+    setProcessandoId(usuario.id);
+    try {
+      await UsuarioService.alterarNivelAcesso(usuario.id, novoNivel);
+      setUsuarios((prev) => prev.map((u) => (u.id === usuario.id ? { ...u, nivelAcesso: novoNivel } : u)));
+    } catch (err) {
+      console.error(err);
+      const msg = err.response?.data?.message || 'Erro ao alterar nível de acesso. Tente novamente.';
+      alert(msg);
+    } finally {
+      setProcessandoId(null);
+    }
+  };
+
   const handleDesbanirUsuario = async (usuarioId) => {
     setProcessandoId(usuarioId);
     try {
       await UsuarioService.desbanir(usuarioId);
       setBanidos((prev) => prev.filter((u) => u.id !== usuarioId));
+      setUsuarios((prev) => prev.map((u) => (u.id === usuarioId ? { ...u, statusUsuario: true } : u)));
     } catch (err) {
       console.error(err);
       alert('Erro ao desbanir usuário. Tente novamente.');
+    } finally {
+      setProcessandoId(null);
+    }
+  };
+
+  const handleBanirUsuarioTab = async (usuario) => {
+    if (confirmandoBanimentoId !== usuario.id) {
+      setConfirmandoBanimentoId(usuario.id);
+      setTimeout(() => setConfirmandoBanimentoId((atual) => (atual === usuario.id ? null : atual)), 3000);
+      return;
+    }
+    setConfirmandoBanimentoId(null);
+    setProcessandoId(usuario.id);
+    try {
+      await UsuarioService.banir(usuario.id);
+      setUsuarios((prev) => prev.map((u) => (u.id === usuario.id ? { ...u, statusUsuario: false } : u)));
+      setBanidos((prev) => (prev.some((u) => u.id === usuario.id) ? prev : [...prev, { ...usuario, statusUsuario: false }]));
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao banir usuário. Tente novamente.');
     } finally {
       setProcessandoId(null);
     }
@@ -168,7 +219,30 @@ function AdminPainel() {
     { chave: 'pesqueiros', label: 'Pesqueiros existentes', total: pesqueiros.length },
     { chave: 'denuncias', label: 'Comentários denunciados', total: denuncias.length },
     { chave: 'banidos', label: 'Usuários banidos', total: banidos.length },
+    { chave: 'usuarios', label: 'Usuários', total: usuarios.length },
   ];
+
+  const usuariosFiltrados = usuarios.filter((u) => {
+    const combinaBusca = !buscaUsuario.trim()
+      || u.nome?.toLowerCase().includes(buscaUsuario.trim().toLowerCase())
+      || u.email?.toLowerCase().includes(buscaUsuario.trim().toLowerCase());
+    const nivel = u.nivelAcesso?.toUpperCase();
+    const combinaNivel = filtroNivel === 'todos' || nivel === filtroNivel;
+    return combinaBusca && combinaNivel;
+  });
+
+  const paginar = (lista) => {
+    const totalPaginas = Math.max(1, Math.ceil(lista.length / ITENS_POR_PAGINA));
+    const paginaSegura = Math.min(paginaAtual, totalPaginas);
+    const itens = lista.slice((paginaSegura - 1) * ITENS_POR_PAGINA, paginaSegura * ITENS_POR_PAGINA);
+    return { itens, totalPaginas };
+  };
+
+  const { itens: pendentesPagina, totalPaginas: totalPaginasPendentes } = paginar(pendentes);
+  const { itens: pesqueirosPagina, totalPaginas: totalPaginasPesqueiros } = paginar(pesqueiros);
+  const { itens: denunciasPagina, totalPaginas: totalPaginasDenuncias } = paginar(denuncias);
+  const { itens: banidosPagina, totalPaginas: totalPaginasBanidos } = paginar(banidos);
+  const { itens: usuariosPagina, totalPaginas: totalPaginasUsuarios } = paginar(usuariosFiltrados);
 
   return (
     <div className="perfil-page">
@@ -193,7 +267,7 @@ function AdminPainel() {
               key={item.chave}
               type="button"
               className={`painel-sidebar-btn ${aba === item.chave ? 'is-active' : ''}`}
-              onClick={() => { setAba(item.chave); setExpandido(null); }}
+              onClick={() => { setAba(item.chave); setExpandido(null); setPaginaAtual(1); }}
             >
               <span>{item.label}</span>
               <span className="painel-sidebar-count">{item.total}</span>
@@ -207,9 +281,10 @@ function AdminPainel() {
           ) : (
             <>
               {aba === 'solicitacoes' && (
-                pendentes.length === 0 ? (
+                <>
+                {pendentes.length === 0 ? (
                   <div className="perfil-card-inner text-center"><p className="mb-0">Nenhuma solicitação pendente no momento.</p></div>
-                ) : pendentes.map((p) => {
+                ) : pendentesPagina.map((p) => {
                   const { regrasPermitido, regrasProibido } = parseInformacao(p.informacao);
                   const { descricaoTexto, informacoesRapidas, catalogoPeixes } = parseDescricao(p.descricao);
                   const chave = `sol-${p.id}`;
@@ -219,7 +294,7 @@ function AdminPainel() {
                       <div className="painel-expand-head" onClick={() => toggleExpandir(chave, p.id)}>
                         <div className="painel-expand-head-info">
                           {p.foto && <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} className="painel-row-photo" />}
-                          <div>
+                          <div style={{ minWidth: 0 }}>
                             <div className="painel-expand-title">{p.nome}</div>
                             <div className="painel-expand-sub">Enviado em {p.dataCadastro}</div>
                           </div>
@@ -266,13 +341,18 @@ function AdminPainel() {
                       )}
                     </div>
                   );
-                })
+                })}
+                {pendentes.length > 0 && (
+                  <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginasPendentes} onMudarPagina={setPaginaAtual} />
+                )}
+                </>
               )}
 
               {aba === 'pesqueiros' && (
-                pesqueiros.length === 0 ? (
+                <>
+                {pesqueiros.length === 0 ? (
                   <div className="perfil-card-inner text-center"><p className="mb-0">Nenhum pesqueiro aprovado ainda.</p></div>
-                ) : pesqueiros.map((p) => {
+                ) : pesqueirosPagina.map((p) => {
                   const { regrasPermitido, regrasProibido } = parseInformacao(p.informacao);
                   const { descricaoTexto, informacoesRapidas, catalogoPeixes } = parseDescricao(p.descricao);
                   const chave = `pes-${p.id}`;
@@ -282,7 +362,7 @@ function AdminPainel() {
                       <div className="painel-expand-head" onClick={() => toggleExpandir(chave, p.id)}>
                         <div className="painel-expand-head-info">
                           {p.foto && <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} className="painel-row-photo" />}
-                          <div>
+                          <div style={{ minWidth: 0 }}>
                             <div className="painel-expand-title">{p.nome}</div>
                             <div className="painel-expand-sub">{p.telefone || 'Sem telefone'}</div>
                           </div>
@@ -331,13 +411,18 @@ function AdminPainel() {
                       )}
                     </div>
                   );
-                })
+                })}
+                {pesqueiros.length > 0 && (
+                  <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginasPesqueiros} onMudarPagina={setPaginaAtual} />
+                )}
+                </>
               )}
 
               {aba === 'denuncias' && (
-                denuncias.length === 0 ? (
+                <>
+                {denuncias.length === 0 ? (
                   <div className="perfil-card-inner text-center"><p className="mb-0">Nenhum comentário denunciado no momento.</p></div>
-                ) : denuncias.map((d) => {
+                ) : denunciasPagina.map((d) => {
                   const chave = `den-${d.comentarioId}`;
                   const aberto = expandido === chave;
                   return (
@@ -381,13 +466,18 @@ function AdminPainel() {
                       )}
                     </div>
                   );
-                })
+                })}
+                {denuncias.length > 0 && (
+                  <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginasDenuncias} onMudarPagina={setPaginaAtual} />
+                )}
+                </>
               )}
 
               {aba === 'banidos' && (
-                banidos.length === 0 ? (
+                <>
+                {banidos.length === 0 ? (
                   <div className="perfil-card-inner text-center"><p className="mb-0">Nenhum usuário banido no momento.</p></div>
-                ) : banidos.map((u) => {
+                ) : banidosPagina.map((u) => {
                   const chave = `ban-${u.id}`;
                   const aberto = expandido === chave;
                   return (
@@ -413,7 +503,121 @@ function AdminPainel() {
                       )}
                     </div>
                   );
-                })
+                })}
+                {banidos.length > 0 && (
+                  <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginasBanidos} onMudarPagina={setPaginaAtual} />
+                )}
+                </>
+              )}
+
+              {aba === 'usuarios' && (
+                <>
+                  <div className="perfil-card-inner" style={{ marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                      <input
+                        type="text"
+                        className="perfil-input"
+                        placeholder="Buscar por nome ou e-mail..."
+                        value={buscaUsuario}
+                        onChange={(e) => { setBuscaUsuario(e.target.value); setPaginaAtual(1); }}
+                        style={{ flex: '1 1 220px' }}
+                      />
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {[
+                          { chave: 'todos', label: 'Todos' },
+                          { chave: 'ADMIN', label: 'Admins' },
+                          { chave: 'USUARIO', label: 'Usuários' },
+                        ].map((opcao) => (
+                          <button
+                            key={opcao.chave}
+                            type="button"
+                            className={`painel-chip ${filtroNivel === opcao.chave ? 'is-active' : ''}`}
+                            onClick={() => { setFiltroNivel(opcao.chave); setPaginaAtual(1); }}
+                          >
+                            {opcao.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {usuariosFiltrados.length === 0 ? (
+                    <div className="perfil-card-inner text-center"><p className="mb-0">Nenhum usuário encontrado.</p></div>
+                  ) : usuariosPagina.map((u) => {
+                    const ehAdmin = u.nivelAcesso?.toUpperCase() === 'ADMIN';
+                    const souEu = u.id === adminLogado?.id;
+                    const banido = u.statusUsuario === false;
+                    const chave = `usr-${u.id}`;
+                    const aberto = expandido === chave;
+                    return (
+                      <div key={u.id} className="painel-expand-card">
+                        <div className="painel-expand-head" onClick={() => toggleExpandir(chave)}>
+                          <div className="painel-expand-head-info">
+                            {u.foto && <img src={`data:image/jpeg;base64,${u.foto}`} alt={u.nome} className="painel-row-photo" />}
+                            <div style={{ minWidth: 0 }}>
+                              <div className="painel-expand-title">{u.nome}</div>
+                              <div className="painel-expand-sub">{u.email}</div>
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                            <span className="painel-badge" style={{ background: ehAdmin ? 'rgba(54, 133, 181, 0.16)' : 'var(--line)', color: ehAdmin ? 'var(--navy)' : 'var(--text-soft)' }}>
+                              {ehAdmin ? 'Admin' : 'Usuário'}
+                            </span>
+                            {banido && <span className="painel-badge is-negado">Banido</span>}
+                            <span className={`painel-expand-arrow ${aberto ? 'is-open' : ''}`}><IconeSeta /></span>
+                          </div>
+                        </div>
+                        {aberto && (
+                          <div className="painel-expand-body">
+                            <div className="perfil-field"><span className="perfil-field-label">E-mail</span><span className="perfil-field-value">{u.email}</span></div>
+                            <div className="perfil-field"><span className="perfil-field-label">Nível de acesso</span><span className="perfil-field-value">{ehAdmin ? 'Administrador' : 'Usuário comum'}</span></div>
+                            <div className="perfil-field"><span className="perfil-field-label">Status</span><span className="perfil-field-value">{banido ? 'Banido' : 'Ativo'}</span></div>
+                            <div className="perfil-field"><span className="perfil-field-label">Cadastrado em</span><span className="perfil-field-value">{u.dataCadastro || '—'}</span></div>
+
+                            {souEu ? (
+                              <p style={{ color: 'var(--text-soft)', fontSize: '0.85rem' }}>Essa é a sua própria conta — você não pode alterar seu nível de acesso nem se banir.</p>
+                            ) : (
+                              <div className="perfil-actions">
+                                <button
+                                  type="button"
+                                  className={`perfil-btn ${ehAdmin ? 'perfil-btn-danger' : 'perfil-btn-primary'}`}
+                                  style={{ background: confirmandoNivelId === u.id ? '#a12626' : undefined }}
+                                  disabled={processandoId === u.id}
+                                  onClick={() => handleAlterarNivelAcesso(u)}
+                                >
+                                  {confirmandoNivelId === u.id ? 'Confirmar?' : ehAdmin ? 'Remover admin' : 'Promover a admin'}
+                                </button>
+                              </div>
+                            )}
+
+                            {!souEu && (
+                              <div className="perfil-danger-zone">
+                                <p>{banido ? 'Desbanir permite que o usuário volte a fazer login.' : 'Banir impede o usuário de fazer login novamente.'}</p>
+                                {banido ? (
+                                  <button className="perfil-btn perfil-btn-primary" style={{ flex: '0 0 auto', padding: '0 28px' }} disabled={processandoId === u.id} onClick={() => handleDesbanirUsuario(u.id)}>
+                                    Desbanir usuário
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="perfil-btn perfil-btn-danger"
+                                    style={{ flex: '0 0 auto', padding: '0 28px', background: confirmandoBanimentoId === u.id ? '#7a1919' : undefined }}
+                                    disabled={processandoId === u.id}
+                                    onClick={() => handleBanirUsuarioTab(u)}
+                                  >
+                                    {confirmandoBanimentoId === u.id ? 'Confirmar banimento?' : 'Banir usuário'}
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {usuariosFiltrados.length > 0 && (
+                    <Paginacao paginaAtual={paginaAtual} totalPaginas={totalPaginasUsuarios} onMudarPagina={setPaginaAtual} />
+                  )}
+                </>
               )}
             </>
           )}

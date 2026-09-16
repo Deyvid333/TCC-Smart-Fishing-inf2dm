@@ -9,6 +9,7 @@ import com.itb.inf2dm.smartfishingd.model.entity.Pesqueiro;
 import com.itb.inf2dm.smartfishingd.model.entity.UsuarioPesqueiro;
 import com.itb.inf2dm.smartfishingd.repository.CatalogoRepository;
 import com.itb.inf2dm.smartfishingd.repository.ComentarioRepository;
+import com.itb.inf2dm.smartfishingd.repository.PeixeCustomizadoRepository;
 import com.itb.inf2dm.smartfishingd.repository.PesqueiroFotoRepository;
 import com.itb.inf2dm.smartfishingd.repository.PesqueiroRepository;
 import com.itb.inf2dm.smartfishingd.repository.UsuarioPesqueiroRepository;
@@ -32,6 +33,9 @@ public class PesqueiroService {
 
     @Autowired
     private PesqueiroFotoRepository pesqueiroFotoRepository;
+
+    @Autowired
+    private PeixeCustomizadoRepository peixeCustomizadoRepository;
 
     public List<Pesqueiro> findAll() {return pesqueiroRepository.findByAprovadoTrue();}
 
@@ -124,6 +128,7 @@ public class PesqueiroService {
             throw new SecurityException("Você só pode apagar o seu próprio pesqueiro");
         }
         pesqueiroFotoRepository.deleteByPesqueiroId(id);
+        peixeCustomizadoRepository.deleteByPesqueiroId(id);
         usuarioPesqueiroRepository.deleteByPesqueiroId(id);
         comentarioRepository.deleteByPesqueiroId(id);
         catalogoRepository.deleteByPesqueiroId(String.valueOf(id));

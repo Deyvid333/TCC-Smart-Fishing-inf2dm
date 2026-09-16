@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Segredos - nunca commitar (senha do banco, chave JWT, senha de e-mail).
+# Veja application.properties.example pro modelo sem valores reais.
+**/application.properties
+.env
+.env.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -12,6 +12,7 @@ import AuthLayout, {
   IconeCheck,
 } from './Componentes/Auth/AuthLayout';
 import { validarEmail, validarSenha, SENHA_DICA, SENHA_MAX, EMAIL_DICA } from './Componentes/Auth/validacao';
+import ContadorCaracteres from './Componentes/ContadorCaracteres';
 
 // ========== COMPONENTE DE CADASTRO ==========
 function Cadastro() {
@@ -120,9 +121,11 @@ function Cadastro() {
               autoComplete="name"
               value={formData.nome}
               onChange={handleInputChange}
+              maxLength={255}
               required
             />
           </div>
+          <ContadorCaracteres atual={formData.nome.length} max={255} />
         </div>
 
         {/* ===== E-mail ===== */}
@@ -138,6 +141,7 @@ function Cadastro() {
               autoComplete="email"
               value={formData.email}
               onChange={handleInputChange}
+              maxLength={255}
               required
             />
           </div>

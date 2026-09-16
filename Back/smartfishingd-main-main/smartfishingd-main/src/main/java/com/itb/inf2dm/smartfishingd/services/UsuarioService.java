@@ -85,6 +85,18 @@ private BCryptPasswordEncoder passwordEncoder;
         usuarioExistente.setStatusUsuario(true);
         return usuarioRepository.save(usuarioExistente);
     }
+
+    public Usuario alterarNivelAcesso(Long id, String nivelAcesso, Long usuarioIdAutenticado) {
+        if (!"ADMIN".equals(nivelAcesso) && !"USUARIO".equals(nivelAcesso)) {
+            throw new IllegalArgumentException("Nível de acesso inválido. Use ADMIN ou USUARIO.");
+        }
+        if (id.equals(usuarioIdAutenticado) && "USUARIO".equals(nivelAcesso)) {
+            throw new IllegalArgumentException("Você não pode remover seu próprio acesso de administrador.");
+        }
+        Usuario usuarioExistente = findById(id);
+        usuarioExistente.setNivelAcesso(nivelAcesso);
+        return usuarioRepository.save(usuarioExistente);
+    }
     public void esqueciSenha(String email) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
         if (usuarioOpt.isEmpty()) {

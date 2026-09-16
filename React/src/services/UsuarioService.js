@@ -34,13 +34,14 @@ const remove = (id) => http.mainInstance.delete(`${API_URL}/${id}`);
 
 const banir = (id) => http.mainInstance.put(`${API_URL}/${id}/banir`);
 const desbanir = (id) => http.mainInstance.put(`${API_URL}/${id}/desbanir`);
+const alterarNivelAcesso = (id, nivelAcesso) => http.mainInstance.put(`${API_URL}/${id}/nivel-acesso`, { nivelAcesso });
 
 const esqueciSenha = (email) => http.mainInstance.post(`${API_URL}/esqueci-senha`, { email });
 const redefinirSenha = (token, novaSenha) => http.mainInstance.post(`${API_URL}/redefinir-senha`, { token, novaSenha });
 
 const UsuarioService = {
   findAll, findById, cadastrar, login, logout, getCurrentUser, update, remove, banir, desbanir,
-  esqueciSenha, redefinirSenha,
+  alterarNivelAcesso, esqueciSenha, redefinirSenha,
 };
 
 export default UsuarioService;

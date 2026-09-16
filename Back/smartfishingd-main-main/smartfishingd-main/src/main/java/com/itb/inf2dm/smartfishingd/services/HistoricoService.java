@@ -45,4 +45,12 @@ public class HistoricoService {
                 .map(Optional::get)
                 .toList();
     }
+
+    public void limparHistorico(Long usuarioId) {
+        historicoRepository.deleteByUsuarioId(usuarioId);
+    }
+
+    public void removerPesqueiroDoHistorico(Long usuarioId, Long pesqueiroId) {
+        historicoRepository.deleteByUsuarioIdAndPesqueiroId(usuarioId, pesqueiroId);
+    }
 }
