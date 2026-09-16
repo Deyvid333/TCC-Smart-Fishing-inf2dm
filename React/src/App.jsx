@@ -13,6 +13,7 @@ import AdminPainel from './AdminPainel';
 import IndiqueSeuPesqueiro from './IndiqueSeuPesqueiro';
 import PainelPesqueiro from './PainelPesqueiro';
 import PesqueiroDinamico from './PesqueiroDinamico';
+import RotaProtegida from './Componentes/RotaProtegida';
 // Importa estilos globais da aplicação
 import './App.css';
 
@@ -25,32 +26,26 @@ function App() {
     <Router>
       {/* Routes: Container para todas as rotas */}
       <Routes>
-        {/* ========== ROTAS PÚBLICAS ========== */}
-        {/* Rota inicial - página de entrada */}
+        {/* ========== ROTAS PÚBLICAS ==========
+            So essas nao exigem login: entrar, criar conta e recuperar senha.
+            Todo o resto do site exige estar logado (regra de negocio). */}
         <Route path="/" element={<Login />} />
-        <Route path="/inicial" element={<Inicial />} />
-        
-        {/* Rotas de autenticação */}
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/esqueci-senha" element={<EsqueciSenha />} />
         <Route path="/redefinir-senha" element={<RedefinirSenha />} />
-        
-        {/* ========== ROTAS DO USUÁRIO ========== */}
-        {/* Página principal com lista de pesqueiros */}
-        <Route path="/pesqueiros" element={<Home />} />
-        
-        {/* ========== ROTAS PRIVADAS ========== */}
-        {/* Página do perfil do usuário */}
-        <Route path="/perfil" element={<Perfil />} />
-        
-        {/* Painel de moderação, restrito a contas com nivelAcesso ADMIN */}
-        <Route path="/admin" element={<AdminPainel />} />
+
+        {/* ========== ROTAS PRIVADAS (exigem login) ========== */}
+        <Route path="/inicial" element={<RotaProtegida><Inicial /></RotaProtegida>} />
+        <Route path="/pesqueiros" element={<RotaProtegida><Home /></RotaProtegida>} />
+        <Route path="/perfil" element={<RotaProtegida><Perfil /></RotaProtegida>} />
+        {/* Painel de moderação, restrito a contas com nivelAcesso ADMIN (checagem extra dentro do componente) */}
+        <Route path="/admin" element={<RotaProtegida><AdminPainel /></RotaProtegida>} />
         {/* Tela onde qualquer usuário logado indica/edita um pesqueiro pendente de análise */}
-        <Route path="/indique-pesqueiro" element={<IndiqueSeuPesqueiro />} />
+        <Route path="/indique-pesqueiro" element={<RotaProtegida><IndiqueSeuPesqueiro /></RotaProtegida>} />
         {/* Painel de um pesqueiro específico, só acessível pelo dono */}
-        <Route path="/painel-pesqueiro/:id" element={<PainelPesqueiro />} />
-        <Route path="/pesqueiro-dinamico" element={<PesqueiroDinamico />} />
+        <Route path="/painel-pesqueiro/:id" element={<RotaProtegida><PainelPesqueiro /></RotaProtegida>} />
+        <Route path="/pesqueiro-dinamico" element={<RotaProtegida><PesqueiroDinamico /></RotaProtegida>} />
       </Routes>
     </Router>
   );
@@ -58,5 +53,3 @@ function App() {
 
 // ========== EXPORTAÇÃO DO COMPONENTE ==========
 export default App;
-
-
