@@ -32,6 +32,7 @@ function IndiqueSeuPesqueiro() {
   const [erros, setErros] = useState({});
   const [galeria, setGaleria] = useState([]);
   const [enviandoFotoGaleria, setEnviandoFotoGaleria] = useState(false);
+  const [aba, setAba] = useState(null);
 
   useEffect(() => {
     const usuarioAtual = UsuarioService.getCurrentUser();
@@ -47,7 +48,10 @@ function IndiqueSeuPesqueiro() {
   const carregarMeusPesqueiros = () => {
     setLoading(true);
     PesqueiroService.meus()
-      .then((res) => setMeusPesqueiros(res.data))
+      .then((res) => {
+        setMeusPesqueiros(res.data);
+        setAba((abaAtual) => abaAtual ?? (res.data.length > 0 ? 'meus' : 'nova'));
+      })
       .catch((err) => console.error('Erro ao carregar seus pesqueiros', err))
       .finally(() => setLoading(false));
   };
@@ -122,7 +126,8 @@ function IndiqueSeuPesqueiro() {
     setMensagem('');
     setErros({});
     carregarGaleria(pesqueiro.id);
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    setAba('nova');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const cancelarEdicao = () => {
@@ -131,6 +136,7 @@ function IndiqueSeuPesqueiro() {
     setFoto(null);
     setErros({});
     setGaleria([]);
+    if (meusPesqueiros.length > 0) setAba('meus');
   };
 
   const carregarGaleria = (pesqueiroId) => {
@@ -218,6 +224,7 @@ function IndiqueSeuPesqueiro() {
       setFoto(null);
       setErros({});
       setGaleria([]);
+      setAba('meus');
       carregarMeusPesqueiros();
     } catch (err) {
       console.error(err);
@@ -251,11 +258,32 @@ function IndiqueSeuPesqueiro() {
       </div>
 
       <div className="perfil-card">
+        {!loading && meusPesqueiros.length > 0 && (
+          <div className="painel-tabs">
+            <button
+              type="button"
+              className={`painel-tab-btn ${aba === 'meus' ? 'is-active' : ''}`}
+              onClick={() => setAba('meus')}
+            >
+              Meus pesqueiros
+            </button>
+            <button
+              type="button"
+              className={`painel-tab-btn ${aba === 'nova' ? 'is-active' : ''}`}
+              onClick={() => { if (!editandoId) setAba('nova'); }}
+              disabled={atingiuLimite && !editandoId}
+              title={atingiuLimite && !editandoId ? 'Você atingiu o limite de solicitações pendentes' : undefined}
+            >
+              Indicar novo pesqueiro
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <p className="text-center">Carregando...</p>
         ) : (
           <>
-            {aprovados.length > 0 && (
+            {aba === 'meus' && aprovados.length > 0 && (
               <div className="perfil-card-inner" style={{ marginBottom: '20px' }}>
                 <div className="painel-section-title">Seus pesqueiros aprovados</div>
                 {aprovados.map((p) => (
@@ -282,7 +310,7 @@ function IndiqueSeuPesqueiro() {
               </div>
             )}
 
-            {naoAprovados.length > 0 && (
+            {aba === 'meus' && naoAprovados.length > 0 && (
               <div className="perfil-card-inner" style={{ marginBottom: '20px' }}>
                 <div className="painel-section-title">Suas solicitações</div>
                 {naoAprovados.map((p) => {
@@ -303,13 +331,13 @@ function IndiqueSeuPesqueiro() {
               </div>
             )}
 
-            {mensagem && <div className="painel-alert is-success">{mensagem}</div>}
+            {aba === 'nova' && mensagem && <div className="painel-alert is-success">{mensagem}</div>}
 
-            {atingiuLimite ? (
+            {aba === 'nova' && (atingiuLimite ? (
               <div className="perfil-card-inner text-center">
                 <h5 style={{ color: 'var(--navy)' }}>Você atingiu o limite de solicitações pendentes</h5>
                 <p className="perfil-field-value" style={{ marginTop: '8px' }}>
-                  Edite uma das solicitações acima ou aguarde a análise antes de enviar outra.
+                  Vá em "Meus pesqueiros" pra editar uma solicitação existente, ou aguarde a análise antes de enviar outra.
                 </p>
               </div>
             ) : (
@@ -461,7 +489,7 @@ function IndiqueSeuPesqueiro() {
                   )}
                 </div>
               </div>
-            )}
+            ))}
           </>
         )}
       </div>

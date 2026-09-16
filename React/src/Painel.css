@@ -4,6 +4,40 @@
    (Perfil.css), só adiciona os elementos que faltam.
    ========================================================================== */
 
+.painel-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.painel-tab-btn {
+  padding: 12px 6px;
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--text-soft);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.painel-tab-btn:hover:not(:disabled) {
+  color: var(--navy);
+}
+
+.painel-tab-btn.is-active {
+  color: var(--navy);
+  border-bottom-color: var(--blue);
+}
+
+.painel-tab-btn:disabled {
+  color: var(--line);
+  cursor: not-allowed;
+}
+
 .painel-textarea {
   width: 100%;
   min-height: 96px;
