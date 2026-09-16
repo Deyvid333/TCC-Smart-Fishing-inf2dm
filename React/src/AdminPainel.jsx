@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Componentes/Navbar/Navbar';
 import PesqueiroService from './services/PesqueiroService';
+import PesqueiroFotoService from './services/PesqueiroFotoService';
 import ComentarioService from './services/ComentarioService';
 import DenunciaService from './services/DenunciaService';
 import UsuarioService from './services/UsuarioService';
@@ -27,6 +28,7 @@ function AdminPainel() {
   const [loading, setLoading] = useState(true);
   const [processandoId, setProcessandoId] = useState(null);
   const [expandido, setExpandido] = useState(null);
+  const [galerias, setGalerias] = useState({});
 
   useEffect(() => {
     const usuario = UsuarioService.getCurrentUser();
@@ -54,7 +56,15 @@ function AdminPainel() {
       .finally(() => setLoading(false));
   };
 
-  const toggleExpandir = (chave) => setExpandido(expandido === chave ? null : chave);
+  const toggleExpandir = (chave, pesqueiroId) => {
+    const abrindo = expandido !== chave;
+    setExpandido(abrindo ? chave : null);
+    if (abrindo && pesqueiroId && !galerias[pesqueiroId]) {
+      PesqueiroFotoService.listar(pesqueiroId)
+        .then((res) => setGalerias((prev) => ({ ...prev, [pesqueiroId]: res.data })))
+        .catch((err) => console.error('Erro ao carregar fotos do pesqueiro', err));
+    }
+  };
 
   const handleAprovar = async (id) => {
     setProcessandoId(id);
@@ -206,7 +216,7 @@ function AdminPainel() {
                   const aberto = expandido === chave;
                   return (
                     <div key={p.id} className="painel-expand-card">
-                      <div className="painel-expand-head" onClick={() => toggleExpandir(chave)}>
+                      <div className="painel-expand-head" onClick={() => toggleExpandir(chave, p.id)}>
                         <div className="painel-expand-head-info">
                           {p.foto && <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} className="painel-row-photo" />}
                           <div>
@@ -218,6 +228,22 @@ function AdminPainel() {
                       </div>
                       {aberto && (
                         <div className="painel-expand-body">
+                          {p.foto && (
+                            <div className="perfil-field">
+                              <span className="perfil-field-label">Foto de capa</span>
+                              <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: 'var(--radius)', marginTop: '6px' }} />
+                            </div>
+                          )}
+                          {galerias[p.id]?.length > 0 && (
+                            <div className="perfil-field">
+                              <span className="perfil-field-label">Carrossel de fotos ({galerias[p.id].length})</span>
+                              <div className="painel-grid" style={{ marginTop: '6px' }}>
+                                {galerias[p.id].map((f) => (
+                                  <img key={f.id} src={`data:image/jpeg;base64,${f.foto}`} alt="Foto do pesqueiro" style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: 'var(--radius)' }} />
+                                ))}
+                              </div>
+                            </div>
+                          )}
                           <div className="perfil-field"><span className="perfil-field-label">Telefone</span><span className="perfil-field-value">{p.telefone || '—'}</span></div>
                           <div className="perfil-field"><span className="perfil-field-label">CNPJ</span><span className="perfil-field-value">{p.cnpj || '—'}</span></div>
                           <div className="perfil-field"><span className="perfil-field-label">Endereço</span><span className="perfil-field-value">{p.cep || '—'} · {p.numero || '—'} · {p.complemento || '—'}</span></div>
@@ -253,7 +279,7 @@ function AdminPainel() {
                   const aberto = expandido === chave;
                   return (
                     <div key={p.id} className="painel-expand-card">
-                      <div className="painel-expand-head" onClick={() => toggleExpandir(chave)}>
+                      <div className="painel-expand-head" onClick={() => toggleExpandir(chave, p.id)}>
                         <div className="painel-expand-head-info">
                           {p.foto && <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} className="painel-row-photo" />}
                           <div>
@@ -265,7 +291,25 @@ function AdminPainel() {
                       </div>
                       {aberto && (
                         <div className="painel-expand-body">
+                          {p.foto && (
+                            <div className="perfil-field">
+                              <span className="perfil-field-label">Foto de capa</span>
+                              <img src={`data:image/jpeg;base64,${p.foto}`} alt={p.nome} style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: 'var(--radius)', marginTop: '6px' }} />
+                            </div>
+                          )}
+                          {galerias[p.id]?.length > 0 && (
+                            <div className="perfil-field">
+                              <span className="perfil-field-label">Carrossel de fotos ({galerias[p.id].length})</span>
+                              <div className="painel-grid" style={{ marginTop: '6px' }}>
+                                {galerias[p.id].map((f) => (
+                                  <img key={f.id} src={`data:image/jpeg;base64,${f.foto}`} alt="Foto do pesqueiro" style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: 'var(--radius)' }} />
+                                ))}
+                              </div>
+                            </div>
+                          )}
                           <div className="perfil-field"><span className="perfil-field-label">CNPJ</span><span className="perfil-field-value">{p.cnpj || '—'}</span></div>
+                          <div className="perfil-field"><span className="perfil-field-label">Status</span><span className="perfil-field-value">{p.aprovado === true ? 'Aprovado' : p.aprovado === false ? 'Negado' : 'Pendente'}</span></div>
+                          <div className="perfil-field"><span className="perfil-field-label">Cadastrado em</span><span className="perfil-field-value">{p.dataCadastro || '—'}</span></div>
                           <div className="perfil-field"><span className="perfil-field-label">Endereço</span><span className="perfil-field-value">{p.cep || '—'} · {p.numero || '—'} · {p.complemento || '—'}</span></div>
                           {p.linkMapa && (
                             <div className="perfil-field">

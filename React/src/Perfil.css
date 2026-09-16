@@ -196,6 +196,8 @@
   font-size: 1.02rem;
   color: var(--text);
   font-weight: 500;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .perfil-input {
